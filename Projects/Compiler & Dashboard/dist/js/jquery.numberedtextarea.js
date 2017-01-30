@@ -143,5 +143,5 @@
         });
     }
 	
-	$('textarea').numberedtextarea({});
+	$('#console').numberedtextarea({});
 }(jQuery));
