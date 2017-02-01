@@ -21,7 +21,7 @@
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 	<link href="../dist/css/jquery.numberedtextarea.css" rel="stylesheet">
 	<link href="../dist/css/title.css" rel="stylesheet">
-	<link href="../dist/css/marquee.css" rel="stylesheet">
+	<link href="../dist/css/token-display.css" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
@@ -80,6 +80,13 @@
 					<button type="button" onclick="updateText()" class="btn btn-primary btn-lg">Update Text</button>
 				</div>
 			</div>
+			<div class="row">
+				<div class="col-lg-6">
+					<table id="tokenTable" class="table table-bordered">
+						<th>No Tokens</th>
+					</table>
+				</div>
+			</div>
 		</div>
     <!-- /#wrapper -->
 
@@ -100,7 +107,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
-	<script src="../dist/js/update-scrolling-text.js"></script>
+	<script src="../dist/js/text-breaker.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
 	
 	<!-- Custom JavaScript -->
