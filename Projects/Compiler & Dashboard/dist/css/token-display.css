@@ -1,0 +1,16 @@
+#marquee-holder {
+	width: 100%;
+}
+.tokenStream {
+	padding-right: 5em;
+}
+.tokenRow:nth-child(even) {
+    background-color: #ffffff;
+	text-align: center;
+}
+.tokenRow:nth-child(odd) {
+	text-align: center;
+}
+th {
+	text-align: center;
+}
