@@ -71,9 +71,9 @@ function updateText() {
             printToken[l] = "While [while]";
         else if (printToken[l] == "if")
             printToken[l] = "If Statement [if]";
-		else if (printToken[l] == "true")
+		else if (printToken[l] == "true" && printToken[l-1] != "Quote [\"]")
             printToken[l] = "Boolean Value [true]";
-		else if (printToken[l] == "false")
+		else if (printToken[l] == "false" && printToken[l-1] != "Quote [\"]")
             printToken[l] = "Boolean Value [false]";
         else if (printToken[l] == "{")
             printToken[l] = "Left Brace [{]";
