@@ -20,6 +20,8 @@
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
 	<link href="../dist/css/jquery.numberedtextarea.css" rel="stylesheet">
+	<link href="../dist/css/title.css" rel="stylesheet">
+	<link href="../dist/css/marquee.css" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
@@ -40,7 +42,8 @@
 		<div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h1 class="page-header">Tienminator Compiler</h1>
+                    <h1 class="page-header">T<img id="red-i-eye" src="../img/red-i-eye.png" />enminat<img id="red-eye" src="../img/red-eye.png" />r<br/><img id="teeth" src="../img/teeth.png" /></h1>
+					
                 </div>
             </div>
             <!-- /.row -->
@@ -69,7 +72,7 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-12 text-center">
-					<button class="btn btn-lg col-lg-12"><marquee id="tokenBanner" behavior="scroll" direction="left">Your scrolling text goes here...</marquee></button>
+					<button id="marquee-holder" class="btn btn-lg col-lg-12 disabled">No Tokens</button>
 				</div>
 			</div>
 			<div class="row">
