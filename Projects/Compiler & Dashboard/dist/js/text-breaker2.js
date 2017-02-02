@@ -133,14 +133,14 @@ function breakText() {
                 tokens[i] = "If [if]";
             }
             // Regex for Variable Type
-            else if (isMatch(/^int|string|boolean$/, token)) {
-                var type = token.match(/^int|string|boolean$/);
+            else if (isMatch(/^int$|^string$|^boolean$/, token)) {
+                var type = token.match(/^int$|^string$|^boolean$/);
                 if (debug)
                     console.log(token);
                 tokens[i] = "Variable Type [" + type[0] + "]";
             }
             // Regex for Boolean Value
-            else if (isMatch(/^true|false$/, token)) {
+            else if (isMatch(/^true$|^false$/, token)) {
                 var boolVal = token.match(/^true|false$/);
                 if (debug)
                     console.log(token);
