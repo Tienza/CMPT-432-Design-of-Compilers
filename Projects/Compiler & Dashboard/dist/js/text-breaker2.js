@@ -85,7 +85,7 @@ function breakText() {
                 tokens[i] = "Right Parenthesis [)]";
             }
             // Regex for End of Program Symbol
-            else if (isMatch(/^\$$/, token)) {
+            else if (isMatch(/^\$$/, token) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug)
                     console.log(token);
                 tokens[i] = "End of Program Symbol [$]";
@@ -147,14 +147,14 @@ function breakText() {
                 tokens[i] = "Boolean Value [" + boolVal[0] + "]";
             }
             // Regex for Identifiers
-            else if (isMatch(/^[a-z]$/, token) && codeFrag[i - 1] != "\"") {
+            else if (isMatch(/^[a-z]$/, token) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] == "\"") {
                 var iden = token.match(/^[a-z]$/);
                 if (debug)
                     console.log(token);
                 tokens[i] = "Identifier [" + iden[0] + "]";
             }
             // Regex for Digits
-            else if (isMatch(/^[0-9]$/, token)) {
+            else if (isMatch(/^[0-9]$/, token) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 var digit = token.match(/^[0-9]$/);
                 if (debug)
                     console.log(token);
