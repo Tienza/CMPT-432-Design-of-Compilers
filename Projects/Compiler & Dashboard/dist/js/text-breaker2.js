@@ -1,4 +1,4 @@
-var debug = false;
+var debug = true;
 
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
@@ -36,7 +36,7 @@ function breakText() {
 
     str = str.replace(/(\r\n|\n|\r)/gm, " ");
 
-    DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(==)|(!=)|(\S)/g;
+    DELIMITER_PATTERN = /([a-z]+)|(\d+)|(")([^"]*)(")|(==)|(!=)|(\S)/g;
 
     str = str.split(DELIMITER_PATTERN);
 
@@ -137,11 +137,11 @@ function breakText() {
                 tokens[i] = "Boolean Value [" + boolVal[0] + "]";
             }
             // Regex for Identifiers
-            else if (isMatch(/^[a-z]$/, token)) {
+            else if (isMatch(/^[a-z]$/, token) && codeFrag[i - 1] != "\"") {
                 var iden = token.match(/^[a-z]$/);
                 if (debug)
                     console.log(token);
-                tokens[i] = "Identifiers [" + iden[0] + "]";
+                tokens[i] = "Identifier [" + iden[0] + "]";
             }
             // Regex for Digits
             else if (isMatch(/^[0-9]$/, token)) {
@@ -164,8 +164,8 @@ function breakText() {
                 tokens[i] = "String [" + string[0] + "]";
             }
             // Regex for String
-            else if (isMatch(/^".*?"$/, token)) {
-                var string = token.match(/^"(.*?)"$/);
+            else if (isMatch(/^[a-z\s]*$/, token) && codeFrag[i - 1] == "\"" && codeFrag[i + 1] == "\"") {
+                var string = token.match(/^[a-z\s]*$/);
                 if (debug)
                     console.log(token);
                 tokens[i] = "String [" + string[0] + "]";
@@ -175,7 +175,7 @@ function breakText() {
                 if (debug)
                     console.log(token);
             } else {
-                document.getElementById('log').value = "LEX ERROR - Unrecognized Character " + "\"" + token + "\"";
+                document.getElementById('log').value = "LEX ERROR - Unrecognized Character " + "[\"" + token + "\"]";
                 document.getElementById('marquee-holder').innerHTML = "";
                 document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
                 printTokens = false
