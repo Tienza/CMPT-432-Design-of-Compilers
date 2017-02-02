@@ -14,3 +14,9 @@
 th {
 	text-align: center;
 }
+.tokenStreamNum {
+	color: #d9534f;
+}
+.tokenStreamText {
+	color: #286090;
+}
