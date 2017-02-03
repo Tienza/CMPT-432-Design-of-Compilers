@@ -116,7 +116,7 @@ function lex() {
             if (isMatch(/^print$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Print [print]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Print [print]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Print [ print ]");
 				var token = new Token("PRINT", "print", lineNum);
@@ -126,7 +126,7 @@ function lex() {
             else if (isMatch(/^while$/, lexeme)) {
                 if (debug){
 					console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "While [while]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "While [while]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("While [ while ]");
 				var token = new Token("WHILE", "print", lineNum);
@@ -136,7 +136,7 @@ function lex() {
             else if (isMatch(/^if$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "If [if]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "If [if]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("If [ if ]");
 				var token = new Token("IF", "if", lineNum);
@@ -147,7 +147,7 @@ function lex() {
                 var type = lexeme.match(/^int$|^string$|^boolean$/);
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Variable Type [" + type[0] + "]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Variable Type [" + type[0] + "]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Variable Type [ " + type[0] + " ]");
 				
@@ -161,7 +161,7 @@ function lex() {
                 var boolVal = lexeme.match(/^true|false$/);
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Boolean Value [" + boolVal[0] + "]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Boolean Value [" + boolVal[0] + "]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Boolean Value [ " + boolVal[0] + " ]");
 				
@@ -174,7 +174,7 @@ function lex() {
             else if (isMatch(/^{$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Left Brace [ { ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Left Brace [ { ]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Left Brace [ { ]");
 				var token = new Token("LEFT_BRACE", "{", lineNum);
@@ -184,7 +184,7 @@ function lex() {
             else if (isMatch(/^}$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Right Brace [ } ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Right Brace [ } ]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Right Brace [ } ]");
 				var token = new Token("RIGHT_BRACE", "}", lineNum);
@@ -194,7 +194,7 @@ function lex() {
             else if (isMatch(/^\($/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Left Parenthesis [ ( ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Left Parenthesis [ ( ]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Left Parenthesis [ ( ]");
 				var token = new Token("LEFT_PARENTHESIS", "(", lineNum);
@@ -204,7 +204,7 @@ function lex() {
             else if (isMatch(/^\)$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Right Parenthesis [ ) ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + "Right Parenthesis [ ) ]" + " on line " + lineNum + "...\n"); 
 				}
                 tokenStrings.push("Right Parenthesis [ ) ]");
 				var token = new Token("RIGHT_PARENTHESIS", ")", lineNum);
@@ -214,7 +214,7 @@ function lex() {
             else if (isMatch(/^\$$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "End of Program Symbol [ $ ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "End of Program Symbol [ $ ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("End of Program Symbol [ $ ]");
 				var token = new Token("EOPS", "$", lineNum);
@@ -224,7 +224,7 @@ function lex() {
             else if (isMatch(/^==$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Equality Operator [ == ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Equality Operator [ == ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Equality Operator [ == ]");
 				var token = new Token("EQUALITY_OP", "==", lineNum);
@@ -234,7 +234,7 @@ function lex() {
             else if (isMatch(/^!=$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Inequality Operator [ != ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Inequality Operator [ != ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Inequality Operator [ != ]");
 				var token = new Token("INEQUALITY_OP", "!=", lineNum);
@@ -244,7 +244,7 @@ function lex() {
             else if (isMatch(/^=$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Assignment Operator [ = ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Assignment Operator [ = ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Assignment Operator [ = ]");
 				var token = new Token("ASSIGNMENT_OP", "=", lineNum);
@@ -254,7 +254,7 @@ function lex() {
             else if (isMatch(/^\+$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Addition Operator [ + ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Addition Operator [ + ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Addition Operator [ + ]");
 				var token = new Token("ADDITION_OP", "+", lineNum);
@@ -265,7 +265,7 @@ function lex() {
                 var iden = lexeme.match(/^[a-z]$/);
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Identifier [ " + iden[0] + " ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Identifier [ " + iden[0] + " ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Identifier [ " + iden[0] + " ]");
 				var token = new Token("ID", iden[0], lineNum);
@@ -276,7 +276,7 @@ function lex() {
                 var digit = lexeme.match(/^[0-9]$/);
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Digit [ " + digit[0] + " ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Digit [ " + digit[0] + " ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Digit [ " + digit[0] + " ]");
 				var token = new Token("DIGIT", digit[0], lineNum);
@@ -286,7 +286,7 @@ function lex() {
             else if (isMatch(/^"$/, lexeme)) {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
 				}
                 tokenStrings.push("Quotation [ \" ]");
 				var token = new Token("QUOTE", "\"", lineNum);
@@ -301,11 +301,11 @@ function lex() {
                     console.log(lexeme + " on line " + lineNum);
 					console.log(lexeme + " on line " + lineNum);
 					
-					$('#log').val(txt + " | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
 					txt = $('#log').val();
-					$('#log').val(txt + " | " + "String [ " + string[2] + " ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "String [ " + string[2] + " ]" + " on line " + lineNum + "...\n");
 					txt = $('#log').val();
-					$('#log').val(txt + " | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
 				}
 				tokenStrings.push("Quotation [ \" ]");
                 tokenStrings.push("String [ " + string[2] + " ]");
@@ -329,7 +329,8 @@ function lex() {
 				$('#log').val(txt + "\nLEX ERROR - Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
                 document.getElementById('marquee-holder').innerHTML = "";
                 document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
-                printTokens = false
+                printTokens = false;
+				$textarea.scrollTop($textarea[0].scrollHeight);
                 break;
             }
 			
