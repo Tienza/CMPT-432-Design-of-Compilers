@@ -348,6 +348,7 @@ function lex() {
     tokenStrings = tokenStrings.clean(undefined);
 	tokens = tokens.clean(undefined);
 	
+	// Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
 	if(tokens[tokens.length - 1].value != "$"){
 		txt = $('#log').val();
 		
@@ -370,7 +371,8 @@ function lex() {
 	
 	// Logs token Array
 	console.log(tokens);
-
+	
+	// Decides what to print for Final Lex Message
     if (printTokens) {
 		txt = $('#log').val();
 		
