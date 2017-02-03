@@ -1,5 +1,7 @@
 var debug = true;
 
+var $textarea = $('#log');
+
 // Creates the Token Class to store token information 
 class Token {
   constructor(tokenType, tokenValue, tokenLine) {
@@ -162,7 +164,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Left Brace
-            else if (isMatch(/^{$/, lexeme)) {
+            else if (isMatch(/^{$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Left Brace [ { ]" + " on line " + lineNum + "...\n"); 
@@ -172,7 +174,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Right Brace
-            else if (isMatch(/^}$/, lexeme)) {
+            else if (isMatch(/^}$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Right Brace [ } ]" + " on line " + lineNum + "...\n"); 
@@ -182,7 +184,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Left Parenthesis
-            else if (isMatch(/^\($/, lexeme)) {
+            else if (isMatch(/^\($/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Left Parenthesis [ ( ]" + " on line " + lineNum + "...\n"); 
@@ -192,7 +194,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Right Parenthesis
-            else if (isMatch(/^\)$/, lexeme)) {
+            else if (isMatch(/^\)$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Right Parenthesis [ ) ]" + " on line " + lineNum + "...\n"); 
@@ -212,7 +214,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Equality Operator
-            else if (isMatch(/^==$/, lexeme)) {
+            else if (isMatch(/^==$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Equality Operator [ == ]" + " on line " + lineNum + "...\n");
@@ -222,7 +224,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Inequality Operator
-            else if (isMatch(/^!=$/, lexeme)) {
+            else if (isMatch(/^!=$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Inequality Operator [ != ]" + " on line " + lineNum + "...\n");
@@ -232,7 +234,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Assignment Operator
-            else if (isMatch(/^=$/, lexeme)) {
+            else if (isMatch(/^=$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Assignment Operator [ = ]" + " on line " + lineNum + "...\n");
@@ -242,7 +244,7 @@ function lex() {
 				tokens[i] = token;
             }
             // Regex for Addition Operator
-            else if (isMatch(/^\+$/, lexeme)) {
+            else if (isMatch(/^\+$/, lexeme) && codeFrag[i - 1] != "\"" && codeFrag[i + 1] != "\"") {
                 if (debug){
                     console.log(lexeme + " on line " + lineNum);
 					$('#log').val(txt + " | " + "Addition Operator [ + ]" + " on line " + lineNum + "...\n");
@@ -310,6 +312,7 @@ function lex() {
 			
         }
 		
+		$textarea.scrollTop($textarea[0].scrollHeight);
     }
 
     // Clean the tokenStrings array of undefined variables again 
@@ -325,6 +328,8 @@ function lex() {
     if (printTokens) {
 		
 		$('#log').val(txt + "\nLex Successful...");
+		
+		$textarea.scrollTop($textarea[0].scrollHeight);
 
         marqueeTokens = [];
         tableTokens = [];
@@ -334,13 +339,13 @@ function lex() {
         // Prepares tokenStrings for printing into marquee and table
         for (var m = 0; m < tokenStrings.length; m++) {
             marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenStrings[m] + "</span></span>";
-            tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + ": " + tokenStrings[m] + "</td></tr>";
+            tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + " :: " + tokens[m].type + "</td><td>" + tokens[m].value + "</td></tr>";
             tokenNumber++;
         }
 
         // Prints tokenStrings into marquee and table
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
-        document.getElementById('tokenTable').innerHTML = "<th>" + tokenStrings.length + " Tokens</th>" + tableTokens.join("");
+        document.getElementById('tokenTable').innerHTML = "<th>Token Type</th><th>Value</th>" + tableTokens.join("");
     }
 	
 	return tokens;
