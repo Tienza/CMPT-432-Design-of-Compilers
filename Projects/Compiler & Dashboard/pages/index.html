@@ -51,10 +51,10 @@
             <!-- /.row -->
 			<div class="row text-center">
 				<div class="col-lg-12 text-center">
-					<button type="button" class="btn btn-primary btn-lg">Compile</button>
+					<button type="button" onclick="lex()" class="btn btn-primary btn-lg">Lex</button>
 					<button type="button" class="btn btn-success btn-lg">Programs</button>
 					<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
-					<button type="button" class="btn btn-danger btn-lg">Verbose</button>
+					<button id="verboseToggle" type="button" onclick="toggleDebug()" class="btn btn-danger btn-lg">Verbose: On</button>
 				</div>
 			</div>
             <div class="row">
@@ -74,14 +74,14 @@
 			</div>
 			<div class="row">
 				<div class="col-lg-12 text-center">
-					<button id="marquee-holder" class="btn btn-lg col-lg-12 disabled">No Tokens</button>
+					<button id="marquee-holder" scrollamount="20" class="btn btn-lg col-lg-12 disabled">No Tokens</button>
 				</div>
 			</div>
-			<div class="row">
+			<!--<div class="row">
 				<div class="col-lg-12">
 					<button type="button" onclick="breakText()" class="btn btn-primary btn-lg">Update Text</button>
 				</div>
-			</div>
+			</div>-->
 			<div class="row">
 				<div class="col-lg-6">
 					<table id="tokenTable" class="table table-bordered">
@@ -109,7 +109,7 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
-	<script src="../dist/js/text-breaker2.js"></script>
+	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
 	
 	<!-- Custom JavaScript -->
