@@ -97,6 +97,10 @@ function lex() {
 	
 	// Line Number
 	var lineNum = 1;
+	
+	// Resets LEXER Error and Warning Count
+	var lexErrorCount = 0;
+	var lexWarningCount = 0;
 
     // Iterate through the condeFrag array to identify valid lexemes
     for (var i = 0; i < codeFrag.length; i++) {
@@ -326,9 +330,10 @@ function lex() {
             }
             // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
             else {
-				$('#log').val(txt + "\nLEX ERROR - Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
+				$('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
                 document.getElementById('marquee-holder').innerHTML = "";
                 document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
+				lexErrorCount++;
                 printTokens = false;
 				$textarea.scrollTop($textarea[0].scrollHeight);
                 break;
@@ -342,7 +347,24 @@ function lex() {
     // Clean the tokenStrings array of undefined variables again 
     tokenStrings = tokenStrings.clean(undefined);
 	tokens = tokens.clean(undefined);
-
+	
+	if(tokens[tokens.length - 1].value != "$"){
+		txt = $('#log').val();
+		
+		var endToken = new Token("EOPS", "$", tokens[tokens.length - 1].line);
+		tokens.push(endToken);
+		
+		tokenStrings.push("End of Program Symbol [ $ ]");
+		
+		lexWarningCount++;
+		if(debug) {
+			$('#log').val(txt + " LEXER --> | WARNING! NO EOPS detected. Added to end-of-file at line " + lineNum + "...\n");
+			$textarea.scrollTop($textarea[0].scrollHeight);
+		}
+	}
+	
+	console.log($('#log').val());
+	
     // Logs the array of tokenStrings
     console.log(tokenStrings);
 	
@@ -350,8 +372,11 @@ function lex() {
 	console.log(tokens);
 
     if (printTokens) {
+		txt = $('#log').val();
 		
-		$('#log').val(txt + "\nLex Successful...");
+		$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING and " + lexErrorCount + " ERRORS" + "...");
+		
+		console.log($('#log').val());
 		
 		$textarea.scrollTop($textarea[0].scrollHeight);
 
@@ -361,7 +386,7 @@ function lex() {
         var tokenNumber = 0;
 
         // Prepares tokenStrings for printing into marquee and table
-        for (var m = 0; m < tokenStrings.length; m++) {
+        for (var m = 0; m < tokens.length; m++) {
             marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenStrings[m] + "</span></span>";
             tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokens[m].type + "</td><td>" + tokens[m].value + "</td><td>" + tokens[m].line + "</td></tr>";
             tokenNumber++;
@@ -371,6 +396,12 @@ function lex() {
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
         document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
     }
+	
+	else{
+		txt = $('#log').val();
+		
+		$('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING and " + lexErrorCount + " ERRORS" + "...");
+	}
 	
 	return tokens;
 }
