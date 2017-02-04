@@ -9,13 +9,14 @@ div.numberedtextarea-wrapper textarea {
 }
 
 div.numberedtextarea-line-numbers {
+  background-color: #eeeeee;
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
   width: 50px;
-  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid rgba(0, 0, 0, 0.5);
   color: rgba(0, 0, 0, 0.5);
   overflow: hidden;
 }
