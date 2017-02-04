@@ -1,4 +1,4 @@
-var debug = true;
+var verbose = true;
 
 var $textarea = $('#log');
 
@@ -38,10 +38,10 @@ function isMatch(rx, str) {
         return false;
 }
 
-function toggleDebug(){
-	debug = !debug;
+function toggleVerbose(){
+	verbose = !verbose;
 	
-	if(!debug){
+	if(!verbose){
 		$('#verboseToggle').html("Verbose: Off")
 		$('#verboseToggle').toggleClass('btn btn-danger btn-lg');
 		$('#verboseToggle').toggleClass('btn btn-default btn-lg');
@@ -64,7 +64,7 @@ function lex() {
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
 
-	if(debug)
+	if(verbose)
 		console.log(str);
 	
     // Replaces breaklines with spaces and turns whole input into single lined string
@@ -92,9 +92,6 @@ function lex() {
     // Array to store tokens
     var tokens = [];
 	
-	// Array to store tokenStrings for display
-	var tokenStrings = [];
-	
 	// Line Number
 	var lineNum = 1;
 	
@@ -108,7 +105,7 @@ function lex() {
 		txt = $('#log').val();
 		
 		if(isMatch(/^\n+/, codeFrag[i])){
-			if(debug)
+			if(verbose)
 				console.log("Break Line");
 			lineNum++;
 		}
@@ -118,206 +115,219 @@ function lex() {
         if (lexeme !== undefined) {
             // Regex for Print
             if (isMatch(/^print$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_PRINT", "print", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Print [print]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n"); 
 				}
-                tokenStrings.push("Print [ print ]");
-				var token = new Token("PRINT", "print", lineNum);
+
 				tokens.push(token);
             }
             // Regex for While 
             else if (isMatch(/^while$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_WHILE", "while", lineNum);
+				
+                if (verbose){
 					console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "While [while]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n"); 
 				}
-                tokenStrings.push("While [ while ]");
-				var token = new Token("WHILE", "print", lineNum);
+
 				tokens.push(token);
             }
             // Regex for If
             else if (isMatch(/^if$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_IF", "if", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "If [if]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("If [ if ]");
-				var token = new Token("IF", "if", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Variable Type
             else if (isMatch(/^int$|^string$|^boolean$/, lexeme)) {
                 var type = lexeme.match(/^int$|^string$|^boolean$/);
-                if (debug){
-                    console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Variable Type [" + type[0] + "]" + " on line " + lineNum + "...\n"); 
-				}
-                tokenStrings.push("Variable Type [ " + type[0] + " ]");
 				
-				var temp = type[0].toUpperCase();
-				var token = new Token("VT_" + temp, type[0], lineNum);
+				var token = new Token("T_VARIABLE_TYPE", type[0], lineNum);
+				
+                if (verbose){
+                    console.log(lexeme + " on line " + lineNum);
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+				}
 				
 				tokens.push(token);
             }
             // Regex for Boolean Value
             else if (isMatch(/^true$|^false$/, lexeme)) {
                 var boolVal = lexeme.match(/^true|false$/);
-                if (debug){
-                    console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Boolean Value [" + boolVal[0] + "]" + " on line " + lineNum + "...\n"); 
-				}
-                tokenStrings.push("Boolean Value [ " + boolVal[0] + " ]");
 				
-				var temp = boolVal[0].toUpperCase();
-				var token = new Token("BV_" + temp, boolVal[0], lineNum);
+				var token = new Token("T_BOOLEAN_VALUE", boolVal[0], lineNum);
+				
+                if (verbose){
+                    console.log(lexeme + " on line " + lineNum);
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+				}
 				
 				tokens.push(token);
             }
             // Regex for Left Brace
             else if (isMatch(/^{$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_OPENING_BRACE", "{", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Left Brace [ { ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Left Brace [ { ]");
-				var token = new Token("LEFT_BRACE", "{", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Right Brace
             else if (isMatch(/^}$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_CLOSING_BRACE", "}", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Right Brace [ } ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Right Brace [ } ]");
-				var token = new Token("RIGHT_BRACE", "}", lineNum);
+				
 				tokens.push(token);
             }
             // Regex for Left Parenthesis
             else if (isMatch(/^\($/, lexeme)) {
-                if (debug){
+				var token = new Token("T_OPENING_PARENTHESIS", "(", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Left Parenthesis [ ( ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Left Parenthesis [ ( ]");
-				var token = new Token("LEFT_PARENTHESIS", "(", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Right Parenthesis
             else if (isMatch(/^\)$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_RIGHT_PARENTHESIS", ")", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Right Parenthesis [ ) ]" + " on line " + lineNum + "...\n"); 
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Right Parenthesis [ ) ]");
-				var token = new Token("RIGHT_PARENTHESIS", ")", lineNum);
+
 				tokens.push(token);
             }
             // Regex for End of Program Symbol
             else if (isMatch(/^\$$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_EOPS", "$", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "End of Program Symbol [ $ ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("End of Program Symbol [ $ ]");
-				var token = new Token("EOPS", "$", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Equality Operator
             else if (isMatch(/^==$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_EQUALITY_OP", "==", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Equality Operator [ == ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Equality Operator [ == ]");
-				var token = new Token("EQUALITY_OP", "==", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Inequality Operator
             else if (isMatch(/^!=$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_INEQUALITY_OP", "!=", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Inequality Operator [ != ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Inequality Operator [ != ]");
-				var token = new Token("INEQUALITY_OP", "!=", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Assignment Operator
             else if (isMatch(/^=$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_ASSIGNMENT_OP", "=", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Assignment Operator [ = ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Assignment Operator [ = ]");
-				var token = new Token("ASSIGNMENT_OP", "=", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Addition Operator
             else if (isMatch(/^\+$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_ADDITION_OP", "+", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Addition Operator [ + ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Addition Operator [ + ]");
-				var token = new Token("ADDITION_OP", "+", lineNum);
+
 				tokens.push(token);
             }
             // Regex for Identifiers
             else if (isMatch(/^[a-z]$/, lexeme)) {
                 var iden = lexeme.match(/^[a-z]$/);
-                if (debug){
+				
+				var token = new Token("T_ID", iden[0], lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Identifier [ " + iden[0] + " ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Identifier [ " + iden[0] + " ]");
-				var token = new Token("ID", iden[0], lineNum);
+
 				tokens.push(token);
             }
             // Regex for Digits
             else if (isMatch(/^[0-9]$/, lexeme)) {
                 var digit = lexeme.match(/^[0-9]$/);
-                if (debug){
+				
+				var token = new Token("T_DIGIT", digit[0], lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Digit [ " + digit[0] + " ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Digit [ " + digit[0] + " ]");
-				var token = new Token("DIGIT", digit[0], lineNum);
+
 				tokens.push(token);
             }
             // Regex for Quotation
             else if (isMatch(/^"$/, lexeme)) {
-                if (debug){
+				var token = new Token("T_QUOTE", "\"", lineNum);
+				
+                if (verbose){
                     console.log(lexeme + " on line " + lineNum);
-					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
 				}
-                tokenStrings.push("Quotation [ \" ]");
-				var token = new Token("QUOTE", "\"", lineNum);
+
 				tokens.push(token);
             }
             // Regex for String
             else if (isMatch(/^(")([a-z\s]*)(")$/, lexeme)) {
                 var string = lexeme.match(/^(")([a-z\s]*)(")$/);
-                if (debug){
-					
-					console.log(lexeme + " on line " + lineNum);
-                    console.log(lexeme + " on line " + lineNum);
-					console.log(lexeme + " on line " + lineNum);
-					
-					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
-					txt = $('#log').val();
-					$('#log').val(txt + " LEXER --> | " + "String [ " + string[2] + " ]" + " on line " + lineNum + "...\n");
-					txt = $('#log').val();
-					$('#log').val(txt + " LEXER --> | " + "Quotation [ \" ]" + " on line " + lineNum + "...\n");
-				}
-				tokenStrings.push("Quotation [ \" ]");
-                tokenStrings.push("String [ " + string[2] + " ]");
-				tokenStrings.push("Quotation [ \" ]");
 				
-				var token = new Token("QUOTE", "\"", lineNum);
-				var token2 = new Token("STRING", string[2], lineNum);
-				var token3 = new Token("QUOTE", "\"", lineNum);
+				var token = new Token("T_QUOTE", "\"", lineNum);
+				var token2 = new Token("T_STRING", string[2], lineNum);
+				var token3 = new Token("T_QUOTE", "\"", lineNum);
+				
+                if (verbose){
+					
+					console.log(string[1] + " on line " + lineNum);
+                    console.log(string[2] + " on line " + lineNum);
+					console.log(string[3] + " on line " + lineNum);
+					
+					$('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+					txt = $('#log').val();
+					$('#log').val(txt + " LEXER --> | " + token2.type + " [ " + token2.value + " ] " + " on line " + token2.line + "...\n");
+					txt = $('#log').val();
+					$('#log').val(txt + " LEXER --> | " + token3.type + " [ " + token3.value + " ] " + " on line " + token3.line + "...\n");
+				}
 				
 				tokens.push(token);
 				tokens.push(token2);
@@ -325,7 +335,7 @@ function lex() {
             }
             // Regex for White Space
             else if (lexeme === "") {
-                if (debug)
+                if (verbose)
                     console.log(lexeme + " on line " + lineNum);
             }
             // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
@@ -344,41 +354,53 @@ function lex() {
 		$textarea.scrollTop($textarea[0].scrollHeight);
     }
 
-    // Clean the tokenStrings array of undefined variables again 
-    tokenStrings = tokenStrings.clean(undefined);
 	tokens = tokens.clean(undefined);
 	
-	// Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
-	if(tokens[tokens.length - 1].value != "$"){
-		txt = $('#log').val();
-		
-		var endToken = new Token("EOPS", "$", tokens[tokens.length - 1].line);
-		tokens.push(endToken);
-		
-		tokenStrings.push("End of Program Symbol [ $ ]");
-		
-		lexWarningCount++;
-		if(debug) {
-			$('#log').val(txt + " LEXER --> | WARNING! NO EOPS detected. Added to end-of-file at line " + lineNum + "...\n");
-			$textarea.scrollTop($textarea[0].scrollHeight);
-		}
-	}
+	var checkReturn = checkEOPS(tokens, lexWarningCount);
 	
-	console.log($('#log').val());
+	// Assigns the return values of checkEOPS
+	tokens = checkReturn[0];
+	lexWarningCount = checkReturn[1];
 	
-    // Logs the array of tokenStrings
-    console.log(tokenStrings);
+	var printLastReturn = printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
+	
+	// Assigns the return values of printLastMessage
+	tokens = printLastReturn[0];
+	lexWarningCount = printLastReturn[1];
+	lexErrorCount = printLastReturn[2];
 	
 	// Logs token Array
 	console.log(tokens);
 	
+	return tokens;
+}
+
+function checkEOPS(tokenArray, lexWarningCount) {
+	// Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
+	if(tokenArray[tokenArray.length - 1].value != "$"){
+		var txt = $('#log').val();
+		
+		var endToken = new Token("EOPS", "$", tokenArray[tokenArray.length - 1].line);
+		tokenArray.push(endToken);
+		
+		lexWarningCount++;
+		if(verbose) {
+			$('#log').val(txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length- 1 ].line + "...\n");
+			$textarea.scrollTop($textarea[0].scrollHeight);
+		}
+	}
+	
+	return [tokenArray, lexWarningCount];
+}
+
+function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCount) {
 	// Decides what to print for Final Lex Message
     if (printTokens) {
 		txt = $('#log').val();
 		
 		$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING and " + lexErrorCount + " ERRORS" + "...");
 		
-		console.log($('#log').val());
+		//console.log($('#log').val());
 		
 		$textarea.scrollTop($textarea[0].scrollHeight);
 
@@ -387,14 +409,14 @@ function lex() {
 
         var tokenNumber = 0;
 
-        // Prepares tokenStrings for printing into marquee and table
-        for (var m = 0; m < tokens.length; m++) {
-            marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenStrings[m] + "</span></span>";
-            tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokens[m].type + "</td><td>" + tokens[m].value + "</td><td>" + tokens[m].line + "</td></tr>";
+        // Prepares token for printing into marquee and table
+        for (var m = 0; m < tokenArray.length; m++) {
+		marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenArray[m].type + " [ " + tokenArray[m].value + " ] " + "</span></span>";
+            tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokenArray[m].type + "</td><td>" + tokenArray[m].value + "</td><td>" + tokenArray[m].line + "</td></tr>";
             tokenNumber++;
         }
 
-        // Prints tokenStrings into marquee and table
+        // Prints token into marquee and table
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
         document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
     }
@@ -405,5 +427,5 @@ function lex() {
 		$('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING and " + lexErrorCount + " ERRORS" + "...");
 	}
 	
-	return tokens;
+	return [tokenArray, lexWarningCount, lexErrorCount];
 }
