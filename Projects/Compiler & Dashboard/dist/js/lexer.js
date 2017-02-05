@@ -1,5 +1,7 @@
 var verbose = true;
 
+var byChar = true;
+
 var $textarea = $('#log');
 
 // Creates the Token Class to store token information 
@@ -52,12 +54,26 @@ function toggleVerbose() {
     }
 }
 
+function toggleByChar() {
+	byChar = !byChar;
+	
+	if (!byChar) {
+        $('#byCharToggle').html("Lex String By: Block")
+        $('#byCharToggle').toggleClass('btn btn-info btn-lg');
+        $('#byCharToggle').toggleClass('btn btn-success btn-lg');
+    } else {
+        $('#byCharToggle').html("Lex String By: Char")
+        $('#byCharToggle').toggleClass('btn btn-success btn-lg');
+        $('#byCharToggle').toggleClass('btn btn-info btn-lg');
+    }
+}
+
 function lex() {
     // Boolean for determining whether to print tokens of not (in case of Lex Failure)
     var printTokens = true;
-	
-	// Boolean for determing whether to run checkEOPS
-	var reachedEnd = true;
+
+    // Boolean for determing whether to run checkEOPS
+    var reachedEnd = true;
 
     // Clears the log at the beginning of each Lex session
     $('#log').val("");
@@ -312,28 +328,75 @@ function lex() {
                 }
                 // Regex for String
                 else if (isMatch(/^(")([a-z\s]*)(")$/, lexeme)) {
-                    var string = lexeme.match(/^(")([a-z\s]*)(")$/);
+                    // Creates Token for full string
+                    if (!byChar) {
+                        var string = lexeme.match(/^(")([a-z\s]*)(")$/);
 
-                    var token = new Token("T_QUOTE", "\"", lineNum);
-                    var token2 = new Token("T_STRING", string[2], lineNum);
-                    var token3 = new Token("T_QUOTE", "\"", lineNum);
+                        var token = new Token("T_QUOTE", "\"", lineNum);
+                        var token2 = new Token("T_STRING", string[2], lineNum);
+                        var token3 = new Token("T_QUOTE", "\"", lineNum);
 
-                    if (verbose) {
+                        if (verbose) {
 
-                        console.log(string[1] + " on line " + lineNum);
-                        console.log(string[2] + " on line " + lineNum);
-                        console.log(string[3] + " on line " + lineNum);
+                            console.log(string[1] + " on line " + lineNum);
+                            console.log(string[2] + " on line " + lineNum);
+                            console.log(string[3] + " on line " + lineNum);
 
-                        $('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
-                        txt = $('#log').val();
-                        $('#log').val(txt + " LEXER --> | " + token2.type + " [ " + token2.value + " ] " + " on line " + token2.line + "...\n");
-                        txt = $('#log').val();
-                        $('#log').val(txt + " LEXER --> | " + token3.type + " [ " + token3.value + " ] " + " on line " + token3.line + "...\n");
+                            $('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                            txt = $('#log').val();
+                            $('#log').val(txt + " LEXER --> | " + token2.type + " [ " + token2.value + " ] " + " on line " + token2.line + "...\n");
+                            txt = $('#log').val();
+                            $('#log').val(txt + " LEXER --> | " + token3.type + " [ " + token3.value + " ] " + " on line " + token3.line + "...\n");
+                        }
+
+                        tokens.push(token);
+                        tokens.push(token2);
+                        tokens.push(token3);
                     }
+                    // Creates Token for each Char
+                    else {
+                        lexeme = lexeme.split("");
 
-                    tokens.push(token);
-                    tokens.push(token2);
-                    tokens.push(token3);
+                        for (var lexElem = 0; lexElem < lexeme.length; lexElem++) {
+
+                            txt = $('#log').val();
+
+                            var lexChar = lexeme[lexElem];
+
+                            if (isMatch(/^"$/, lexChar)) {
+                                var token = new Token("T_QUOTE", "\"", lineNum);
+
+                                if (verbose) {
+                                    console.log(lexChar + " on line " + lineNum);
+                                    $('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                }
+
+                                tokens.push(token);
+                            } else if (isMatch(/^[a-z]$/, lexChar)) {
+                                var token = new Token("T_CHAR", lexChar, lineNum);
+
+                                if (verbose) {
+                                    console.log(lexChar + " on line " + lineNum);
+                                    $('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                }
+
+                                tokens.push(token);
+                            } else if (isMatch(/^\s$/, lexChar)) {
+                                var token = new Token("T_WHITE_SPACE", lexChar, lineNum);
+
+                                if (verbose) {
+                                    console.log(lexChar + " on line " + lineNum);
+                                    $('#log').val(txt + " LEXER --> | " + token.type + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                }
+
+                                tokens.push(token);
+                            } else {
+                                if (verbose)
+                                    console.log("Broke out of string loop...")
+                                break;
+                            }
+                        }
+                    }
                 }
                 // Regex for White Space
                 else if (lexeme === "") {
@@ -347,7 +410,7 @@ function lex() {
                     document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
                     lexErrorCount++;
                     printTokens = false;
-					reachedEnd = false;
+                    reachedEnd = false;
                     $textarea.scrollTop($textarea[0].scrollHeight);
                     break;
                 }
