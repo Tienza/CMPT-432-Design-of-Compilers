@@ -47,10 +47,15 @@ function toggleVerbose() {
         $('#verboseToggle').html("Verbose: Off")
         $('#verboseToggle').toggleClass('btn btn-danger btn-lg');
         $('#verboseToggle').toggleClass('btn btn-default btn-lg');
+		$('#verboseDropDown').toggleClass('btn btn-danger btn-lg dropdown-toggle');
+        $('#verboseDropDown').toggleClass('btn btn-default btn-lg dropdown-toggle');
     } else {
         $('#verboseToggle').html("Verbose: On")
         $('#verboseToggle').toggleClass('btn btn-default btn-lg');
         $('#verboseToggle').toggleClass('btn btn-danger btn-lg');
+        $('#verboseDropDown').toggleClass('btn btn-default btn-lg dropdown-toggle');
+		$('#verboseDropDown').toggleClass('btn btn-danger btn-lg dropdown-toggle');
+		
     }
 }
 
@@ -58,13 +63,9 @@ function toggleByChar() {
 	byChar = !byChar;
 	
 	if (!byChar) {
-        $('#byCharToggle').html("Lex String By: Block")
-        $('#byCharToggle').toggleClass('btn btn-info btn-lg');
-        $('#byCharToggle').toggleClass('btn btn-success btn-lg');
-    } else {
         $('#byCharToggle').html("Lex String By: Char")
-        $('#byCharToggle').toggleClass('btn btn-success btn-lg');
-        $('#byCharToggle').toggleClass('btn btn-info btn-lg');
+    } else {
+        $('#byCharToggle').html("Lex String By: Block")
     }
 }
 
@@ -76,8 +77,13 @@ function lex() {
     var reachedEnd = true;
 
     // Clears the log at the beginning of each Lex session
-    $('#log').val("");
-    var txt = $('#log').val("Beginning Lexing Session...\n\n");
+    $('#log').val
+	
+	// Begin Lexing Statement - Changes depending on how we are handling Strings
+	if(byChar)
+		var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
+	else
+		var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As Blocks*\n\n");
 
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
