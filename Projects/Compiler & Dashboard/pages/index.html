@@ -52,10 +52,27 @@
 			<div class="row text-center">
 				<div class="col-lg-12 text-center">
 					<button type="button" onclick="lex()" class="btn btn-primary btn-lg">Lex</button>
-					<button type="button" class="btn btn-success btn-lg">Programs</button>
+					<div class="btn-group">
+						<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Programs <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a href="#" onclick="insertProgram(0)">Test Case 0</a></li>
+							<li role="separator" class="divider"></li>
+							<li><a href="#" onclick="insertProgram(1)">Test Case 1</a></li>
+						</ul>
+					</div>
 					<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
-					<button id="verboseToggle" type="button" onclick="toggleVerbose()" class="btn btn-danger btn-lg">Verbose: On</button>
-					<button id="byCharToggle" type="button" onclick="toggleByChar()" class="btn btn-info btn-lg">Lex String By: Char</button>
+					<div class="btn-group">
+						<button id="verboseToggle" type="button" onclick="toggleVerbose()" class="btn btn-danger btn-lg">Verbose: On</button>
+						<button id ="verboseDropDown" type="button" class="btn btn-danger btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<span class="caret"></span>
+							<span class="sr-only">Toggle Dropdown</span>
+						</button>
+						<ul class="dropdown-menu">
+							<li><a id="byCharToggle" href="#" onclick="toggleByChar()">Lex String By: Block</a></li>
+						</ul>
+					</div>
+					<!-- <button id="byCharToggle" type="button" onclick="toggleByChar()" class="btn btn-info btn-lg">Lex String By: Char</button> -->
 				</div>
 			</div>
             <div class="row">
@@ -110,6 +127,7 @@
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
 	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
+	<script src="../dist/js/test-programs.js"></script>
 	
 	<!-- Custom JavaScript -->
 	<script>
