@@ -13,16 +13,19 @@ class Token {
     }
 }
 
+// Function to do a "replace all" on a string. Because this doesn't exit natively in JavaScript
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
     return target.split(search).join(replacement);
 };
 
+// Function to do a "replace all" on a string using ReGex. Because this doesn't exit natively in JavaScript
 String.prototype.replaceAllRX = function(search, replacement) {
     var target = this;
     return target.replace(new RegExp(search, 'g'), replacement);
 };
 
+// Function to do delete a value from an array. Because apparently this doesn't exit natively in JavaScript
 Array.prototype.clean = function(deleteValue) {
     for (var i = 0; i < this.length; i++) {
         if (this[i] == deleteValue) {
@@ -33,6 +36,7 @@ Array.prototype.clean = function(deleteValue) {
     return this;
 };
 
+// Function that returns a boolean if there is a regex match, used during lex
 function isMatch(rx, str) {
     if (str.match(rx))
         return true;
@@ -40,6 +44,7 @@ function isMatch(rx, str) {
         return false;
 }
 
+// Toggles whether the compiler will be in "Verbose Mode" or not. (Might move to different file later)
 function toggleVerbose() {
     verbose = !verbose;
 
@@ -59,6 +64,7 @@ function toggleVerbose() {
     }
 }
 
+// Toggles whether the Lexer will treat strings as String Blocks or CharLists
 function toggleByChar() {
 	byChar = !byChar;
 	
@@ -69,6 +75,7 @@ function toggleByChar() {
     }
 }
 
+// Initialize the Lexing Process
 function lex() {
     // Boolean for determining whether to print tokens of not (in case of Lex Failure)
     var printTokens = true;
@@ -105,12 +112,11 @@ function lex() {
     //str = str.replace(/(\r\n|\n|\r)/gm, " ");
     if (/\S/.test(str)) {
         // ReGex pattern to break up input by symbols, keywords, etc.
+		// Must also give credit where it is due, this ReGex a modified form of the ReGex from Svegliator which is a modified
+		// version of the ReGex from apparent ReGex God "Chris"
         DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(==)|(!=)|(\S)|(\n)/g;
 
-        //DELIMITER_PATTERN = /([a-z]+)|(\d+)|(")([^"]*)(")|(==)|(!=)|(\S)|(\n)/g; -- Old ReGex keeping incase of the need to Revert
-
-
-        // Turns string into array delimited by the patter above
+        // Turns string into array delimited by the pattern above
         str = str.split(DELIMITER_PATTERN);
 
         // Removes undefined elements within the array
@@ -332,7 +338,7 @@ function lex() {
 
                     tokens.push(token);
                 }
-                // Regex for String
+                // Regex for String -- Either by String Blocks or CharLists ---
                 else if (isMatch(/^(")([a-z\s]*)(")$/, lexeme)) {
                     // Creates Token for full string
                     if (!byChar) {
@@ -361,8 +367,10 @@ function lex() {
                     }
                     // Creates Token for each Char
                     else {
+						// Split input into individual characters
                         lexeme = lexeme.split("");
-
+						// Runs though each characters attempting to classify and generate appropriate tokens. 
+						// Patterns are the same as above, with the exception of of T_WHITE_SPACE, which only exists here
                         for (var lexElem = 0; lexElem < lexeme.length; lexElem++) {
 
                             txt = $('#log').val();
@@ -378,7 +386,8 @@ function lex() {
                                 }
 
                                 tokens.push(token);
-                            } else if (isMatch(/^[a-z]$/, lexChar)) {
+                            } 
+							else if (isMatch(/^[a-z]$/, lexChar)) {
                                 var token = new Token("T_CHAR", lexChar, lineNum);
 
                                 if (verbose) {
@@ -387,7 +396,9 @@ function lex() {
                                 }
 
                                 tokens.push(token);
-                            } else if (isMatch(/^\s$/, lexChar)) {
+                            } 
+							// Creates a Token for white spaces only if they exist inside a string
+							else if (isMatch(/^\s$/, lexChar)) {
                                 var token = new Token("T_WHITE_SPACE", lexChar, lineNum);
 
                                 if (verbose) {
@@ -396,7 +407,8 @@ function lex() {
                                 }
 
                                 tokens.push(token);
-                            } else {
+                            } 
+							else {
                                 if (verbose)
                                     console.log("Broke out of string loop...")
                                 break;
@@ -428,11 +440,12 @@ function lex() {
 
         tokens = tokens.clean(undefined);
 
-        var checkReturn = checkEOPS(tokens, lexWarningCount, reachedEnd);
+        var checkReturn = checkEOPS(tokens, reachedEnd, lexWarningCount, lexErrorCount);
 
         // Assigns the return values of checkEOPS
         tokens = checkReturn[0];
         lexWarningCount = checkReturn[1];
+		lexErrorCount = checkReturn[2];
 
         var printLastReturn = printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
 
@@ -445,7 +458,8 @@ function lex() {
         console.log(tokens);
 
         return tokens;
-    } 
+    }
+	// If console is empty and the user tries to lex then return an error
 	else {
         printTokens = false;
 
@@ -458,22 +472,36 @@ function lex() {
     }
 }
 
-function checkEOPS(tokenArray, lexWarningCount, reachedEnd) {
+function checkEOPS(tokenArray, reachedEnd, lexWarningCount, lexErrorCount) {
+	var txt = $('#log').val();
     // Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
-    if (tokenArray[tokenArray.length - 1].value != "$" && reachedEnd) {
-        var txt = $('#log').val();
+    try {
+		if (tokenArray[tokenArray.length - 1].value != "$" && reachedEnd) {
 
-        var endToken = new Token("T_EOPS", "$", tokenArray[tokenArray.length - 1].line);
-        tokenArray.push(endToken);
+			var endToken = new Token("T_EOPS", "$", tokenArray[tokenArray.length - 1].line);
+			tokenArray.push(endToken);
 
-        lexWarningCount++;
-        if (verbose) {
-            $('#log').val(txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n");
-            $textarea.scrollTop($textarea[0].scrollHeight);
-        }
-    }
+			lexWarningCount++;
+			
+			if (verbose) {
+				$('#log').val(txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n");
+				$textarea.scrollTop($textarea[0].scrollHeight);
+			}
+		}
+	}
+	// If Token Array is invalid or empty, notify the user of the error
+	catch(error) {
+		lexErrorCount++;
+		
+		if (verbose) {
+			console.log("Invalid Input..." + error);
+			$('#log').val(txt + " LEXER --> | ERROR! Input did not generate valid Token Array...\n");
+			$textarea.scrollTop($textarea[0].scrollHeight);
+		}
+		
+	}	
 
-    return [tokenArray, lexWarningCount];
+    return [tokenArray, lexWarningCount, lexErrorCount];
 }
 
 function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCount) {
@@ -509,7 +537,8 @@ function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCoun
         // Prints token into marquee and table
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
         document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
-    } else {
+    } 
+	else {
         txt = $('#log').val();
 		
 		// Prints Final Lex Fail Message
