@@ -501,7 +501,10 @@ function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCoun
         }
 		
 		// Updates Progess Status Bar
-		$('#lexResults').html(" PASSED ");
+		if(lexWarningCount == 0)
+			$('#lexResults').html("<span style=\"color:green;\"> PASSED </span>");
+		else
+			$('#lexResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
 
         // Prints token into marquee and table
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
@@ -512,8 +515,10 @@ function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCoun
 		// Prints Final Lex Fail Message
         $('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
 		
+		$textarea.scrollTop($textarea[0].scrollHeight);
+		
 		// Updates Progess Status Bar
-		$('#lexResults').html(" FAILED ");
+		$('#lexResults').html("<span style=\"color:red;\"> FAILED </span>");
     }
 
     return [tokenArray, lexWarningCount, lexErrorCount];
