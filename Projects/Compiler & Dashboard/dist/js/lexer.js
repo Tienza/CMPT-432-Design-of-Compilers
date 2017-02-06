@@ -77,8 +77,8 @@ function lex() {
     var reachedEnd = true;
 
     // Clears the log at the beginning of each Lex session
-    $('#log').val
-	
+    $('#log').val("")
+
 	// Begin Lexing Statement - Changes depending on how we are handling Strings
 	if(byChar)
 		var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
@@ -445,7 +445,8 @@ function lex() {
         console.log(tokens);
 
         return tokens;
-    } else {
+    } 
+	else {
         printTokens = false;
 
         lexErrorCount++;
@@ -479,7 +480,8 @@ function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCoun
     // Decides what to print for Final Lex Message
     if (printTokens) {
         txt = $('#log').val();
-
+		
+		// Prints Final Lex Success Message
         $('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
 
         //console.log($('#log').val());
@@ -497,14 +499,21 @@ function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCoun
             tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokenArray[m].type + "</td><td>" + tokenArray[m].value + "</td><td>" + tokenArray[m].line + "</td></tr>";
             tokenNumber++;
         }
+		
+		// Updates Progess Status Bar
+		$('#lexResults').html(" PASSED ");
 
         // Prints token into marquee and table
         document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
         document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
     } else {
         txt = $('#log').val();
-
+		
+		// Prints Final Lex Fail Message
         $('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
+		
+		// Updates Progess Status Bar
+		$('#lexResults').html(" FAILED ");
     }
 
     return [tokenArray, lexWarningCount, lexErrorCount];

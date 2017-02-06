@@ -24,8 +24,12 @@ function insertProgram(progNum) {
 		availableProgram = false;
 	}
 	
-	// 
+	// Clears Console and Resets the Progress Bar
 	$('#console').val("");
+	$('#lexResults').html(" INCOMPLETE ");
+	$('#parseResults').html(" INCOMPLETE ");
+	$('#saResults').html(" INCOMPLETE ");
+	$('#cgResults').html(" INCOMPLETE ");
 	
 	if (availableProgram) {
 		
