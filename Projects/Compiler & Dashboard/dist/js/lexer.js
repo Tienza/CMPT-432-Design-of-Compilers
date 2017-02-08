@@ -423,7 +423,8 @@ function lex() {
                 }
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
                 else {
-                    $('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
+					if (verbose)
+						$('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
                     document.getElementById('marquee-holder').innerHTML = "";
                     document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
                     lexErrorCount++;
