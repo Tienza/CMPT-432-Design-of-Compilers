@@ -21,7 +21,10 @@ function insertProgram(progNum) {
 		testProgramArray = [ "{", "\n", "\t", "i", "n", "t", " ", "a", "\n", "\t", "a", " ", "=", " ", "1", "\n", "}" ];
 	// Clears Console and Inserts If Statement Test Case
 	else if (progNum == 5)
-		testProgramArray = [ "{", "\n", "\t", "i", "n", "t", " ", "a", "\n", "\t", "a", " ", "=", " ", "1", "\n", "\n", "\t", "i", "f", "(", "a", " ", "=", "=", " ", "1", ")", " ", "{", "\n", "\t", "\t", "a", " ", "=", " ", "2", "\n", "\t", "}", "\n", "\n", "\t", "i", "f", "(", "a", " ", "!", "=", " ", "1", ")", " ", "{", "\n", "\t", "\t", "a", " ", "=", " ", "3", "\n", "\t", "}", "\n", "}", " ", "$" ]
+		testProgramArray = [ "{", "\n", "\t", "i", "n", "t", " ", "a", "\n", "\t", "a", " ", "=", " ", "1", "\n", "\n", "\t", "i", "f", "(", "a", " ", "=", "=", " ", "1", ")", " ", "{", "\n", "\t", "\t", "a", " ", "=", " ", "2", "\n", "\t", "}", "\n", "\n", "\t", "i", "f", "(", "a", " ", "!", "=", " ", "1", ")", " ", "{", "\n", "\t", "\t", "a", " ", "=", " ", "3", "\n", "\t", "}", "\n", "}", " ", "$" ];
+	// Clears Console and Inserts Invalid Print Statement Case
+	else if (progNum == 6)
+		testProgramArray = [ "{", "\n", "\t", "p", "r", "i", "n", "t", "(", "\"", "1", "2", "\"", ")", "\n", "}", "$" ];
 	// If no valid program number is provided, print WARNING to log
 	else {
 		availableProgram = false;
