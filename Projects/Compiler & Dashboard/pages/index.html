@@ -24,6 +24,7 @@
 	<link href="../dist/css/jquery.numberedtextarea.css" rel="stylesheet">
 	<link href="../dist/css/title.css" rel="stylesheet">
 	<link href="../dist/css/token-display.css" rel="stylesheet">
+	<link href="../dist/css/toast.css" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="../vendor/morrisjs/morris.css" rel="stylesheet">
@@ -56,13 +57,13 @@
 					<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Programs <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a href="#" onclick="insertProgram(0)">Test Case 0</a></li>
-						<li><a href="#" onclick="insertProgram(1)">Test Case 1</a></li>
-						<li><a href="#" onclick="insertProgram(2)">Alan Case</a></li>
-						<li><a href="#" onclick="insertProgram(3)">Long Test Case</a></li>
-						<li><a href="#" onclick="insertProgram(4)">Missing End $</a></li>
-						<li><a href="#" onclick="insertProgram(5)">If Statement</a></li>
-						<li><a href="#" onclick="insertProgram(6)">Invalid Print</a></li>
+						<li><a onclick="insertProgram(0)">Test Case 0</a></li>
+						<li><a onclick="insertProgram(1)">Test Case 1</a></li>
+						<li><a onclick="insertProgram(2)">Alan Case</a></li>
+						<li><a onclick="insertProgram(3)">Long Test Case</a></li>
+						<li><a onclick="insertProgram(4)">Missing End $</a></li>
+						<li><a onclick="insertProgram(5)">If Statement</a></li>
+						<li><a onclick="insertProgram(6)">Invalid Print</a></li>
 					</ul>
 				</div>
 				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
@@ -116,6 +117,7 @@
 			</div>
 			<div class="col-lg-6">
 				<label>Log</label>
+				<a id="copy" onclick="copyLog()" data-toggle="tooltip" data-placement="right" title="Copy Log to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				<div class="panel panel-default">
 					<textarea readonly id="log" class="form-control" rows="20"></textarea>
 				</div>
@@ -135,6 +137,12 @@
 					<th>No Tokens</th>
 				</table>
 			</div>
+		</div>
+		<!-- /.row -->
+		
+		<!-- Toast Messages -->
+		<div class="row">
+			<div id="copyMessage" class="toast">Copied to Clipboard</div>
 		</div>
 		<!-- /.row -->
 	</div>
@@ -174,8 +182,9 @@
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
-	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
+	<script src="../dist/js/main-page-functions.js"></script>
+	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/test-programs.js"></script>
 	
 	<!-- Custom JavaScript -->

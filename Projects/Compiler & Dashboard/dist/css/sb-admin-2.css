@@ -14,6 +14,20 @@ body {
   min-height: 568px;
   background-color: white;
 }
+#copy {
+	color: #555;
+	padding-top: 3px;
+	padding-left: 3px;
+	padding-bottom: 3px;
+	padding-right: 3px;
+	border: solid 1px;
+	border-color: #ccc;
+	border-radius: 3px;
+	background-color: #fff;
+}
+#copy:hover {
+	cursor:pointer;
+}
 @media (min-width: 768px) {
   #page-wrapper {
     position: inherit;
