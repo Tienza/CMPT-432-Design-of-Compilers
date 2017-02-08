@@ -467,7 +467,8 @@ function lex() {
         lexErrorCount++;
 
         txt = $('#log').val();
-        $('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
+		if (verbose)
+			$('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
 
         printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
     }
