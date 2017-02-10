@@ -1,4 +1,4 @@
-function copyLog() {
+function cloneLog() {
 	$('#log').select();
     document.execCommand('copy');
 	clearSelection();

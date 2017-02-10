@@ -14,7 +14,7 @@ body {
   min-height: 568px;
   background-color: white;
 }
-#copy {
+#copyButton {
 	color: #555;
 	padding-top: 3px;
 	padding-left: 3px;
@@ -25,7 +25,7 @@ body {
 	border-radius: 3px;
 	background-color: #fff;
 }
-#copy:hover {
+#copyButton:hover {
 	cursor:pointer;
 	color: #0275d8;
 }

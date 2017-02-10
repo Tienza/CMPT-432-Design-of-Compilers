@@ -64,6 +64,7 @@
 						<li><a class="sub-menu-links" onclick="insertProgram(4)">Missing End $</a></li>
 						<li><a class="sub-menu-links" onclick="insertProgram(5)">If Statement</a></li>
 						<li><a class="sub-menu-links" onclick="insertProgram(6)">Invalid Print</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(7)">\n in String</a></li>
 					</ul>
 				</div>
 				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
@@ -112,12 +113,12 @@
 			<div class="col-lg-6">
 				<label>Console</label>
 				<div class="panel panel-default">
-					<textarea id="console" class="form-control" rows="20" placeholder="Enter your Code Here...">&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;&#13;</textarea>
+					<textarea id="console" class="form-control" rows="20" placeholder="Enter your Code Here..."></textarea>
 				</div>
 			</div>
 			<div class="col-lg-6">
 				<label>Log</label>
-				<a id="copy" onclick="copyLog()" data-toggle="tooltip" data-placement="right" title="Copy Log to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				<a id="copyButton" onclick="cloneLog()" data-toggle="tooltip" data-placement="right" title="Copy Log to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				<div class="panel panel-default">
 					<textarea readonly id="log" class="form-control" rows="20"></textarea>
 				</div>
