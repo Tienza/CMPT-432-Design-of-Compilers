@@ -27,6 +27,7 @@ body {
 }
 #copy:hover {
 	cursor:pointer;
+	color: #0275d8;
 }
 @media (min-width: 768px) {
   #page-wrapper {
@@ -35,6 +36,9 @@ body {
     padding: 0 30px;
     border-left: 1px solid #e7e7e7;
   }
+}
+.sub-menu-links {
+	cursor: pointer;
 }
 .navbar-top-links {
   margin-right: 0;

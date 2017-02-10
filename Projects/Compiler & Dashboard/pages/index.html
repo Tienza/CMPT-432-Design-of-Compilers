@@ -57,13 +57,13 @@
 					<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Programs <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a onclick="insertProgram(0)">Test Case 0</a></li>
-						<li><a onclick="insertProgram(1)">Test Case 1</a></li>
-						<li><a onclick="insertProgram(2)">Alan Case</a></li>
-						<li><a onclick="insertProgram(3)">Long Test Case</a></li>
-						<li><a onclick="insertProgram(4)">Missing End $</a></li>
-						<li><a onclick="insertProgram(5)">If Statement</a></li>
-						<li><a onclick="insertProgram(6)">Invalid Print</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(0)">Test Case 0</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(1)">Test Case 1</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(2)">Alan Case</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(3)">Long Test Case</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(4)">Missing End $</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(5)">If Statement</a></li>
+						<li><a class="sub-menu-links" onclick="insertProgram(6)">Invalid Print</a></li>
 					</ul>
 				</div>
 				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
@@ -74,7 +74,7 @@
 						<span class="sr-only">Toggle Dropdown</span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a id="byCharToggle" href="#" onclick="toggleByChar()">Lex String By: Block</a></li>
+						<li><a id="byCharToggle" class="sub-menu-links" onclick="toggleByChar()">Lex String By: Block</a></li>
 					</ul>
 				</div>
 				<!-- <button id="byCharToggle" type="button" onclick="toggleByChar()" class="btn btn-info btn-lg">Lex String By: Char</button> -->
