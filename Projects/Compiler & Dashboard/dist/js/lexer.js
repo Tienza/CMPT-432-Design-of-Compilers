@@ -339,10 +339,10 @@ function lex() {
                     tokens.push(token);
                 }
                 // Regex for String -- Either by String Blocks or CharLists ---
-                else if (isMatch(/^(")([a-z\s]*)(")$/, lexeme)) {
+                else if (isMatch(/^(")([a-z \t]*)(")$/, lexeme)) {
                     // Creates Token for full string
                     if (!byChar) {
-                        var string = lexeme.match(/^(")([a-z\s]*)(")$/);
+                        var string = lexeme.match(/^(")([a-z \t]*)(")$/);
 
                         var token = new Token("T_QUOTE", "\"", lineNum);
                         var token2 = new Token("T_STRING", string[2], lineNum);
@@ -399,7 +399,7 @@ function lex() {
                             } 
 							// Creates a Token for white spaces only if they exist inside a string
 							else if (isMatch(/^\s$/, lexChar)) {
-                                var token = new Token("T_WHITE_SPACE", lexChar, lineNum);
+                                var token = new Token("T_CHAR", lexChar, lineNum);
 
                                 if (verbose) {
                                     console.log(lexChar + " on line " + lineNum);
