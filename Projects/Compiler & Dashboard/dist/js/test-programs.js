@@ -25,6 +25,8 @@ function insertProgram(progNum) {
 	// Clears Console and Inserts Invalid Print Statement Case
 	else if (progNum == 6)
 		testProgramArray = [ "{", "\n", "\t", "p", "r", "i", "n", "t", "(", "\"", "1", "2", "\"", ")", "\n", "}", "$" ];
+	else if (progNum == 7)
+		testProgramArray = [ "{", "\"", "t", "w", "o", "\n", "l", "i", "n", "e", "s", "\"", "}", "$" ];
 	// If no valid program number is provided, print WARNING to log
 	else {
 		availableProgram = false;
