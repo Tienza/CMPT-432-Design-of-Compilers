@@ -16,3 +16,9 @@ function showToast(toastId) {
     x.className = "toast show";
     setTimeout(function(){ x.className = x.className.replace("toast show", "toast"); }, 1500);
 }
+function brokenTeeth(brokenLevel) {
+	if (brokenLevel == 0)
+		$('#teeth').attr('src', '../img/teeth.png');
+	else if (brokenLevel == 1)
+		$('#teeth').attr('src', '../img/lexTeeth.png');
+}
