@@ -9,7 +9,7 @@ class Token {
 
 // Initialize the Lexing Process
 function lex() {
-    // Boolean for determining whether to print tokens of not (in case of Lex Failure)
+    // Boolean for determining whether to print tokens or not (in case of Lex Failure)
     var printTokens = true;
 
     // Boolean for determing whether to run checkEOPS
@@ -27,7 +27,7 @@ function lex() {
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
 
-    // Resets LEXER Error and Warning Count
+    // Resets and initialize LEXER Error and Warning Count
     var lexErrorCount = 0;
     var lexWarningCount = 0;
 
@@ -45,7 +45,7 @@ function lex() {
     if (/\S/.test(str)) {
         // RegEx pattern to break up input by symbols, keywords, etc.
 		// Must also give credit where it is due, this RegEx a modified form of the RegEx from Svegliator which is a modified
-		// version of the RegEx from apparent RegEx God "Chris"
+		// version of the RegEx from apparent RegEx god "Chris"
         DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(==)|(!=)|(\S)|(\n)/g;
 
         // Turns string into array delimited by the pattern above
@@ -67,8 +67,8 @@ function lex() {
             txt = $('#log').val();
 
             if (isMatch(/^\n+/, codeFrag[i])) {
-                if (verbose)
-                    console.log("Break Line");
+                /*if (verbose)
+                    console.log("Break Line");*/
                 lineNum++;
             }
 
@@ -80,7 +80,7 @@ function lex() {
                     var token = new Token("T_PRINT", "print", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -91,7 +91,7 @@ function lex() {
                     var token = new Token("T_WHILE", "while", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -102,7 +102,7 @@ function lex() {
                     var token = new Token("T_IF", "if", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -115,7 +115,7 @@ function lex() {
                     var token = new Token("T_VARIABLE_TYPE", type[0], lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -128,7 +128,7 @@ function lex() {
                     var token = new Token("T_BOOLEAN_VALUE", boolVal[0], lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -139,7 +139,7 @@ function lex() {
                     var token = new Token("T_OPENING_BRACE", "{", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -150,7 +150,7 @@ function lex() {
                     var token = new Token("T_CLOSING_BRACE", "}", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -161,7 +161,7 @@ function lex() {
                     var token = new Token("T_OPENING_PARENTHESIS", "(", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -169,10 +169,10 @@ function lex() {
                 }
                 // RegEx for Right Parenthesis
                 else if (isMatch(/^\)$/, lexeme)) {
-                    var token = new Token("T_RIGHT_PARENTHESIS", ")", lineNum);
+                    var token = new Token("T_CLOSING_PARENTHESIS", ")", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -183,7 +183,7 @@ function lex() {
                     var token = new Token("T_EOPS", "$", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -194,7 +194,7 @@ function lex() {
                     var token = new Token("T_EQUALITY_OP", "==", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -205,7 +205,7 @@ function lex() {
                     var token = new Token("T_INEQUALITY_OP", "!=", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -216,7 +216,7 @@ function lex() {
                     var token = new Token("T_ASSIGNMENT_OP", "=", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -227,7 +227,7 @@ function lex() {
                     var token = new Token("T_ADDITION_OP", "+", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -240,7 +240,7 @@ function lex() {
                     var token = new Token("T_ID", iden[0], lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -253,7 +253,7 @@ function lex() {
                     var token = new Token("T_DIGIT", digit[0], lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -264,7 +264,7 @@ function lex() {
                     var token = new Token("T_QUOTE", "\"", lineNum);
 
                     if (verbose) {
-                        console.log(lexeme + " on line " + lineNum);
+                        // console.log(lexeme + " on line " + lineNum);
                         $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                     }
 
@@ -282,9 +282,9 @@ function lex() {
 
                         if (verbose) {
 
-                            console.log(string[1] + " on line " + lineNum);
-                            console.log(string[2] + " on line " + lineNum);
-                            console.log(string[3] + " on line " + lineNum);
+                            // console.log(string[1] + " on line " + lineNum);
+                            // console.log(string[2] + " on line " + lineNum);
+                            // console.log(string[3] + " on line " + lineNum);
 
                             $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                             txt = $('#log').val();
@@ -313,7 +313,7 @@ function lex() {
                                 var token = new Token("T_QUOTE", "\"", lineNum);
 
                                 if (verbose) {
-                                    console.log(lexChar + " on line " + lineNum);
+                                    // console.log(lexChar + " on line " + lineNum);
                                     $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                                 }
 
@@ -323,7 +323,7 @@ function lex() {
                                 var token = new Token("T_CHAR", lexChar, lineNum);
 
                                 if (verbose) {
-                                    console.log(lexChar + " on line " + lineNum);
+                                    // console.log(lexChar + " on line " + lineNum);
                                     $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                                 }
 
@@ -334,7 +334,7 @@ function lex() {
                                 var token = new Token("T_CHAR", lexChar, lineNum);
 
                                 if (verbose) {
-                                    console.log(lexChar + " on line " + lineNum);
+                                    // console.log(lexChar + " on line " + lineNum);
                                     $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
                                 }
 
@@ -350,8 +350,8 @@ function lex() {
                 }
                 // RegEx for White Space
                 else if (lexeme === "") {
-                    if (verbose)
-                        console.log(lexeme + " on line " + lineNum);
+                    /*if (verbose)
+                        console.log(lexeme + " on line " + lineNum);*/
                 }
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
                 else {
@@ -389,8 +389,15 @@ function lex() {
 
         // Logs token Array
         console.log(tokens);
-
-        return tokens;
+		
+		// Variable to store all objects moving on to the parser
+		var lexReturns = {
+			tokenArray: tokens,
+			warningCount: lexWarningCount,
+			errorCount: lexErrorCount
+		}
+		
+        return lexReturns;
     }
 	// If console is empty and the user tries to lex then return an error
 	else {
@@ -456,10 +463,13 @@ function lex() {
 		
 		// Decides what to print for Final Lex Message
 		if (printTokens) {
+			// LEX Success
+			lexComplete = true;
+			
 			txt = $('#log').val();
 			
 			// Prints Final Lex Success Message
-			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
+			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n\n");
 
 			//console.log($('#log').val());
 
@@ -488,6 +498,9 @@ function lex() {
 			document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
 		} 
 		else {
+			// LEX fail
+			lexComplete = false;
+			
 			txt = $('#log').val();
 			
 			// Prints Final Lex Fail Message
