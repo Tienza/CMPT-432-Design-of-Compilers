@@ -3,6 +3,12 @@ var verbose = true;
 
 var byChar = true;
 
+// Global Status Boolean Declarations
+var lexComplete = false;
+var parseComplete = false;
+var semanticComplete = false;
+var codeComplete = false;
+
 var $textarea = $('#log');
 
 // Function to do a "replace all" on a string. Because this doesn't exit natively in JavaScript
