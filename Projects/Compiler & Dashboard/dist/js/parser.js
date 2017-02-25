@@ -27,15 +27,18 @@ function parse() {
 	
 	function parseProgram() {
 		txt = $('#log').val();
-
+		
+		// Initialize parsing of Block
 		parseBlock();
 		
 		txt = $('#log').val();
 		
+		// Checks to see if the character following the Block is a T_EOPS
 		if(matchToken(tokens[currentToken].kind, "T_EOPS")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_EOPS ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ $ ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -49,10 +52,12 @@ function parse() {
 	function parseBlock() {
 		txt = $('#log').val();
 		
+		// Checks the required first character of a Block [ { ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_OPENING_BRACE ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ { ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -62,17 +67,20 @@ function parse() {
 		
 		scrollDown();
 		
+		// Initialize parsing of StatementLists
 		parseStatementList();
 		
 		txt = $('#log').val();
 		
+		// Checks the required last character of a Block [ } ]
 		if (matchToken(tokens[currentToken].kind, "T_CLOSING_BRACE")){
 			txt = $('#log').val();
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_CLOSING_BRACE ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
+		// Throws an error if the character does not match what is expected
 		else {
-			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ } ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ } ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
 			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
@@ -84,10 +92,13 @@ function parse() {
 	function parseStatementList() {
 		txt = $('#log').val();
 		
+		// Checks to see if the following statement is another statement
 		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken+1] == "T_ASSIGNMENT_OP" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Now parsing Statement...\n");
+			// Initialize parsing of Statement
 			parseStatement();	
 		}
+		// Empty production
 		else
 			txt = $('#log').val(txt + " PARSER --> | PASSED! " + lambdaChar + " production on line " + tokens[currentToken].line + "...\n");
 		
@@ -98,8 +109,10 @@ function parse() {
 		
 		txt = $('#log').val();
 		
+		// Checks to see if the following token is the start of a print statement
 		if (tokens[currentToken].kind == "T_PRINT") {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_PRINT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			// Initialize parsing of Print
 			parsePrint();
 		}
 		
@@ -127,7 +140,7 @@ function parse() {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_OPENING_BRACE ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			parseBlock();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val();
 			
@@ -143,11 +156,12 @@ function parse() {
 	function parsePrint() {	
 		txt = $('#log').val();	
 		
+		// Checks the required first character of print [ T_PRINT ]
 		if (matchToken(tokens[currentToken].kind, "T_PRINT")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_PRINT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ print ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -159,11 +173,12 @@ function parse() {
 		
 		txt = $('#log').val();
 		
+		// Checks the required second character of print [ ( ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_OPENING_PARENTHESIS ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ ( ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -173,15 +188,17 @@ function parse() {
 		
 		scrollDown();
 		
+		// Initialize parsing of Expr
 		parseExpr();
 		
 		txt = $('#log').val();
 		
+		// Checks the required last character of print [ ) ]
 		if (matchToken(tokens[currentToken].kind, "T_CLOSING_PARENTHESIS")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_CLOSING_PARENTHESIS ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ ) ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -195,11 +212,13 @@ function parse() {
 	function parseExpr() {
 		txt = $('#log').val();
 		
+		// Checks the required first character of IntExpr [ T_DIGIT ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ IntExpr ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			// Initialize parsing of IntExpr
 			parseIntExpr();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ IntExpr || StringExpr || BooleanExpr || Id ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -213,6 +232,7 @@ function parse() {
 	function parseIntExpr() {
 		txt = $('#log').val();
 		
+		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_DIGIT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken()
@@ -223,12 +243,12 @@ function parse() {
 			parseExpr();
 			
 		}
-		
+		// Checks the required first character is T_DIGIT
 		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_DIGIT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ T_DIGIT & T_ADDITION_OP || T_DIGIT ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
@@ -242,11 +262,12 @@ function parse() {
 	function parseIntOp() {
 		txt = $('#log').val();
 		
+		// Checks the required character of IntOp [ T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_ADDITION_OP ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		
+		// Throws an error if the character does not match what is expected
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ + ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			parseErrorCount++;
