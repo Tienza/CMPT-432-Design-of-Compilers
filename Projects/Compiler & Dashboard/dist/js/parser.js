@@ -37,6 +37,8 @@ function parse() {
 		}
 		else
 			throw new Error("HOLY SHIT! IT DIED...");
+		
+		scrollDown();
 	}
 	
 	function parseBlock() {
@@ -51,6 +53,8 @@ function parse() {
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
+		scrollDown();
+		
 		parseStatementList();
 		
 		txt = $('#log').val();
@@ -64,17 +68,21 @@ function parse() {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ } ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
+		
+		scrollDown();
 	}
 	
 	function parseStatementList() {
+		txt = $('#log').val();
 		
 		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken+1] == "T_ASSIGNMENT_OP" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
-			txt = $('#log').val();
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Now parsing Statement...\n");
 			parseStatement();	
 		}
 		else
-			console.log(lambdaChar + " Productions");
+			txt = $('#log').val(txt + " PARSER --> | PASSED! " + lambdaChar + " production on line " + tokens[currentToken].line + "...\n");
+		
+		scrollDown();
 	}
 	
 	function parseStatement() {
@@ -117,22 +125,24 @@ function parse() {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ print ]| [ T_ID & T_ASSIGNMENT_OP ] | [ T_ID ] | [ while ] | [ if ] | [ { ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
+		
+		scrollDown();
 	}
 	
 	function parsePrint() {	
 		txt = $('#log').val();	
 		
 		if (matchToken(tokens[currentToken].kind, "T_PRINT")) {
-			txt = $('#log').val();
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_PRINT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
 		
 		else {
-			txt = $('#log').val();
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ print ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
+		
+		scrollDown();
 		
 		txt = $('#log').val();
 		
@@ -146,6 +156,10 @@ function parse() {
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
+		scrollDown();
+		
+		parseExpr();
+		
 		txt = $('#log').val();
 		
 		if (matchToken(tokens[currentToken].kind, "T_CLOSING_PARENTHESIS")) {
@@ -157,6 +171,67 @@ function parse() {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ ) ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
+		
+		scrollDown();
+	}
+	
+	function parseExpr() {
+		txt = $('#log').val();
+		
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ IntExpr ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			parseIntExpr();
+		}
+		
+		else {
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ IntExpr || StringExpr || BooleanExpr || Id ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			throw new Error("HOLY SHIT! IT DIED...");
+		}
+		
+		scrollDown();
+	}
+	
+	function parseIntExpr() {
+		txt = $('#log').val();
+		
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
+			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_DIGIT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			consumeToken()
+			txt = $('#log').val();
+			
+			parseIntOp();
+			
+			parseExpr();
+			
+		}
+		
+		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_DIGIT ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			consumeToken();
+		}
+		
+		else {
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ T_DIGIT & T_ADDITION_OP || T_DIGIT ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			throw new Error("HOLY SHIT! IT DIED...");
+		}
+		
+		scrollDown();
+	}
+	
+	function parseIntOp() {
+		txt = $('#log').val();
+		
+		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
+			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_ADDITION_OP ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
+			consumeToken();
+		}
+		
+		else {
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ + ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			throw new Error("HOLY SHIT! IT DIED...");
+		}
+		
+		scrollDown();
 	}
 	
 	function matchToken(tokenKind, expectedKind){
