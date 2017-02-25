@@ -97,6 +97,11 @@ function showToast(toastId) {
     setTimeout(function(){ x.className = x.className.replace("toast show", "toast"); }, 1500);
 }
 
+// Scroll to bottom of textarea
+function scrollDown() {
+	$textarea.scrollTop($textarea[0].scrollHeight);
+}
+
 // Changes Smiley's teeth according to Compulation Stage.
 function brokenTeeth(brokenLevel) {
 	if (brokenLevel == 0)
