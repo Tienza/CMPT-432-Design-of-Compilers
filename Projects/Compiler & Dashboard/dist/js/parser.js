@@ -30,13 +30,18 @@ function parse() {
 
 		parseBlock();
 		
+		txt = $('#log').val();
+		
 		if(matchToken(tokens[currentToken].kind, "T_EOPS")) {
-			txt = $('#log').val();
 			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ T_EOPS ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
 			consumeToken();
 		}
-		else
+		else {
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ $ ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
+		}
 		
 		scrollDown();
 	}
@@ -49,7 +54,9 @@ function parse() {
 			consumeToken();
 		}
 		else {
-			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ { ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
+			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ { ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -66,6 +73,8 @@ function parse() {
 		}
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ } ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -123,6 +132,8 @@ function parse() {
 			txt = $('#log').val();
 			
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ print ]| [ T_ID & T_ASSIGNMENT_OP ] | [ T_ID ] | [ while ] | [ if ] | [ { ] found " + tokens[currentToken].value + " on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -139,6 +150,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ print ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -153,6 +166,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ ( ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -169,6 +184,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ ) ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -185,6 +202,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ IntExpr || StringExpr || BooleanExpr || Id ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -212,6 +231,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ T_DIGIT & T_ADDITION_OP || T_DIGIT ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -228,6 +249,8 @@ function parse() {
 		
 		else {
 			txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ + ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+			parseErrorCount++;
+			printLastParseMessage(parseComplete);
 			throw new Error("HOLY SHIT! IT DIED...");
 		}
 		
@@ -252,6 +275,20 @@ function parse() {
 	
 	function consumeToken() {
 		currentToken++;
+	}
+	
+	function printLastParseMessage(parseComplete) {
+		txt = $('#log').val();
+		
+		if (parseComplete) {
+			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n\n");
+		}
+		
+		else {
+			txt = $('#log').val(txt + "\nParse Failed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...");
+		}
+		
+		scrollDown();
 	}
 	
 }
