@@ -355,20 +355,19 @@ function lex() {
                 }
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
                 else {
-					if (verbose)
-						$('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
+					$('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
                     document.getElementById('marquee-holder').innerHTML = "";
                     document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
                     lexErrorCount++;
                     printTokens = false;
                     reachedEnd = false;
-                    $textarea.scrollTop($textarea[0].scrollHeight);
+                    scrollDown();
                     break;
                 }
 
             }
 
-            $textarea.scrollTop($textarea[0].scrollHeight);
+            scrollDown();
         }
 
         tokens = tokens.clean(undefined);
@@ -406,8 +405,8 @@ function lex() {
         lexErrorCount++;
 
         txt = $('#log').val();
-		if (verbose)
-			$('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
+		
+		$('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
 
         printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
     }
@@ -431,7 +430,7 @@ function lex() {
 				
 				if (verbose) {
 					$('#log').val(txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n");
-					$textarea.scrollTop($textarea[0].scrollHeight);
+					scrollDown();
 				}
 			}
 		}
@@ -439,12 +438,9 @@ function lex() {
 		catch(error) {
 			lexErrorCount++;
 			
-			if (verbose) {
-				console.log("Invalid Input..." + error);
-				$('#log').val(txt + " LEXER --> | ERROR! Input did not generate valid Token Array...\n");
-				$textarea.scrollTop($textarea[0].scrollHeight);
-			}
-			
+			console.log("Invalid Input..." + error);
+			$('#log').val(txt + " LEXER --> | ERROR! Input did not generate valid Token Array...\n");
+			scrollDown();
 		}
 
 		checkEOPS.tokenArray = tokenArray;
@@ -473,7 +469,7 @@ function lex() {
 
 			//console.log($('#log').val());
 
-			$textarea.scrollTop($textarea[0].scrollHeight);
+			scrollDown();
 
 			marqueeTokens = [];
 			tableTokens = [];
@@ -506,7 +502,7 @@ function lex() {
 			// Prints Final Lex Fail Message
 			$('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
 			
-			$textarea.scrollTop($textarea[0].scrollHeight);
+			scrollDown();
 			
 			// Updates Progess Status Bar
 			$('#lexResults').html("<span style=\"color:red;\"> FAILED </span>");
