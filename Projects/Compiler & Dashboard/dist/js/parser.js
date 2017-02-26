@@ -13,8 +13,6 @@ function parse() {
 		
 		// Sets carry-over variables from LEXER to be used in PARSER
 		var tokens = lexReturns.tokenArray;
-		var totalWarningCount = lexReturns.warningCount;
-		var totalErrorCount = lexReturns.errorCount;
 		
 		// Resets and initialize LEXER Error and Warning Count
 		var parseErrorCount = 0;
@@ -22,7 +20,36 @@ function parse() {
 		
 		var currentToken = 0;
 		
+		// Initialize parsing of Program
 		parseProgram();
+		
+		// Parsing Succeeded - Determines how parsing went and updates appropriate fields
+		if (parseErrorCount == 0) {
+			// Parse Success
+			parseComplete = true;
+			
+			// Updates Progess Status Bar
+			if (parseWarningCount == 0) 
+				$('#parseResults').html("<span style=\"color:green;\"> PASSED </span>");
+			else
+				$('#parseResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
+			// Prints Last Parse Message
+			printLastParseMessage(parseComplete);
+		}
+		// Parsing Failed
+			/* See throwParseError() */
+		
+		// Variable to store all objects moving onto semantic analysis
+		var parseReturns = {
+			tokenArray: tokens,
+			totalWarningCount: parseWarningCount + lexReturns.warningCount,
+			totalErrorCount: parseErrorCount + lexReturns.errorCount
+		}
+		
+		if (verbose)
+			console.log(parseReturns);
+		
+		return parseReturns;
 	}
 	
 	function parseProgram() {
@@ -38,6 +65,10 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("$");
+		
+		// Checks to see if there is another program (If there is then run parse again)
+		if (currentToken < tokens.length)
+			parseProgram();
 	}
 	
 	function parseBlock() {
@@ -67,14 +98,14 @@ function parse() {
 	
 	function parseStatementList() {
 		// Checks to see if the following is a statement is another statement
-		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" && tokens[currentToken+1].kind == "T_ASSIGNMENT_OP" || tokens[currentToken].kind == "T_VARIABLE_TYPE" && tokens[currentToken+1].kind == "T_ID" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
+		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
 			if (verbose)
 				printParseMessage("Statement", "Statement");
 			// Initialize parsing of Statement
 			parseStatement();	
 		}
 		// Checks to see if following the statement is another statement
-		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" && tokens[currentToken+1].kind == "T_ASSIGNMENT_OP" || tokens[currentToken].kind == "T_VARIABLE_TYPE" && tokens[currentToken+1].kind == "T_ID" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
+		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
 			if (verbose)
 				printParseMessage("StatementList", "Statement");
 			// Initialize parsing of Statement
@@ -96,14 +127,14 @@ function parse() {
 			parsePrint();
 		}
 		// Checks to see if the following token is the start of an AssignmentStatement
-		else if (tokens[currentToken].kind == "T_ID" && tokens[currentToken+1].kind == "T_ASSIGNMENT_OP") {
+		else if (tokens[currentToken].kind == "T_ID") {
 			if (verbose)
 				printParseMessage("AssignmentStatement", "T_ID & T_ASSIGNMENT_OP");
 			// Initialize parsing of AssignmentStatement
 			parseAssignment();
 		}
 		// Checks to see if the following token is the start of a VarDecl
-		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE" && tokens[currentToken+1].kind == "T_ID") {
+		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE") {
 			if (verbose)
 				printParseMessage("VarDecl", "T_VARIABLE_TYPE & T_ID");
 			// Initialize parsing of VarDecl
@@ -524,6 +555,8 @@ function parse() {
 		txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 		parseErrorCount++;
 		printLastParseMessage(parseComplete);
+		// Updates Progess Status Bar
+		$('#parseResults').html("<span style=\"color:red;\"> FAILED </span>");
 		scrollDown();
 		throw new Error("HOLY SHIT! IT DIED...");
 	}
