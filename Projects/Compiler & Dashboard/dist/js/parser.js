@@ -88,37 +88,40 @@ function parse() {
 	}
 	
 	function parseStatement() {
-		// Checks to see if the following token is the start of a print statement
+		// Checks to see if the following token is the start of a PrintStatement
 		if (tokens[currentToken].kind == "T_PRINT") {
 			if (verbose)
 				printParseMessage("PrintStatement", "");
 			// Initialize parsing of PrintStatement
 			parsePrint();
 		}
-		// Checks to see if the following token is the start of an assignment statement
+		// Checks to see if the following token is the start of an AssignmentStatement
 		else if (tokens[currentToken].kind == "T_ID" && tokens[currentToken+1].kind == "T_ASSIGNMENT_OP") {
 			if (verbose)
 				printParseMessage("AssignmentStatement", "T_ID & T_ASSIGNMENT_OP");
 			// Initialize parsing of AssignmentStatement
 			parseAssignment();
 		}
-		
+		// Checks to see if the following token is the start of a VarDecl
 		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE" && tokens[currentToken+1].kind == "T_ID") {
 			if (verbose)
-				printParseMessage("T_VARIABLE_TYPE", "T_VARIABLE_TYPE & T_ID");
+				printParseMessage("VarDecl", "T_VARIABLE_TYPE & T_ID");
+			// Initialize parsing of VarDecl
 			parseVarDecl();
 		}
-		
+		// Checks to see if the following token is the start of a WhileStatement
 		else if (tokens[currentToken].kind == "T_WHILE") {
 			if (verbose)
-				printParseMessage("T_WHILE");
-			console.log("While Statement", "");
+				printParseMessage("WhileStatement", "T_WHILE");
+			// Initialize parsing of WhileStatement
+			parseWhile();
 		}
-		
+		// Checks to see if the following token is the start of a IfStatement
 		else if (tokens[currentToken].kind == "T_IF") {
 			if (verbose)
-				printParseMessage("T_IF");
-			console.log("IF Statement", "");
+				printParseMessage("IfStatement", "T_IF");
+			// Initialize parsing of IfStatement
+			parseIf();
 		}
 		
 		else if (tokens[currentToken].kind == "T_OPENING_BRACE") {
@@ -131,8 +134,44 @@ function parse() {
 			throwParseError("print | T_ID & T_ASSIGNMENT_OP | T_ID | while | if | {");
 	}
 	
+	function parseIf() {
+		// Checks and consumes the required first character of IfStatement
+		if (matchToken(tokens[currentToken].kind, "T_IF")) {
+			if (verbose)
+				printParseMessage("T_IF", tokens[currentToken].value);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("if");
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+	}
+	
+	function parseWhile() {
+		// Checks and consumes the required first character of WhileStatement
+		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
+			if (verbose)
+				printParseMessage("T_WHILE", tokens[currentToken].value);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("while");
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+	}
+	
 	function parseVarDecl() {
-		// Checks required first character of variable declaration [ T_VARIABLE_TYPE ]
+		// Checks required first character of VarDecl [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			if (verbose)
 				printParseMessage("T_VARIABLE_TYPE", "");
@@ -143,7 +182,7 @@ function parse() {
 		else 
 			throwParseError("T_VARIABLE_TYPE");
 		
-		// Checks required second character of variable declaration [ T_ID ]
+		// Checks required second character of VarDecl [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			if (verbose)
 				printParseMessage("T_ID", "");
@@ -250,6 +289,20 @@ function parse() {
 			// Initialize parsing of StringExpr
 			parseStringExpr();
 		}
+		// Checks the first possible character of BooleanExpr [ T_OPENING_PARENTHESIS ]
+		else if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
+			if (verbose)
+				printParseMessage("Expr", "BooleanExpr");
+			// Initialize parsing of BooleanExpr
+			parseBooleanExpr();
+		}
+		// Checks the second possible character of BooleanExpr [ T_BOOLEAN_VALUE ]
+		else if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
+			if (verbose)
+				printParseMessage("Expr", "BooleanExpr");
+			// Initialize parsing of BooleanExpr
+			parseBooleanExpr();
+		}
 		// Checks the required first character of Id [ T_ID ]
 		else if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			if (verbose)
@@ -260,6 +313,69 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("IntExpr || StringExpr || BooleanExpr || Id");
+	}
+	
+	function parseBooleanExpr() {
+		// Checks and consumes the required first character of BooleanExpr(1) [ T_OPENING_PARENTHESIS ]
+		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
+			if (verbose)
+				printParseMessage("T_OPENING_PARENTHESIS", tokens[currentToken].value);
+			consumeToken();
+			// Initialize parsing of Expr
+			parseExpr();
+			// Initialize parsing of BoolOp
+			parseBoolOp();
+			// Initialize parsing of Expr
+			parseExpr();
+			// Checks and consumes the required last character of BooleanExpr(1) [ T_CLOSING_PARENTHESIS ]
+			if (matchToken(tokens[currentToken].kind, "T_CLOSING_PARENTHESIS")) {
+				if (verbose)
+					printParseMessage("T_OPENING_PARENTHESIS", tokens[currentToken].value);
+				consumeToken();
+			}
+			// Throws an error if the character does not match what is expected
+			else
+				throwParseError(")");
+		}
+		// Checks the required first character of BooleanExpr(2) [ T_BOOLEAN_VALUE ]
+		else if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
+			if (verbose)
+				printParseMessage("T_BOOLEAN_VALUE", "");
+			parseBoolVal();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("( | == | !=");
+	}
+	
+	function parseBoolOp() {
+		// Checks and consumes the first possible character of BoolOp [ T_EQUALITY_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_EQUALITY_OP")) {
+			if (verbose)
+				printParseMessage("T_EQUALITY_OP", tokens[currentToken].value);
+			consumeToken();
+		}
+		// Checks and consumes the second possible character of BoolOp [ T_EQUALITY_OP ]
+		else if (matchToken(tokens[currentToken].kind, "T_INEQUALITY_OP")) {
+			if (verbose)
+				printParseMessage("T_INEQUALITY_OP", tokens[currentToken].value);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("== || !=");
+	}
+	
+	function parseBoolVal() {
+		// Checks and consumes the first required character of BoolOp [ T_BOOLEAN_VALUE ]
+		if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
+			if (verbose)
+				printParseMessage("T_BOOLEAN_VALUE", tokens[currentToken].value);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("true || false");
 	}
 	
 	function parseStringExpr() {
