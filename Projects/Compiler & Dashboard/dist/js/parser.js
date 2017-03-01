@@ -129,28 +129,28 @@ function parse() {
 		// Checks to see if the following token is the start of an AssignmentStatement
 		else if (tokens[currentToken].kind == "T_ID") {
 			if (verbose)
-				printParseMessage("AssignmentStatement", "T_ID & T_ASSIGNMENT_OP");
+				printParseMessage("AssignmentStatement", "");
 			// Initialize parsing of AssignmentStatement
 			parseAssignment();
 		}
 		// Checks to see if the following token is the start of a VarDecl
 		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE") {
 			if (verbose)
-				printParseMessage("VarDecl", "T_VARIABLE_TYPE & T_ID");
+				printParseMessage("VarDecl", "");
 			// Initialize parsing of VarDecl
 			parseVarDecl();
 		}
 		// Checks to see if the following token is the start of a WhileStatement
 		else if (tokens[currentToken].kind == "T_WHILE") {
 			if (verbose)
-				printParseMessage("WhileStatement", "T_WHILE");
+				printParseMessage("WhileStatement", "");
 			// Initialize parsing of WhileStatement
 			parseWhile();
 		}
 		// Checks to see if the following token is the start of a IfStatement
 		else if (tokens[currentToken].kind == "T_IF") {
 			if (verbose)
-				printParseMessage("IfStatement", "T_IF");
+				printParseMessage("IfStatement", "");
 			// Initialize parsing of IfStatement
 			parseIf();
 		}
