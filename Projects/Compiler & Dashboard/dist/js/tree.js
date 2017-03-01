@@ -47,7 +47,7 @@ function Tree() {
     };
 
     // Note that we're done with this branch of the tree...
-    this.endChildren = function() {
+    this.kick = function() {
         // ... by moving "up" to our parent node (if possible).
         if ((this.cur.parent !== null) && (this.cur.parent.name !== undefined)) {
             this.cur = this.cur.parent;
@@ -74,7 +74,7 @@ function Tree() {
             // If there are no children (i.e., leaf nodes)...
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
-                traversalResult += "[" + node.name + "]";
+                traversalResult += "[ " + node.name + " ]";
                 traversalResult += "\n";
             } 
 			else {
