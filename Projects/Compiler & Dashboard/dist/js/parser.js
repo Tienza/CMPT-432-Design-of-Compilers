@@ -77,9 +77,11 @@ function parse() {
 		
 		// Checks to see if there is another program (If there is then run parse again)
 		if (currentToken < tokens.length) {
-			cst.kick();
 			parseProgram();
 		}
+		
+		// Kicks you one level up the tree
+		cst.kick();
 	}
 	
 	function parseBlock() {

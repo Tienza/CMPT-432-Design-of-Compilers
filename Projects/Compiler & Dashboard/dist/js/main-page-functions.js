@@ -74,14 +74,14 @@ function toggleByChar() {
 }
 
 // Copies all log messages to clipboard
-function cloneLog() {
-	$('#log').select();
+function copyText(copyLoc) {
+	$(copyLoc).select();
     document.execCommand('copy');
 	clearSelection();
 	showToast('copyMessage');
 }
 
-// Clears selection of text in log after cloneLog is called
+// Clears selection of text in log after copyText is called
 function clearSelection() {
     if ( document.selection ) {
         document.selection.empty();

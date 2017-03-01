@@ -118,7 +118,7 @@
 			</div>
 			<div class="col-lg-6">
 				<label>Log</label>
-				<a id="copyButton" onclick="cloneLog()" data-toggle="tooltip" data-placement="right" title="Copy Log to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
+				<a id="copyButton" onclick="copyText('#log')" data-toggle="tooltip" data-placement="right" title="Copy Log to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				<div class="panel panel-default">
 					<textarea readonly id="log" class="form-control" rows="20"></textarea>
 				</div>
@@ -144,14 +144,14 @@
 					<li><a href=".ast" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
 				</ul>
 				<div class="tab-content">
-					<div id="cstDisplay" class="tab-pane active cst" style="text-align: center; font-weight: bold;">
+					<div id="cstDisplay" class="tab-pane active cst" style="font-weight: bold;">
 						<div class="panel panel-default">
-							<textarea readonly id="cstLog" class="form-control" rows="10" placeholder="NO CST GENERATED"></textarea>
+							<textarea readonly id="cstLog" class="form-control" onclick="copyText('#cstLog')" rows="10" placeholder="NO CST GENERATED"></textarea>
 						</div>
 					</div>
 					<div id="astDisplay" class="tab-pane ast" style="text-align: center; font-weight: bold;">
 						<div class="panel panel-default">
-							<textarea readonly id="astLog" class="form-control" rows="10" placeholder="NO AST GENERATED"></textarea>
+							<textarea readonly id="astLog" class="form-control" onclick="copyText('#astLog')" rows="10" placeholder="NO AST GENERATED"></textarea>
 						</div>
 					</div>
 				</div>
