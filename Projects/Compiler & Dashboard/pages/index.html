@@ -67,7 +67,7 @@
 						<li><a class="sub-menu-links" onclick="insertProgram(7)">\n in String</a></li>
 					</ul>
 				</div>
-				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
+				<button onclick="insertCST()" type="button" class="btn btn-warning btn-lg">Run Tests</button>
 				<div class="btn-group">
 					<button id="verboseToggle" type="button" onclick="toggleVerbose()" class="btn btn-danger btn-lg">Verbose: On</button>
 					<button id ="verboseDropDown" type="button" class="btn btn-danger btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -138,6 +138,26 @@
 					<th>No Tokens</th>
 				</table>
 			</div>
+			<div class="col-lg-6">
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="active"><a href=".cst" role="tab" data-toggle="tab">Concrete Syntax Tree</a></li>
+					<li><a href=".ast" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="cstDisplay" class="tab-pane active cst" style="text-align: center; font-weight: bold;">
+						<div class="panel panel-default">
+							<textarea readonly id="cstLog" class="form-control" rows="10" placeholder="NO CST GENERATED"></textarea>
+						</div>
+					</div>
+					<div id="astDisplay" class="tab-pane ast" style="text-align: center; font-weight: bold;">
+						<div class="panel panel-default">
+							<textarea readonly id="astLog" class="form-control" rows="10" placeholder="NO AST GENERATED"></textarea>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Tab-Panes -->
+			
 		</div>
 		<!-- /.row -->
 		
@@ -185,9 +205,11 @@
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
 	<script src="../dist/js/main-page-functions.js"></script>
+	<script src="../dist/js/tree.js"></script>
 	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/parser.js"></script>
 	<script src="../dist/js/test-programs.js"></script>
+	<script src="../dist/js/test-cst-print.js"></script>
 	
 	<!-- Custom JavaScript -->
 	<script>
