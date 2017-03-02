@@ -62,6 +62,9 @@ function parse() {
 		
 		// Initialize parsing of Block
 		parseBlock();
+
+		// Kicks you one level up the tree
+		cst.kick();
 		
 		// Checks and consumes the character following the Block is a T_EOPS
 		if (matchToken(tokens[currentToken].kind, "T_EOPS")) {
@@ -79,9 +82,6 @@ function parse() {
 		if (currentToken < tokens.length) {
 			parseProgram();
 		}
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseBlock() {
@@ -130,6 +130,10 @@ function parse() {
 			// Initialize parsing of Statement
 			parseStatement();	
 		}
+
+		// Kicks you one level up the tree
+		cst.kick();
+
 		// Checks to see if following the statement is another statement
 		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
 			if (verbose)
@@ -293,9 +297,6 @@ function parse() {
 			cst.addNode(tokens[currentToken].value, "leaf");
 			consumeToken();
 		}
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseAssignment() {
@@ -345,9 +346,6 @@ function parse() {
 		}
 		else
 			throwParseError("T_ID");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	};
 	
 	function parsePrint() {
@@ -507,9 +505,6 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("== || !=");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseBoolVal() {
@@ -599,9 +594,6 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("T_CHAR");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseIntExpr() {
@@ -646,9 +638,6 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("+");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseDigit() {
@@ -663,9 +652,6 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("T_DIGIT");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	// Matches token and returns True if it matches
