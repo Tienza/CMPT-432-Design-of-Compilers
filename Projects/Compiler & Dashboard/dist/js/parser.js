@@ -74,14 +74,14 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("$");
+
+		// Kicks you one level up the tree
+		cst.kick();
 		
 		// Checks to see if there is another program (If there is then run parse again)
 		if (currentToken < tokens.length) {
 			parseProgram();
 		}
-
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseBlock() {
@@ -132,7 +132,7 @@ function parse() {
 		}
 
 		// Kicks you one level up the tree
-		//cst.kick();
+		cst.kick();
 
 		// Checks to see if following the statement is another statement
 		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
@@ -150,7 +150,7 @@ function parse() {
 		}
 		
 		// Kicks you one level up the tree
-		cst.kick();
+		//cst.kick();
 	}
 	
 	function parseStatement() {
@@ -346,6 +346,9 @@ function parse() {
 		}
 		else
 			throwParseError("T_ID");
+
+		// Kicks you one level up the tree
+		cst.kick();
 	};
 	
 	function parsePrint() {
