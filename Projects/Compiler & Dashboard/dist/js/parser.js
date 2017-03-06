@@ -62,9 +62,6 @@ function parse() {
 		
 		// Initialize parsing of Block
 		parseBlock();
-
-		// Kicks you one level up the tree
-		cst.kick();
 		
 		// Checks and consumes the character following the Block is a T_EOPS
 		if (matchToken(tokens[currentToken].kind, "T_EOPS")) {
@@ -82,6 +79,9 @@ function parse() {
 		if (currentToken < tokens.length) {
 			parseProgram();
 		}
+
+		// Kicks you one level up the tree
+		cst.kick();
 	}
 	
 	function parseBlock() {
@@ -132,7 +132,7 @@ function parse() {
 		}
 
 		// Kicks you one level up the tree
-		cst.kick();
+		//cst.kick();
 
 		// Checks to see if following the statement is another statement
 		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
@@ -700,7 +700,7 @@ function parse() {
 		// Updates Progess Status Bar
 		$('#parseResults').html("<span style=\"color:red;\"> FAILED </span>");
 		scrollDown();
-		throw new Error("HOLY SHIT! IT DIED...");
+		throw new Error("HOLY SHIT! IT DIED..." + "on line " + tokens[currentToken].line);
 	}
 	
 	function printParseMessage(expectVal, foundVal) {
