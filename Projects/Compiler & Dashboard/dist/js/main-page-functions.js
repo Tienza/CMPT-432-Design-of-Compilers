@@ -73,6 +73,17 @@ function toggleByChar() {
     }
 }
 
+// Resets key components in index.html to default state
+function resetIndexPage() {
+	$('#lexResults').html(" INCOMPLETE ");
+	$('#parseResults').html(" INCOMPLETE ");
+	$('#saResults').html(" INCOMPLETE ");
+	$('#cgResults').html(" INCOMPLETE ");
+	$('#tokenTable').html("<th>No Tokens</th>");
+	$('#cstLog').val("");
+	$('#astLog').val("");
+}
+
 // Copies all log messages to clipboard
 function copyText(copyLoc) {
 	$(copyLoc).select();

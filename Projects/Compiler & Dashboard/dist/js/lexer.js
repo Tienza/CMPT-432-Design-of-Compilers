@@ -15,12 +15,9 @@ function lex() {
     // Boolean for determing whether to run checkEOPS
     var reachedEnd = true;
 
-    // Clears the log and resets status bar at the beginning of each Lex session
+    // Clears the log and resets page
     $('#log').val("");
-	$('#lexResults').html("<span> INCOMPLETE </span>");
-	$('#parseResults').html("<span> INCOMPLETE </span>");
-	$('#saResults').html("<span> INCOMPLETE </span>");
-	$('#cgResults').html("<span> INCOMPLETE </span>");
+	resetIndexPage();
 	
 	// Begin Lexing Statement - Changes depending on how we are handling Strings
 	if(byChar)
