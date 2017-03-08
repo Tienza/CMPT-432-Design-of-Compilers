@@ -57,17 +57,37 @@
 					<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Programs <span class="caret"></span>
 					</button>
 					<ul class="dropdown-menu">
-						<li><a class="sub-menu-links" onclick="insertProgram(0)">Test Case 0</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(1)">Test Case 1</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(2)">Alan Case</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(3)">Long Test Case</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(4)">Missing End $</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(5)">If Statement</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(6)">Invalid Print</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(7)">\n in String</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(8)">Parse Fail Case 0</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(9)">Parse Fail Case 1</a></li>
-						<li><a class="sub-menu-links" onclick="insertProgram(10)">Parse Fail Case 2</a></li>
+						<li class="dropdown-submenu">
+							<a class="test" tabindex="-1" href="#">Good Programs <small><span class="glyphicon glyphicon-play sub-menu-caret"></span></small></a>
+							<ul class="dropdown-menu">
+								<li><a tabindex="-1" class="sub-menu-links" onclick="insertProgram(0)">Test Case 0</a></li>
+								<li><a tabindex="-1" class="sub-menu-links" onclick="insertProgram(1)">Test Case 1</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(3)">Long Test Case</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(5)">If Statement</a></li>
+							</ul>
+						</li>
+						<li class="dropdown-submenu">
+							<a class="test" tabindex="-1" href="#">Warning Programs <small><span class="glyphicon glyphicon-play"></span></small></a>
+							<ul class="dropdown-menu">
+								<li><a class="sub-menu-links" onclick="insertProgram(4)">Missing End $</a></li>
+							</ul>
+						</li>
+						<li class="dropdown-submenu">
+							<a class="test" tabindex="-1" href="#">Lex Fail <small><span class="glyphicon glyphicon-play sub-menu-caret"></span></small></a>
+							<ul class="dropdown-menu">
+								<li><a class="sub-menu-links" onclick="insertProgram(2)">Alan Case</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(6)">Invalid Print</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(7)">\n in String</a></li>
+							</ul>
+						</li>
+						<li class="dropdown-submenu">
+							<a class="test" tabindex="-1" href="#">Parse Fail <small><span class="glyphicon glyphicon-play sub-menu-caret"></span></small></a>
+							<ul class="dropdown-menu">
+								<li><a class="sub-menu-links" onclick="insertProgram(8)">Parse Fail Case 0</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(9)">Parse Fail Case 1</a></li>
+								<li><a class="sub-menu-links" onclick="insertProgram(10)">Parse Fail Case 2</a></li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>

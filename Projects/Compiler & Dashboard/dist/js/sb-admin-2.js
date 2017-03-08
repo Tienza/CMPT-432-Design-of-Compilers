@@ -9,6 +9,11 @@ $(function() {
 $(function () {
   $('[data-toggle="tooltip"]').tooltip()
 })
+$('.dropdown-submenu a.test').on("click", function(e){
+	$(this).next('ul').toggle();
+	e.stopPropagation();
+	e.preventDefault();
+});
 
 //Loads the correct sidebar on window load,
 //collapses the sidebar on window resize.

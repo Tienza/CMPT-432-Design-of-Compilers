@@ -37,6 +37,18 @@ body {
     border-left: 1px solid #e7e7e7;
   }
 }
+.sub-menu-caret {
+	float: right;
+}
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+}
 .sub-menu-links {
 	cursor: pointer;
 }
