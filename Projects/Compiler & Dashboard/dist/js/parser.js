@@ -703,7 +703,7 @@ function parse() {
 		// Updates Progess Status Bar
 		$('#parseResults').html("<span style=\"color:red;\"> FAILED </span>");
 		scrollDown();
-		throw new Error("HOLY SHIT! IT DIED..." + "on line " + tokens[currentToken].line);
+		throw new Error("HOLY SHIT! IT DIED..." + "Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 	}
 	
 	function printParseMessage(expectVal, foundVal) {
