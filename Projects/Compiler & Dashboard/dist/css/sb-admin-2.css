@@ -38,6 +38,7 @@ body {
   }
 }
 .dropdown-submenu {
+    cursor: pointer;
     position: relative;
 }
 .dropdown-submenu>.dropdown-menu {
@@ -50,7 +51,7 @@ body {
     border-radius: 0 6px 6px 6px;
 }
 .dropdown-submenu:hover>.dropdown-menu {
-	cursor: pointer;
+	  cursor: pointer;
     display: block;
 }
 .dropdown-submenu>a:after {

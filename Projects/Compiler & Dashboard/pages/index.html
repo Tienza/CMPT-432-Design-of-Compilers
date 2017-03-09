@@ -58,7 +58,7 @@
 					</button>
 					<ul class="dropdown-menu">
 						<li class="dropdown-submenu">
-							<a tabindex="-1" href="#">Good Programs</a>
+							<a tabindex="-1">Good Programs</a>
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(0)">Test Case 0</a></li>
 								<li><a onclick="insertProgram(1)">Test Case 1</a></li>
@@ -67,13 +67,13 @@
 							</ul>
 						</li>
 						<li class="dropdown-submenu">
-							<a tabindex="-1" href="#">Warning Programs</a>
+							<a tabindex="-1">Warning Programs</a>
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(4)">Missing End $</a></li>
 							</ul>
 						</li>
 						<li class="dropdown-submenu">
-							<a tabindex="-1" href="#">Lex Fail</a>
+							<a tabindex="-1">Lex Fail</a>
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(2)">Alan Case</a></li>
 								<li><a onclick="insertProgram(6)">Invalid Print</a></li>
@@ -81,7 +81,7 @@
 							</ul>
 						</li>
 						<li class="dropdown-submenu">
-							<a tabindex="-1" href="#">Parse Fail</a>
+							<a tabindex="-1">Parse Fail</a>
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(8)">Invalid String Decl</a></li>
 								<li><a onclick="insertProgram(9)">Invalid Expr</a></li>
@@ -135,6 +135,7 @@
 		<div class="row">
 			<div class="col-lg-6">
 				<label>Console</label>
+				<a id="copyButton" onclick="copyText('#console')" data-toggle="tooltip" data-placement="right" title="Copy Console to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
 				<div class="panel panel-default">
 					<textarea id="console" class="form-control" rows="20" placeholder="Enter your Code Here..."></textarea>
 				</div>
