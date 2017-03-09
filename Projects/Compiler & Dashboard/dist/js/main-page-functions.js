@@ -79,6 +79,7 @@ function resetIndexPage() {
 	$('#parseResults').html(" INCOMPLETE ");
 	$('#saResults').html(" INCOMPLETE ");
 	$('#cgResults').html(" INCOMPLETE ");
+    $('#marquee-holder').html("No Tokens");
 	$('#tokenTable').html("<th>No Tokens</th>");
 	$('#cstLog').val("");
 	$('#astLog').val("");
