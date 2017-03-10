@@ -75,6 +75,12 @@ function toggleByChar() {
 
 // Resets key components in index.html to default state
 function resetIndexPage() {
+	// Reset Boolean Values
+	lexComplete = false;
+	parseComplete = false;
+	semanticComplete = false;
+	codeComplete = false;
+	// Reset Page Elements
 	$('#lexResults').html(" INCOMPLETE ");
 	$('#parseResults').html(" INCOMPLETE ");
 	$('#saResults').html(" INCOMPLETE ");
