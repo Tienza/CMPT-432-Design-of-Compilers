@@ -21,6 +21,7 @@ function lex() {
 	
 	// Begin Lexing Statement - Changes depending on how we are handling Strings
 	var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
+	txt = $('#log').val();
 
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
@@ -55,14 +56,8 @@ function lex() {
 
         // Iterate through the condeFrag array to identify valid lexemes
         for (var i = 0; i < codeFrag.length; i++) {
-
-            txt = $('#log').val();
-
-            if (isMatch(/^\n+/, codeFrag[i])) {
-                /*if (verbose)
-                    console.log("Break Line");*/
+            if (isMatch(/^\n+/, codeFrag[i]))
                 lineNum++;
-            }
 
             lexeme = codeFrag[i].trim();
 
@@ -72,8 +67,7 @@ function lex() {
                     var token = new Token("T_PRINT", "print", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -83,8 +77,7 @@ function lex() {
                     var token = new Token("T_WHILE", "while", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -94,8 +87,7 @@ function lex() {
                     var token = new Token("T_IF", "if", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -107,8 +99,7 @@ function lex() {
                     var token = new Token("T_VARIABLE_TYPE", type[0], lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -120,8 +111,7 @@ function lex() {
                     var token = new Token("T_BOOLEAN_VALUE", boolVal[0], lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -131,8 +121,7 @@ function lex() {
                     var token = new Token("T_OPENING_BRACE", "{", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -142,8 +131,7 @@ function lex() {
                     var token = new Token("T_CLOSING_BRACE", "}", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -153,8 +141,7 @@ function lex() {
                     var token = new Token("T_OPENING_PARENTHESIS", "(", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -164,8 +151,7 @@ function lex() {
                     var token = new Token("T_CLOSING_PARENTHESIS", ")", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -175,8 +161,7 @@ function lex() {
                     var token = new Token("T_EOPS", "$", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -186,8 +171,7 @@ function lex() {
                     var token = new Token("T_EQUALITY_OP", "==", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -197,8 +181,7 @@ function lex() {
                     var token = new Token("T_INEQUALITY_OP", "!=", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -208,8 +191,7 @@ function lex() {
                     var token = new Token("T_ASSIGNMENT_OP", "=", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -219,8 +201,7 @@ function lex() {
                     var token = new Token("T_ADDITION_OP", "+", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -232,8 +213,7 @@ function lex() {
                     var token = new Token("T_ID", iden[0], lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -245,8 +225,7 @@ function lex() {
                     var token = new Token("T_DIGIT", digit[0], lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -256,8 +235,7 @@ function lex() {
                     var token = new Token("T_QUOTE", "\"", lineNum);
 
                     if (verbose) {
-                        // console.log(lexeme + " on line " + lineNum);
-                        $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                        txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                     }
 
                     tokens.push(token);
@@ -278,11 +256,11 @@ function lex() {
                             // console.log(string[2] + " on line " + lineNum);
                             // console.log(string[3] + " on line " + lineNum);
 
-                            $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
-                            txt = $('#log').val();
-                            $('#log').val(txt + " LEXER --> | " + token2.kind + " [ " + token2.value + " ] " + " on line " + token2.line + "...\n");
-                            txt = $('#log').val();
-                            $('#log').val(txt + " LEXER --> | " + token3.kind + " [ " + token3.value + " ] " + " on line " + token3.line + "...\n");
+                            txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
+                            //txt = $('#log').val();
+                            txt = txt + " LEXER --> | " + token2.kind + " [ " + token2.value + " ] " + " on line " + token2.line + "...\n";
+                            //txt = $('#log').val();
+                            txt = txt + " LEXER --> | " + token3.kind + " [ " + token3.value + " ] " + " on line " + token3.line + "...\n";
                         }
 
                         tokens.push(token);
@@ -297,7 +275,7 @@ function lex() {
 						// Patterns are the same as above, with the exception of of T_WHITE_SPACE, which only exists here
                         for (var lexElem = 0; lexElem < lexeme.length; lexElem++) {
 
-                            txt = $('#log').val();
+                            //txt = $('#log').val();
 
                             var lexChar = lexeme[lexElem];
 
@@ -306,7 +284,7 @@ function lex() {
 
                                 if (verbose) {
                                     // console.log(lexChar + " on line " + lineNum);
-                                    $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                    txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                                 }
 
                                 tokens.push(token);
@@ -316,7 +294,7 @@ function lex() {
 
                                 if (verbose) {
                                     // console.log(lexChar + " on line " + lineNum);
-                                    $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                    txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                                 }
 
                                 tokens.push(token);
@@ -327,7 +305,7 @@ function lex() {
 
                                 if (verbose) {
                                     // console.log(lexChar + " on line " + lineNum);
-                                    $('#log').val(txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n");
+                                    txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
                                 }
 
                                 tokens.push(token);
@@ -358,8 +336,6 @@ function lex() {
                 }
 
             }
-
-            scrollDown();
         }
 
         tokens = tokens.clean(undefined);
@@ -404,7 +380,7 @@ function lex() {
     }
 	
 	function checkEOPS(tokenArray, reachedEnd, lexWarningCount, lexErrorCount) {
-		var txt = $('#log').val();
+		//var txt = $('#log').val();
 		
 		var checkEOPS = {
 			tokenArray: "",
@@ -421,8 +397,7 @@ function lex() {
 				lexWarningCount++;
 				
 				if (verbose) {
-					$('#log').val(txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n");
-					scrollDown();
+					txt = txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n";
 				}
 			}
 		}
@@ -454,7 +429,7 @@ function lex() {
 			// LEX Success
 			lexComplete = true;
 			
-			txt = $('#log').val();
+			//txt = $('#log').val();
 			
 			// Prints Final Lex Success Message
 			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n\n");
