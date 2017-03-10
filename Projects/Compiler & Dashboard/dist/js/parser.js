@@ -144,8 +144,7 @@ function parse() {
 		else {
 			if (verbose)
 				printParseMessage(lambdaChar, "");
-			// Creates a lambdaChar leaf
-			cst.addNode(lambdaChar, "leaf");
+			/* Do Nothing λ Production */
 		}
 		
 		// Kicks you one level up the tree
@@ -571,12 +570,11 @@ function parse() {
 				printParseMessage("T_CHAR", "");
 			parseChar();
 		}
-		
+		// Empty production
 		else {
 			if (verbose)
 				printParseMessage(lambdaChar, "");
-			// Creates a lambdaChar leaf
-			cst.addNode(lambdaChar, "leaf");
+			/* Do Nothing λ Production */
 		}
 		
 		// Kicks you one level up the tree

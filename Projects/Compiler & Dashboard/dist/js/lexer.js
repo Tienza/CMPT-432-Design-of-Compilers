@@ -396,9 +396,7 @@ function lex() {
 
 				lexWarningCount++;
 				
-				if (verbose) {
-					txt = txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n";
-				}
+				txt = txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n";
 			}
 		}
 		// If Token Array is invalid or empty, notify the user of the error
