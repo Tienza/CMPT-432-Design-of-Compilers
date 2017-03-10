@@ -20,10 +20,7 @@ function lex() {
 	resetIndexPage();
 	
 	// Begin Lexing Statement - Changes depending on how we are handling Strings
-	if(byChar)
-		var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
-	else
-		var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As Blocks*\n\n");
+	var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
 
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
@@ -37,9 +34,6 @@ function lex() {
 
     // Line Number
     var lineNum = 1;
-
-    if (verbose)
-        console.log(str);
 
     // Replaces breaklines with spaces and turns whole input into single lined string
     //str = str.replace(/(\r\n|\n|\r)/gm, " ");
@@ -58,9 +52,6 @@ function lex() {
         for (var temp = 0; temp < codeFrag.length; temp++) {
             codeFrag[temp] = codeFrag[temp].replace(/^ +| +$/gm, "");
         }
-
-        // Logs the array that is going to be processed
-        console.log(codeFrag);
 
         // Iterate through the condeFrag array to identify valid lexemes
         for (var i = 0; i < codeFrag.length; i++) {
