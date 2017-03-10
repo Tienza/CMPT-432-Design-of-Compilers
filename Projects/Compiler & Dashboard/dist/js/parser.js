@@ -7,9 +7,7 @@ function parse() {
 		// Prints start of Parsing Session
 		var txt = $('#log').val();
 		txt = $('#log').val(txt + "Beginning Parsing Session...\n\n");
-		
-		if (verbose)
-			console.log(lexReturns);
+		txt = $('#log').val();
 		
 		// Sets carry-over variables from LEXER to be used in PARSER
 		var tokens = lexReturns.tokenArray;
@@ -18,7 +16,8 @@ function parse() {
 		var parseErrorCount = 0;
 		var parseWarningCount = 0;
 		
-		var currentToken = 0;	
+		// Initialize Parser Variables
+		var currentToken = 0;
 		
 		// Creates Concrete Syntax Tree and adds root node
 		var cst = new Tree();
@@ -661,11 +660,6 @@ function parse() {
 	function matchToken(tokenKind, expectedKind){
 		var match;
 		
-		console.log(tokens[currentToken]);
-		
-		if (verbose)
-			console.log(currentToken);
-		
 		if (tokenKind == expectedKind)
 			match = true;
 		else
@@ -680,8 +674,6 @@ function parse() {
 	
 	// Funtions to print last message for parser
 	function printLastParseMessage(parseComplete) {
-		txt = $('#log').val();
-		
 		if (parseComplete) {
 			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n\n");
 			$('#cstLog').val(cst.toString());
@@ -695,27 +687,21 @@ function parse() {
 	}
 	
 	function throwParseError(expectVal) {
-		txt = $('#log').val();
-		
-		txt = $('#log').val(txt + " PARSER --> | ERROR! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
+		txt = txt + " PARSER --> | ERROR! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n";
 		parseErrorCount++;
 		printLastParseMessage(parseComplete);
 		// Updates Progess Status Bar
 		$('#parseResults').html("<span style=\"color:red;\"> FAILED </span>");
-		scrollDown();
 		throw new Error("HOLY SHIT! IT DIED..." + "Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
 	}
 	
 	function printParseMessage(expectVal, foundVal) {
-		txt = $('#log').val();
-		
 		if (foundVal !== "")
-			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + foundVal + " ] on line " + tokens[currentToken].line + "...\n");
+			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + foundVal + " ] on line " + tokens[currentToken].line + "...\n";
 		else if (expectVal == lambdaChar)
-			txt = $('#log').val(txt + " PARSER --> | PASSED! " + expectVal + " production on line " + tokens[currentToken].line + "...\n");
+			txt = txt + " PARSER --> | PASSED! " + expectVal + " production on line " + tokens[currentToken].line + "...\n";
 		else
-			txt = $('#log').val(txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n");
-		
-		scrollDown();
+			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n";
+
 	}
 }
