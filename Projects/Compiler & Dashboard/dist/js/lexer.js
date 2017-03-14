@@ -430,7 +430,7 @@ function lex() {
 			//txt = $('#log').val();
 			
 			// Prints Final Lex Success Message
-			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n\n");
+			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
 
 			//console.log($('#log').val());
 

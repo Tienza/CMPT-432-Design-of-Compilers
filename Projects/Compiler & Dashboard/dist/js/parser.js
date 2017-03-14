@@ -673,7 +673,7 @@ function parse() {
 	// Funtions to print last message for parser
 	function printLastParseMessage(parseComplete) {
 		if (parseComplete) {
-			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n\n");
+			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
 			$('#cstLog').val(cst.toString());
 		}
 		
