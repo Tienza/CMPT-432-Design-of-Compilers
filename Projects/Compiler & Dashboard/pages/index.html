@@ -89,6 +89,12 @@
 								<li><a onclick="insertProgram(11)">Missing Expr line 19</a></li>
 							</ul>
 						</li>
+						<li class="dropdown-submenu">
+							<a tabindex="-1">Semantic Analysis Fail</a>
+							<ul class="dropdown-menu">
+								<li><a onclick="insertProgram(12)">Undeclared Variable [ b ]</a></li>
+							</ul>
+						</li>
 					</ul>
 				</div>
 				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
@@ -113,19 +119,19 @@
 				<span>
 					Lexer:
 					<span>
-						<b id="lexResults"> INCOMPLETE </b>
+						<b id="lexResults"> --- </b>
 					</span>
 					| Parser:
 					<span>
-						<b id="parseResults"> INCOMPLETE </b>
+						<b id="parseResults"> --- </b>
 					</span>
 					| Semantic Analysis:
 					<span>
-						<b id="saResults"> INCOMPLETE </b>
+						<b id="saResults"> --- </b>
 					</span>
 					| Code Generation:
 					<span>
-						<b id="cgResults"> INCOMPLETE </b>
+						<b id="cgResults"> --- </b>
 					</span>
 				</span>
 			</div>

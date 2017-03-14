@@ -81,10 +81,10 @@ function resetIndexPage() {
 	semanticComplete = false;
 	codeComplete = false;
 	// Reset Page Elements
-	$('#lexResults').html(" INCOMPLETE ");
-	$('#parseResults').html(" INCOMPLETE ");
-	$('#saResults').html(" INCOMPLETE ");
-	$('#cgResults').html(" INCOMPLETE ");
+	$('#lexResults').html(" --- ");
+	$('#parseResults').html(" --- ");
+	$('#saResults').html(" --- ");
+	$('#cgResults').html(" --- ");
     $('#marquee-holder').html("No Tokens");
 	$('#tokenTable').html("<th>No Tokens</th>");
 	$('#cstLog').val("");
