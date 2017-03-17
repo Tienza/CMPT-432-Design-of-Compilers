@@ -520,9 +520,6 @@ function parse() {
 		// Throws an error if the character does not match what is expected
 		else
 			throwParseError("true || false");
-		
-		// Kicks you one level up the tree
-		cst.kick();
 	}
 	
 	function parseStringExpr() {
