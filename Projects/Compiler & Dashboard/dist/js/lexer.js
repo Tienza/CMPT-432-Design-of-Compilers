@@ -48,8 +48,8 @@ function lex() {
         str = str.split(DELIMITER_PATTERN);
 
         // Removes undefined elements within the array
-        codeFrag = str.clean(undefined);
-        codeFrag2 = [];
+        var codeFrag = str.clean(undefined);
+        var codeFrag2 = [];
 
         for (var subBreak = 0; subBreak < codeFrag.length; subBreak++) {
             if (isMatch(/^([a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
@@ -73,6 +73,8 @@ function lex() {
             }
         }
 
+		codeFrag = codeFrag2;
+		
         // Iterate through the condeFrag array to identify valid lexemes
         for (var i = 0; i < codeFrag.length; i++) {
             if (isMatch(/^\n+/, codeFrag[i]))
