@@ -17,11 +17,11 @@ function lex() {
 
     // Clears the log and resets page
     $('#log').val("");
-	resetIndexPage();
-	
-	// Begin Lexing Statement - Changes depending on how we are handling Strings
-	var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
-	txt = $('#log').val();
+    resetIndexPage();
+
+    // Begin Lexing Statement - Changes depending on how we are handling Strings
+    var txt = $('#log').val("Beginning Lexing Session... *Stings Treated As CharList*\n\n");
+    txt = $('#log').val();
 
     // Gets the code written inside the console textarea for processing
     var str = document.getElementById('console').value;
@@ -40,8 +40,8 @@ function lex() {
     //str = str.replace(/(\r\n|\n|\r)/gm, " ");
     if (/\S/.test(str)) {
         // RegEx pattern to break up input by symbols, keywords, etc.
-		// Must also give credit where it is due, this RegEx a modified form of the RegEx from Svegliator which is a modified
-		// version of the RegEx from apparent RegEx god "Chris"
+        // Must also give credit where it is due, this RegEx a modified form of the RegEx from Svegliator which is a modified
+        // version of the RegEx from apparent RegEx god "Chris"
         DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(==)|(!=)|(\S)|(\n)/g;
 
         // Turns string into array delimited by the pattern above
@@ -49,9 +49,28 @@ function lex() {
 
         // Removes undefined elements within the array
         codeFrag = str.clean(undefined);
+        codeFrag2 = [];
+
+        for (var subBreak = 0; subBreak < codeFrag.length; subBreak++) {
+            if (isMatch(/^([a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
+                codeFrag[subBreak] = tokenBeautify(codeFrag[subBreak]);
+                codeFrag[subBreak] = codeFrag[subBreak].split(DELIMITER_PATTERN);
+                codeFrag[subBreak] = codeFrag[subBreak].clean(undefined);
+            }
+        }
+
+        codeFrag = [].concat.apply([], codeFrag);
 
         for (var temp = 0; temp < codeFrag.length; temp++) {
-            codeFrag[temp] = codeFrag[temp].replace(/^ +| +$/gm, "");
+            if (isMatch(/^([a-z]+)$/, codeFrag[temp]) && codeFrag[temp] != "print" && codeFrag[temp] != "while" && codeFrag[temp] != "if" && codeFrag[temp] != "int" && codeFrag[temp] != "string" && codeFrag[temp] != "boolean" && codeFrag[temp] != "false" && codeFrag[temp] != "true") {
+                var tempArray = codeFrag[temp].split("");
+                for (var repeatChar = 0; repeatChar < tempArray.length; repeatChar++) {
+                    codeFrag2.push(tempArray[repeatChar]);
+                }
+            } else {
+                codeFrag[temp] = codeFrag[temp].replace(/^ +| +$/gm, "");
+                codeFrag2.push(codeFrag[temp]);
+            }
         }
 
         // Iterate through the condeFrag array to identify valid lexemes
@@ -269,10 +288,10 @@ function lex() {
                     }
                     // Creates Token for each Char
                     else {
-						// Split input into individual characters
+                        // Split input into individual characters
                         lexeme = lexeme.split("");
-						// Runs though each characters attempting to classify and generate appropriate tokens. 
-						// Patterns are the same as above, with the exception of of T_WHITE_SPACE, which only exists here
+                        // Runs though each characters attempting to classify and generate appropriate tokens. 
+                        // Patterns are the same as above, with the exception of of T_WHITE_SPACE, which only exists here
                         for (var lexElem = 0; lexElem < lexeme.length; lexElem++) {
 
                             //txt = $('#log').val();
@@ -288,8 +307,18 @@ function lex() {
                                 }
 
                                 tokens.push(token);
-                            } 
-							else if (isMatch(/^[a-z]$/, lexChar)) {
+                            } else if (isMatch(/^[a-z]$/, lexChar)) {
+                                var token = new Token("T_CHAR", lexChar, lineNum);
+
+                                if (verbose) {
+                                    // console.log(lexChar + " on line " + lineNum);
+                                    txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
+                                }
+
+                                tokens.push(token);
+                            }
+                            // Creates a Token for white spaces only if they exist inside a string
+                            else if (isMatch(/^\s$/, lexChar)) {
                                 var token = new Token("T_CHAR", lexChar, lineNum);
 
                                 if (verbose) {
@@ -299,17 +328,7 @@ function lex() {
 
                                 tokens.push(token);
                             } 
-							// Creates a Token for white spaces only if they exist inside a string
-							else if (isMatch(/^\s$/, lexChar)) {
-                                var token = new Token("T_CHAR", lexChar, lineNum);
-
-                                if (verbose) {
-                                    // console.log(lexChar + " on line " + lineNum);
-                                    txt = txt + " LEXER --> | " + token.kind + " [ " + token.value + " ] " + " on line " + token.line + "...\n";
-                                }
-
-                                tokens.push(token);
-                            } 
+							// No more valid actions break out of loop
 							else {
                                 if (verbose)
                                     console.log("Broke out of string loop...")
@@ -325,7 +344,7 @@ function lex() {
                 }
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
                 else {
-					$('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
+                    $('#log').val(txt + " LEXER --> | ERROR! Unrecognized or Invalid Token " + "[ " + lexeme + " ] on line " + lineNum + "\n");
                     document.getElementById('marquee-holder').innerHTML = "";
                     document.getElementById('tokenTable').innerHTML = "<th>No Tokens</th>";
                     lexErrorCount++;
@@ -345,7 +364,7 @@ function lex() {
         // Assigns the return values of checkEOPS
         tokens = checkReturn.tokenArray;
         lexWarningCount = checkReturn.lexWarningCount;
-		lexErrorCount = checkReturn.lexErrorCount;
+        lexErrorCount = checkReturn.lexErrorCount;
 
         var printLastReturn = printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
 
@@ -356,127 +375,126 @@ function lex() {
 
         // Logs token Array
         console.log(tokens);
-		
-		// Variable to store all objects moving on to the parser
-		var lexReturns = {
-			tokenArray: tokens,
-			warningCount: lexWarningCount,
-			errorCount: lexErrorCount
-		}
-		
+
+        // Variable to store all objects moving on to the parser
+        var lexReturns = {
+            tokenArray: tokens,
+            warningCount: lexWarningCount,
+            errorCount: lexErrorCount
+        }
+
         return lexReturns;
     }
-	// If console is empty and the user tries to lex then return an error
-	else {
+    // If console is empty and the user tries to lex then return an error
+    else {
         printTokens = false;
 
         lexErrorCount++;
 
         txt = $('#log').val();
-		
-		$('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
+
+        $('#log').val(txt + " LEXER --> | ERROR! Empty Input or Only White-Space Detected...\n");
 
         printLastMessage(tokens, printTokens, lexWarningCount, lexErrorCount);
     }
-	
-	function checkEOPS(tokenArray, reachedEnd, lexWarningCount, lexErrorCount) {
-		//var txt = $('#log').val();
-		
-		var checkEOPS = {
-			tokenArray: "",
-			lexWarningCount: "",
-			lexErrorCount: ""
-		}
-		// Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
-		try {
-			if (tokenArray[tokenArray.length - 1].value != "$" && reachedEnd) {
 
-				var endToken = new Token("T_EOPS", "$", tokenArray[tokenArray.length - 1].line);
-				tokenArray.push(endToken);
+    function checkEOPS(tokenArray, reachedEnd, lexWarningCount, lexErrorCount) {
+        //var txt = $('#log').val();
 
-				lexWarningCount++;
-				
-				txt = txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n";
-			}
-		}
-		// If Token Array is invalid or empty, notify the user of the error
-		catch(error) {
-			lexErrorCount++;
-			
-			console.log("Invalid Input..." + error);
-			$('#log').val(txt + " LEXER --> | ERROR! Input did not generate valid Token Array...\n");
-			scrollDown();
-		}
+        var checkEOPS = {
+            tokenArray: "",
+            lexWarningCount: "",
+            lexErrorCount: ""
+        }
+        // Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
+        try {
+            if (tokenArray[tokenArray.length - 1].value != "$" && reachedEnd) {
 
-		checkEOPS.tokenArray = tokenArray;
-		checkEOPS.lexWarningCount = lexWarningCount;
-		checkEOPS.lexErrorCount = lexErrorCount;
+                var endToken = new Token("T_EOPS", "$", tokenArray[tokenArray.length - 1].line);
+                tokenArray.push(endToken);
 
-		return checkEOPS;
-	}
+                lexWarningCount++;
 
-	function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCount) {	
-		var printLastMessage = {
-			tokenArray: "",
-			lexWarningCount: "",
-			lexErrorCount: ""
-		}
-		
-		// Decides what to print for Final Lex Message
-		if (printTokens) {
-			// LEX Success
-			lexComplete = true;
-			
-			//txt = $('#log').val();
-			
-			// Prints Final Lex Success Message
-			$('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
+                txt = txt + " LEXER --> | WARNING! NO EOPS [$] detected. Added to end-of-file at line " + tokenArray[tokenArray.length - 1].line + "...\n";
+            }
+        }
+        // If Token Array is invalid or empty, notify the user of the error
+        catch (error) {
+            lexErrorCount++;
 
-			//console.log($('#log').val());
+            console.log("Invalid Input..." + error);
+            $('#log').val(txt + " LEXER --> | ERROR! Input did not generate valid Token Array...\n");
+            scrollDown();
+        }
 
-			scrollDown();
+        checkEOPS.tokenArray = tokenArray;
+        checkEOPS.lexWarningCount = lexWarningCount;
+        checkEOPS.lexErrorCount = lexErrorCount;
 
-			marqueeTokens = [];
-			tableTokens = [];
+        return checkEOPS;
+    }
 
-			var tokenNumber = 0;
+    function printLastMessage(tokenArray, printTokens, lexWarningCount, lexErrorCount) {
+        var printLastMessage = {
+            tokenArray: "",
+            lexWarningCount: "",
+            lexErrorCount: ""
+        }
 
-			// Prepares token for printing into marquee and table
-			for (var m = 0; m < tokenArray.length; m++) {
-				marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenArray[m].kind + " [ " + tokenArray[m].value + " ] " + "</span></span>";
-				tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokenArray[m].kind + "</td><td>" + tokenArray[m].value + "</td><td>" + tokenArray[m].line + "</td></tr>";
-				tokenNumber++;
-			}
-			
-			// Updates Progess Status Bar
-			if(lexWarningCount == 0)
-				$('#lexResults').html("<span style=\"color:green;\"> PASSED </span>");
-			else
-				$('#lexResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
+        // Decides what to print for Final Lex Message
+        if (printTokens) {
+            // LEX Success
+            lexComplete = true;
 
-			// Prints token into marquee and table
-			document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
-			document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
-		} 
-		else {
-			// LEX fail
-			lexComplete = false;
-			
-			txt = $('#log').val();
-			
-			// Prints Final Lex Fail Message
-			$('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
-			
-			scrollDown();
-			
-			// Updates Progess Status Bar
-			$('#lexResults').html("<span style=\"color:red;\"> FAILED </span>");
-		}
-		
-		printLastMessage.tokenArray = tokenArray;
-		printLastMessage.lexWarningCount = lexWarningCount;
-		printLastMessage.lexErrorCount = lexErrorCount;
+            //txt = $('#log').val();
 
-		return printLastMessage;
-	}
+            // Prints Final Lex Success Message
+            $('#log').val(txt + "\nLex Completed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
+
+            //console.log($('#log').val());
+
+            scrollDown();
+
+            marqueeTokens = [];
+            tableTokens = [];
+
+            var tokenNumber = 0;
+
+            // Prepares token for printing into marquee and table
+            for (var m = 0; m < tokenArray.length; m++) {
+                marqueeTokens[m] = "<span class=\"tokenStream\">" + "<span class=\"tokenStreamNum\">" + tokenNumber + "</span> " + ":: " + "<span class=\"tokenStreamText\">" + tokenArray[m].kind + " [ " + tokenArray[m].value + " ] " + "</span></span>";
+                tableTokens[m] = "<tr class=\"tokenRow\"><td>" + tokenNumber + "</td><td>" + tokenArray[m].kind + "</td><td>" + tokenArray[m].value + "</td><td>" + tokenArray[m].line + "</td></tr>";
+                tokenNumber++;
+            }
+
+            // Updates Progess Status Bar
+            if (lexWarningCount == 0)
+                $('#lexResults').html("<span style=\"color:green;\"> PASSED </span>");
+            else
+                $('#lexResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
+
+            // Prints token into marquee and table
+            document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
+            document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
+        } else {
+            // LEX fail
+            lexComplete = false;
+
+            txt = $('#log').val();
+
+            // Prints Final Lex Fail Message
+            $('#log').val(txt + "\nLex Failed With " + lexWarningCount + " WARNING(S) and " + lexErrorCount + " ERROR(S)" + "...");
+
+            scrollDown();
+
+            // Updates Progess Status Bar
+            $('#lexResults').html("<span style=\"color:red;\"> FAILED </span>");
+        }
+
+        printLastMessage.tokenArray = tokenArray;
+        printLastMessage.lexWarningCount = lexWarningCount;
+        printLastMessage.lexErrorCount = lexErrorCount;
+
+        return printLastMessage;
+    }
 }
