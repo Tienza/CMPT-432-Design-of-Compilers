@@ -499,4 +499,17 @@ function lex() {
 
         return printLastMessage;
     }
+	function tokenBeautify(tokenString) {
+		tokenString = tokenString.replaceAll("print", " print ");
+		tokenString = tokenString.replaceAll("int", " int ");
+		tokenString = tokenString.replaceAll("string", " string ");
+		tokenString = tokenString.replaceAll("boolean", " boolean ");
+		tokenString = tokenString.replaceAll("while", " while ");
+		tokenString = tokenString.replaceAll("if", " if ");
+		tokenString = tokenString.replaceAll("true", " true ");
+		tokenString = tokenString.replaceAll("false", " false ");
+		tokenString = tokenString.replaceAll("pr int", "print");
+		
+		return tokenString;
+	}
 }
