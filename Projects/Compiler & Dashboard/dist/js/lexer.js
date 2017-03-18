@@ -52,7 +52,7 @@ function lex() {
         var codeFrag2 = [];
 
         for (var subBreak = 0; subBreak < codeFrag.length; subBreak++) {
-            if (isMatch(/^([a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
+            if (isMatch(/^([a-z][a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
                 codeFrag[subBreak] = tokenBeautify(codeFrag[subBreak]);
                 codeFrag[subBreak] = codeFrag[subBreak].split(DELIMITER_PATTERN);
                 codeFrag[subBreak] = codeFrag[subBreak].clean(undefined);
@@ -62,7 +62,7 @@ function lex() {
         codeFrag = [].concat.apply([], codeFrag);
 
         for (var temp = 0; temp < codeFrag.length; temp++) {
-            if (isMatch(/^([a-z]+)$/, codeFrag[temp]) && codeFrag[temp] != "print" && codeFrag[temp] != "while" && codeFrag[temp] != "if" && codeFrag[temp] != "int" && codeFrag[temp] != "string" && codeFrag[temp] != "boolean" && codeFrag[temp] != "false" && codeFrag[temp] != "true") {
+            if (isMatch(/^([a-z][a-z]+)$/, codeFrag[temp]) && codeFrag[temp] != "print" && codeFrag[temp] != "while" && codeFrag[temp] != "if" && codeFrag[temp] != "int" && codeFrag[temp] != "string" && codeFrag[temp] != "boolean" && codeFrag[temp] != "false" && codeFrag[temp] != "true") {
                 var tempArray = codeFrag[temp].split("");
                 for (var repeatChar = 0; repeatChar < tempArray.length; repeatChar++) {
                     codeFrag2.push(tempArray[repeatChar]);
@@ -384,7 +384,7 @@ function lex() {
             warningCount: lexWarningCount,
             errorCount: lexErrorCount
         }
-
+		console.log(tokens.length);
         return lexReturns;
     }
     // If console is empty and the user tries to lex then return an error
