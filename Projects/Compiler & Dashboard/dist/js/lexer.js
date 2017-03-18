@@ -384,7 +384,7 @@ function lex() {
             warningCount: lexWarningCount,
             errorCount: lexErrorCount
         }
-		console.log(tokens.length);
+		
         return lexReturns;
     }
     // If console is empty and the user tries to lex then return an error
