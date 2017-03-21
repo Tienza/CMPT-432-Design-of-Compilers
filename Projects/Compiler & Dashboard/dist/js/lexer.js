@@ -42,7 +42,7 @@ function lex() {
         // RegEx pattern to break up input by symbols, keywords, etc.
         // Must also give credit where it is due, this RegEx a modified form of the RegEx from Svegliator which is a modified
         // version of the RegEx from apparent RegEx god "Chris"
-        DELIMITER_PATTERN = /([a-z]+)|(\d+)|(\/\*[^\/\*]*\*\/)|("[^"]*")|(==)|(!=)|(\S)|(\n)/g;
+        DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(\/\*[^\/\*]*\*\/)|(==)|(!=)|(\S)|(\n)/g;
 
         // Turns string into array delimited by the pattern above
         str = str.split(DELIMITER_PATTERN);
