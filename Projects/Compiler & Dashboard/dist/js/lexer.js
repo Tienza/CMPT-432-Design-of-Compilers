@@ -42,7 +42,7 @@ function lex() {
         // RegEx pattern to break up input by symbols, keywords, etc.
         // Must also give credit where it is due, this RegEx a modified form of the RegEx from Svegliator which is a modified
         // version of the RegEx from apparent RegEx god "Chris"
-        DELIMITER_PATTERN = /([a-z]+)|(\d+)|("[^"]*")|(#[^#]*#)|(==)|(!=)|(\S)|(\n)/g;
+        DELIMITER_PATTERN = /([a-z]+)|(\d+)|(\/\*[^\/\*]*\*\/)|("[^"]*")|(==)|(!=)|(\S)|(\n)/g;
 
         // Turns string into array delimited by the pattern above
         str = str.split(DELIMITER_PATTERN);
@@ -50,6 +50,8 @@ function lex() {
         // Removes undefined elements within the array
         var codeFrag = str.clean(undefined);
         var codeFrag2 = [];
+		
+		console.log(codeFrag);
 
         for (var subBreak = 0; subBreak < codeFrag.length; subBreak++) {
             if (isMatch(/^([a-z][a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
@@ -345,7 +347,7 @@ function lex() {
                         console.log(lexeme + " on line " + lineNum);*/
                 }
 				// RegEx for Multi-line Comments: Updates lineNum with number of break lines in comment
-				else if (isMatch(/^(#[^#]*#)$/, lexeme)) {
+				else if (isMatch(/^(\/\*[^\/\*]*\*\/)$/, lexeme)) {
 					lineNum = lineNum + lexeme.replace(/[^\n]/g, "").length;
 				}
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
