@@ -50,8 +50,6 @@ function lex() {
         // Removes undefined elements within the array
         var codeFrag = str.clean(undefined);
         var codeFrag2 = [];
-		
-		console.log(codeFrag);
 
         for (var subBreak = 0; subBreak < codeFrag.length; subBreak++) {
             if (isMatch(/^([a-z][a-z]+)$/, codeFrag[subBreak]) && codeFrag[subBreak] != "print" && codeFrag[subBreak] != "while" && codeFrag[subBreak] != "if" && codeFrag[subBreak] != "int" && codeFrag[subBreak] != "string" && codeFrag[subBreak] != "boolean" && codeFrag[subBreak] != "false" && codeFrag[subBreak] != "true") {
