@@ -344,9 +344,9 @@ function lex() {
                     /*if (verbose)
                         console.log(lexeme + " on line " + lineNum);*/
                 }
-				// RegEx for Comments
+				// RegEx for Multi-line Comments: Updates lineNum with number of break lines in comment
 				else if (isMatch(/^(#[^#]*#)$/, lexeme)) {
-					// Literally do nothing
+					lineNum = lineNum + lexeme.replace(/[^\n]/g, "").length;
 				}
                 // Breaks out of loop incase of invalid lexeme, logs which chracter caused the error to be thrown
                 else {
