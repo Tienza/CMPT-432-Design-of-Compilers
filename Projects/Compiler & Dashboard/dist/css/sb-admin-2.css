@@ -6,6 +6,13 @@
 body {
   background-color: #f8f8f8;
 }
+#console {
+  white-space: nowrap;
+  font-family: "Courier New";
+}
+#log {
+  font-family: "Courier New";
+}
 #wrapper {
   width: 100%;
 }
