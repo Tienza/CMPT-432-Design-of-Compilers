@@ -24,7 +24,8 @@ function lex() {
     txt = $('#log').val();
 
     // Gets the code written inside the console textarea for processing
-    var str = document.getElementById('console').value;
+    //var str = document.getElementById('console').value;
+	var str = editor.getValue();
 
     // Resets and initialize LEXER Error and Warning Count
     var lexErrorCount = 0;

@@ -57,6 +57,7 @@ function insertProgram(progNum) {
 	
 	// Clears Console and Resets page
 	$('#console').val("");
+	editor.setValue("");
 	resetIndexPage();
 	
 	if (availableProgram) {
@@ -66,6 +67,10 @@ function insertProgram(progNum) {
 		});
 		
 		$('#console').val(testProgram);
+		editor.setValue(testProgram);
+		var row = editor.session.getLength() - 1
+		var column = editor.session.getLine(row).length // or simply Infinity
+		editor.gotoLine(row + 1, column)
 	
 		if (verbose) {
 			$('#log').val("Inserted Program: Test Case " + progNum);

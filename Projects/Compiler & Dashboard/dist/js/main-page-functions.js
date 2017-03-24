@@ -11,6 +11,11 @@ var codeComplete = false;
 
 var $textarea = $('#log');
 
+var editor = ace.edit("editor");
+editor.setTheme("ace/theme/chrome");
+editor.session.setMode("ace/mode/java");
+editor.$blockScrolling = Infinity;
+
 // Function to do a "replace all" on a string. Because this doesn't exit natively in JavaScript
 String.prototype.replaceAll = function(search, replacement) {
     var target = this;
