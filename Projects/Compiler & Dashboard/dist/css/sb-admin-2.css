@@ -6,20 +6,28 @@
 body {
   background-color: #f8f8f8;
 }
+#editor {
+	height: 417px;
+	border-radius: 4px;
+}
 #console {
-  white-space: nowrap;
-  font-family: "Courier New";
+	display: none;
+	white-space: nowrap;
+	font-family: "Courier New";
+}
+#consoleDiv {
+	display: none;
 }
 #log {
-  font-family: "Courier New";
+	font-family: "Courier New";
 }
 #wrapper {
-  width: 100%;
+	width: 100%;
 }
 #page-wrapper {
-  padding: 0 15px;
-  min-height: 568px;
-  background-color: white;
+	padding: 0 15px;
+	min-height: 568px;
+	background-color: white;
 }
 #copyButton {
 	color: #555;
@@ -43,6 +51,12 @@ body {
     padding: 0 30px;
     border-left: 1px solid #e7e7e7;
   }
+}
+.ace_content {
+	padding-left: 10px;
+}
+.ace_gutter-layer {
+	padding-bottom: 10px;
 }
 .dropdown-submenu {
     cursor: pointer;

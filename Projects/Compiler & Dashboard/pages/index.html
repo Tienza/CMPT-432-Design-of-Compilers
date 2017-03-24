@@ -149,8 +149,9 @@
 		<div class="row">
 			<div class="col-lg-6">
 				<label>Console</label>
-				<a id="copyButton" onclick="copyText('#console')" data-toggle="tooltip" data-placement="right" title="Copy Console to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a>
-				<div class="panel panel-default">
+				<!-- <a id="copyButton" onclick="copyText('#console')" data-toggle="tooltip" data-placement="right" title="Copy Console to Clipboard"><i class="fa fa-clipboard" aria-hidden="true"></i></a> -->
+				<pre id="editor"></pre>
+				<div id="consoleDiv" class="panel panel-default">
 					<textarea id="console" class="form-control" spellcheck=false rows="20" placeholder="Enter your Code Here..."></textarea>
 				</div>
 			</div>
@@ -240,6 +241,7 @@
 
     <!-- Custom Theme JavaScript -->
     <script src="../dist/js/sb-admin-2.js"></script>
+	<script src="../js/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
 	<script src="../dist/js/jquery.numberedtextarea.js"></script>
 	<script src="../dist/js/enable-tabs.js"></script>
 	<script src="../dist/js/main-page-functions.js"></script>
