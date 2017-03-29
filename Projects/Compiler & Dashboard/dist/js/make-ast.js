@@ -1,8 +1,8 @@
 function makeAST() {
-	var parseReturns = parse();
+	var makeASTTokensReturns = makeASTTokens();
 	
 	// Creates local copy of TokenArray for processing to make AST
-	var tokens = parseReturns.tokenArray;
+	var tokens = makeASTTokensReturns.tokenArray;
 	
 	// Initialize AST Variables
 	var currentToken = 0;
@@ -269,6 +269,10 @@ function makeAST() {
 				// Creates a Equality Branch
 				ast.addNode("Equality", "branch");
 			}
+			else if (matchToken(tokens[currentToken+3].value, "==")) {
+				// Creates a Equality Branch
+				ast.addNode("Equality", "branch");
+			}
 			else {
 				// Creates a Inequality Branch
 				ast.addNode("Inequality", "branch");
@@ -308,34 +312,26 @@ function makeAST() {
 	function parseBoolVal() {
 		// Checks and consumes the first required character of BoolOp [ T_BOOLEAN_VALUE ]
 		if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
+			// Creates a BoolVal leaf
+			ast.addNode(tokens[currentToken].value, "branch");
 			consumeToken();
 		}
 	}
 	
 	function parseStringExpr() {
-		var fullString = "";
 		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
 		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
 			consumeToken();
 		}
 		
-		// Get index of first letter after quote
-		var firstQuote = currentToken;
-		
 		// Initialize parsting of CharList
 		parseCharList();
 		
-		// Get index of last letter before quote
-		var secondQuote = currentToken-1;
+		var fullString = tokens[currentToken-1].value;
 		
 		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
 		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
 			consumeToken();
-		}
-		
-		// Assembles the Full String
-		for (var i = firstQuote; i < secondQuote+1; i++) {
-			fullString = fullString + tokens[i].value;
 		}
 		
 		// Creates a StringExpr leaf
@@ -345,20 +341,12 @@ function makeAST() {
 	
 	function parseCharList() {
 		// Checks the required first character of CharList [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
-			parseChar();
+		if (matchToken(tokens[currentToken].kind, "T_CHARLIST")) {
+			consumeToken()
 		}
 		// Empty production
 		else {
 			/* Do Nothing λ Production */
-		}
-	}
-	
-	function parseChar() {
-		// Checks and consumes the required first character of Char [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
-			consumeToken();
-			parseCharList();
 		}
 	}
 	
