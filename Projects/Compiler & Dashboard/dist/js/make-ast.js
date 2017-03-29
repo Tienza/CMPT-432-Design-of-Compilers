@@ -15,8 +15,6 @@ function makeAST() {
 	
 	$('#astLog').val(ast.toString());
 	
-	console.log("Success! AST Programs run with no errors!");
-	
 	function parseProgram() {
 		// Creates a Program Branch
 		ast.addNode("Program", "branch");

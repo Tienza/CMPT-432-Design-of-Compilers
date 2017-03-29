@@ -1,6 +1,5 @@
 function makeASTTokens() {
 	var parseReturns = parse();
-	console.log(parseReturns.astLexemes);
 	
 	// Initialize Make-AST-Token Variables
 	var codeFrag = parseReturns.astLexemes;
