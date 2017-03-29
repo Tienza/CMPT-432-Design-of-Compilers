@@ -386,6 +386,7 @@ function lex() {
         // Variable to store all objects moving on to the parser
         var lexReturns = {
             tokenArray: tokens,
+			astLexemes: codeFrag,
             warningCount: lexWarningCount,
             errorCount: lexErrorCount
         }

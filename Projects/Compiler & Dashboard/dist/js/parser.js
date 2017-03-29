@@ -45,6 +45,7 @@ function parse() {
 		// Variable to store all objects moving onto semantic analysis
 		var parseReturns = {
 			tokenArray: tokens,
+			astLexemes: lexReturns.astLexemes,
 			totalWarningCount: parseWarningCount + lexReturns.warningCount,
 			totalErrorCount: parseErrorCount + lexReturns.errorCount
 		}
