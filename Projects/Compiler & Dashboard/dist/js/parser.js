@@ -258,10 +258,10 @@ function parse() {
 	}
 	
 	function parseVarDecl() {
-		// Creates a VarDecl Branch
-		cst.addNode("VarDecl", "branch");
+		// Creates a VariableDeclaration Branch
+		cst.addNode("VariableDeclaration", "branch");
 		
-		// Checks required first character of VarDecl [ T_VARIABLE_TYPE ]
+		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			if (verbose)
 				printParseMessage("T_VARIABLE_TYPE", "");
@@ -272,7 +272,7 @@ function parse() {
 		else 
 			throwParseError("T_VARIABLE_TYPE");
 		
-		// Checks required second character of VarDecl [ T_ID ]
+		// Checks required second character of VariableDeclaration [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			if (verbose)
 				printParseMessage("T_ID", "");

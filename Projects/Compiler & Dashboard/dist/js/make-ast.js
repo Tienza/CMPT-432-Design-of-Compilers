@@ -146,16 +146,16 @@ function makeAST() {
 	}
 	
 	function parseVarDecl() {
-		// Creates a VarDecl Branch
-		ast.addNode("VarDecl", "branch");
+		// Creates a VariableDeclaration Branch
+		ast.addNode("VariableDeclaration", "branch");
 		
-		// Checks required first character of VarDecl [ T_VARIABLE_TYPE ]
+		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			// Initialize parsing of Type
 			parseType();
 		}
 		
-		// Checks required second character of VarDecl [ T_ID ]
+		// Checks required second character of VariableDeclaration [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Initialize parsing of Id
 			parseId();
