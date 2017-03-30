@@ -126,6 +126,7 @@ function makeASTTokens() {
 	}
 
 	tokens = tokens.clean(undefined);
+	tokens = checkEOPS(tokens);
 	
 	var makeASTTokensReturns = {
 		tokenArray: tokens,
@@ -137,4 +138,13 @@ function makeASTTokens() {
 		console.log(makeASTTokensReturns);
 	
 	return makeASTTokensReturns;
+	
+	function checkEOPS(tokenArray) {
+        // Checks to see whether the program ends with a EOPS ($) or not. If not then adds EOPS to the end of the token stream
+		if (tokenArray[tokenArray.length - 1].value != "$") {
+			var endToken = new Token("T_EOPS", "$", tokenArray[tokenArray.length - 1].line);
+			tokenArray.push(endToken);
+		}
+		return tokenArray;
+    }
 }
