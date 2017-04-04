@@ -14,6 +14,18 @@ function makeAST() {
 	parseProgram();
 	
 	$('#astLog').val(ast.toString());
+
+	var makeASTReturns = {
+		AST: ast,
+		tokenArray: tokens,
+		totalWarningCount: makeASTTokensReturns.totalWarningCount,
+		totalErrorCount: makeASTTokensReturns.totalErrorCount
+	}
+
+	if (verbose)
+		console.log(makeASTReturns);
+
+	return makeASTReturns;
 	
 	function parseProgram() {
 		// Creates a Program Branch
