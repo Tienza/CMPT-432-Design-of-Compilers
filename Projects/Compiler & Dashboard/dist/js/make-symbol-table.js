@@ -1,12 +1,12 @@
 function makeSymbolTable() {
 	var makeASTReturns = makeAST();
 
+	// Initialize AST Variables to be used to make symbol tables
 	var ast = makeASTReturns.AST;
 
 	if (verbose)
 		console.log(makeASTReturns);
 
-	console.log(ast.cur);
 	traverseTree(ast.cur);
 
 	function traverseTree(node) {
