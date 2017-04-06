@@ -58,7 +58,7 @@ function parse() {
 	
 	function parseProgram() {
 		// Creates a Program Branch
-		cst.addNode("Program", "branch");
+		cst.addNode("Program", "branch", "");
 		
 		// Initialize parsing of Block
 		parseBlock();
@@ -68,7 +68,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_EOPS", "");
 			// Creates [ $ ] leaf
-			cst.addNode("$", "leaf");
+			cst.addNode("$", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -93,7 +93,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_OPENING_BRACE", "");
 			// Creates [ { ] leaf
-			cst.addNode("{", "leaf");
+			cst.addNode("{", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -108,7 +108,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_CLOSING_BRACE", "");
 			// Creates [ } ] leaf
-			cst.addNode("}", "leaf");
+			cst.addNode("}", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -214,7 +214,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_IF", tokens[currentToken].value);
 			// Creates [ if ] leaf
-			cst.addNode("if", "leaf");
+			cst.addNode("if", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -240,7 +240,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_WHILE", tokens[currentToken].value);
 			// Creates [ while ] leaf
-			cst.addNode("while", "leaf");
+			cst.addNode("while", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -293,7 +293,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_VARIABLE_TYPE", tokens[currentToken].value);
 			// Creates [ type ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 	}
@@ -317,7 +317,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_ASSIGNMENT_OP", tokens[currentToken].value);
 			// Creates [ = ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -340,7 +340,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_ID", tokens[currentToken].value);
 			// Creates [ Id ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		else
@@ -359,7 +359,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_PRINT", "");
 			// Creates [ print ] leaf
-			cst.addNode("print", "leaf");
+			cst.addNode("print", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -371,7 +371,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_OPENING_PARENTHESIS", "");
 			// Creates [ ( ] leaf
-			cst.addNode("(", "leaf");
+			cst.addNode("(", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -386,7 +386,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_CLOSING_PARENTHESIS", "");
 			// Creates [ ) ] leaf
-			cst.addNode(")", "leaf");
+			cst.addNode(")", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -453,7 +453,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_OPENING_PARENTHESIS", tokens[currentToken].value);
 			// Creates [ ( ] leaf
-			cst.addNode("(", "leaf");
+			cst.addNode("(", "leaf", tokens[currentToken].line);
 			consumeToken();
 			// Initialize parsing of Expr
 			parseExpr();
@@ -466,7 +466,7 @@ function parse() {
 				if (verbose)
 					printParseMessage("T_CLOSING_PARENTHESIS", tokens[currentToken].value);
 				// Creates [ ) ] leaf
-				cst.addNode(")", "leaf");
+				cst.addNode(")", "leaf", tokens[currentToken].line);
 				consumeToken();
 			}
 			// Throws an error if the character does not match what is expected
@@ -493,7 +493,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_EQUALITY_OP", tokens[currentToken].value);
 			// Creates [ == ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Checks and consumes the second possible character of BoolOp [ T_EQUALITY_OP ]
@@ -501,7 +501,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_INEQUALITY_OP", tokens[currentToken].value);
 			// Creates [ != ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -515,7 +515,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_BOOLEAN_VALUE", tokens[currentToken].value);
 			// Creates [ T_BOOLEAN_VALUE ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -532,7 +532,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_QUOTE", "");
 			// Creates [ \" ] leaf
-			cst.addNode("\"", "leaf");
+			cst.addNode("\"", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -547,7 +547,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_QUOTE", "");
 			// Creates [ \" ] leaf
-			cst.addNode("\"", "leaf");
+			cst.addNode("\"", "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -585,7 +585,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_CHAR", tokens[currentToken].value);
 			// Creates a char leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 			parseCharList();
 		}
@@ -630,7 +630,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_ADDITION_OP", tokens[currentToken].value);
 			// Creates a IntOp leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected
@@ -644,7 +644,7 @@ function parse() {
 			if (verbose)
 				printParseMessage("T_DIGIT", tokens[currentToken].value);
 			// Creates a Digit leaf
-			cst.addNode(tokens[currentToken].value, "leaf");
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 		// Throws an error if the character does not match what is expected

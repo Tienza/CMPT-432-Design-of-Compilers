@@ -181,7 +181,7 @@ function makeAST() {
 		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			// Creates [ type ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf");
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 	}
@@ -211,7 +211,7 @@ function makeAST() {
 		// Checks and consumes the required first character of Id [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Creates [ Id ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf");
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 	};
@@ -345,7 +345,7 @@ function makeAST() {
 		}
 		
 		// Creates a StringExpr leaf
-		ast.addNode(fullString, "leaf");
+		ast.addNode(fullString, "leaf", tokens[currentToken].line);
 		
 	}
 	
@@ -392,7 +392,7 @@ function makeAST() {
 		// Checks and consumes the required character to be a digit [ T_DIGIT ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
 			// Creates a Digit leaf
-			ast.addNode(tokens[currentToken].value, "leaf");
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 	}
