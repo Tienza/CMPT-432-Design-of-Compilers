@@ -3,11 +3,16 @@ function makeSymbolTable() {
 
 	// Initialize AST Variables to be used to make symbol tables
 	var ast = makeASTReturns.AST;
+	var st = new symbolTable();
+	
+	st.addHashTable("Scope 0", "branch");
 
 	if (verbose)
 		console.log(makeASTReturns);
 
 	traverseTree(ast.cur);
+	
+	console.log(values);
 
 	function traverseTree(node) {
 		if (node.children.length != 0) {

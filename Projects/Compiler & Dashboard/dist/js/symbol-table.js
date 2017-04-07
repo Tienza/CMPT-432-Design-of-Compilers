@@ -18,13 +18,13 @@ function symbolTable() {
     // -- ------- --
 
     // Add a node: kind in {branch, leaf}.
-    this.addNode = function(name, kind, line) {
+    this.addHashTable = function(name, kind) {
         // Construct the node object.
         var node = {
             name: name,
             children: [],
             parent: {},
-            line: line
+            symbols: []
         };
 
         // Check to see if it needs to be the root node.
