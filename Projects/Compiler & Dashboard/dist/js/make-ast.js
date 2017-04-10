@@ -7,9 +7,18 @@ function makeAST() {
 	// Initialize AST Variables
 	var currentToken = 0;
 	
-	// Creates Concrete Syntax Tree and adds root node
+	// Creates Abstract Syntax Tree and adds root node
 	var ast = new Tree();
 	ast.addNode("Root", "branch");
+
+	// Creates Symbol Tree and adds root node
+	var scope = -1;
+	var st = new symbolTable();
+
+	// Symbol Global Variables
+	var variableKey = "";
+	var variableType = "";
+	var variableLine = 0;
 	
 	parseProgram();
 	
@@ -25,7 +34,21 @@ function makeAST() {
 	if (verbose)
 		console.log(makeASTReturns);
 
+	if (verbose) {
+		traverseTree(st.cur);
+		console.log(st.toString());
+	}
+
 	return makeASTReturns;
+
+	function traverseTree(node) {
+		console.log(node.symbols);
+		if (node.children.length != 0) {
+			node.children.forEach(function(element){
+				traverseTree(element);
+			});
+		}
+	}
 	
 	function parseProgram() {
 		// Creates a Program Branch
@@ -49,8 +72,11 @@ function makeAST() {
 	}
 	
 	function parseBlock() {
+		scope++;
 		// Creates a Block Branch
 		ast.addNode("Block", "branch");
+		// Creates a Scope in the Symbol Tree
+		st.addNode("ScopeLevel: "+scope,"branch");
 		
 		// Checks and consumes the required first character of a Block [ { ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
@@ -65,8 +91,11 @@ function makeAST() {
 			consumeToken();
 		}
 		
+		scope--;
 		// Kicks you one level up the tree
 		ast.kick();
+		// Kicks you one Scope up the Symbol Tree
+		st.kick();
 	}
 	
 	function parseStatementList() {
@@ -173,6 +202,13 @@ function makeAST() {
 			parseId();
 		}
 		
+		// Adds Symbol to Symbol Tree
+		var symbol = new Symbol(variableKey, variableType, false, false);
+		st.cur.symbols.push(symbol);
+		// Clears data stored in variableKey && variableType
+		variableKey = "";
+		variableType = ""; 
+
 		// Kicks you one level up the tree
 		ast.kick();
 	}
@@ -182,6 +218,8 @@ function makeAST() {
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			// Creates [ type ] leaf
 			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			// Assigns Type to Global Variable Type
+			variableType = tokens[currentToken].value;
 			consumeToken();
 		}
 	}
@@ -212,6 +250,9 @@ function makeAST() {
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Creates [ Id ] leaf
 			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			// Assigns ID to Global Variable Key
+			variableKey = tokens[currentToken].value;
+			variableLine = tokens[currentToken].line;
 			consumeToken();
 		}
 	};
