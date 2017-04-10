@@ -18,7 +18,7 @@ function symbolTable() {
     // -- ------- --
 
     // Add a node: kind in {branch, leaf}.
-    this.addHashTable = function(name, kind) {
+    this.addNode = function(name, kind) {
         // Construct the node object.
         var node = {
             name: name,

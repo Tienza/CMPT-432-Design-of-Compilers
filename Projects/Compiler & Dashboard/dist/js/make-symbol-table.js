@@ -11,8 +11,6 @@ function makeSymbolTable() {
 		console.log(makeASTReturns);
 
 	traverseTree(ast.cur);
-	
-	console.log(values);
 
 	function traverseTree(node) {
 		if (node.children.length != 0) {
@@ -29,5 +27,17 @@ function makeSymbolTable() {
 		else {
 			console.log("Reached End of Branch... " + node.name + " on line " + node.line);
 		}
+	}
+
+	function makePairs(arr) {
+	    var pairs = [];
+	    for (var i=0 ; i<arr.length ; i+=2) {
+	        if (arr[i+1] !== undefined) {
+	            pairs.push ([arr[i], arr[i+1]]);
+	        } else {
+	            pairs.push ([arr[i]]);
+	        }
+	    }
+	    return pairs;
 	}
 }
