@@ -41,15 +41,15 @@ function makeAST() {
 		console.log(st.toString());
 	}
 	
-	document.getElementById('symbolTable').innerHTML = "<th>Key</th><th>Type</th><th>Scope</th><th>Scope Level</th><th>Line Number</th>" + symbolTableStrings;
+	document.getElementById('symbolTable').innerHTML = "<th class=\"symbolHeader\">Key</th><th class=\"symbolHeader\">Type</th><th class=\"symbolHeader\">Scope</th><th class=\"symbolHeader\">Scope Level</th><th class=\"symbolHeader\">Line Number</th>" + symbolTableStrings;
 
 	return makeASTReturns;
 
 	function traverseTree(node) {
 		if (node.symbols.length > 0) {
-			node.symbols.forEach(function(symbol) {
+			/*node.symbols.forEach(function(symbol) {
 				symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>"
-			});
+			});*/
 		}
 		if (node.children.length != 0) {
 			node.children.forEach(function(element) {
@@ -80,12 +80,13 @@ function makeAST() {
 	}
 	
 	function parseBlock() {
-		scope++;
 		scopeLevel++;
+
 		// Creates a Block Branch
 		ast.addNode("Block", "branch");
 		// Creates a Scope in the Symbol Tree
-		st.addNode("ScopeLevel: "+scopeLevel,"branch");
+		scope++;
+		st.addNode("ScopeLevel: "+scopeLevel, "branch", scope);
 		
 		// Checks and consumes the required first character of a Block [ { ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
@@ -212,8 +213,9 @@ function makeAST() {
 		}
 		
 		// Adds Symbol to Symbol Tree
-		var symbol = new Symbol(variableKey, variableType, variableLine, scope, scopeLevel, false, false);
+		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
 		st.cur.symbols.push(symbol);
+		symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>";
 		
 		// Clears data stored in variableKey && variableType
 		variableKey = "";
