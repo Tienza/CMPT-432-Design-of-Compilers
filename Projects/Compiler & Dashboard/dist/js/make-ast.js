@@ -41,6 +41,7 @@ function makeAST() {
 		console.log(st.toString());
 	}
 	
+	// Prints out the Symbol Table Based - Defined by Order of Declaration
 	document.getElementById('symbolTable').innerHTML = "<th class=\"symbolHeader\">Key</th><th class=\"symbolHeader\">Type</th><th class=\"symbolHeader\">Scope</th><th class=\"symbolHeader\">Scope Level</th><th class=\"symbolHeader\">Line Number</th>" + symbolTableStrings;
 
 	return makeASTReturns;
