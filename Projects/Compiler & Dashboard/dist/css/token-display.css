@@ -9,6 +9,7 @@
 	text-align: center;
 }
 .tokenRow:nth-child(odd) {
+	background-color: #f8f8f8;
 	text-align: center;
 }
 th {
@@ -19,4 +20,7 @@ th {
 }
 .tokenStreamText {
 	color: #286090;
+}
+.symbolHeader {
+	background-color: #f8f8f8;
 }
