@@ -181,6 +181,7 @@
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="active"><a href=".cst" role="tab" data-toggle="tab">Concrete Syntax Tree</a></li>
 					<li><a href=".ast" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
+					<li><a href=".st" role="tab" data-toggle="tab">Symbol Table</a></li>
 				</ul>
 				<div class="tab-content">
 					<div id="cstDisplay" class="tab-pane active cst" style="font-weight: bold;">
@@ -193,11 +194,29 @@
 							<textarea readonly id="astLog" class="form-control" onclick="copyText('#astLog')" rows="10" placeholder="NO AST GENERATED"></textarea>
 						</div>
 					</div>
+					<div id="stDisplay" class="tab-pane st">
+						<div class="panel panel-default">
+							<table id="symbolTable" class="table table-bordered">
+								<th>No Symbols</th>
+							</table>
+						</div>
+					</div>
 				</div>
 			</div>
 			<!-- Tab-Panes -->
 			
 		</div>
+		<!-- /.row -->
+		<!-- <div class="row">
+			<div class="col-lg-6">
+				<div style="text-align:center;">PLACE HOLDER</div>
+			</div>
+			<div class="col-lg-6">
+				<table id="symbolTable" class="table table-bordered">
+					<th>No Symbols</th>
+				</table>
+			</div>
+		</div> -->
 		<!-- /.row -->
 		
 		<!-- Toast Messages -->
