@@ -1,10 +1,10 @@
 function makeSymbolTable() {
 	var makeASTReturns = makeAST();
 	
-	// Creates local copy of TokenArray for processing to make AST
+	// Creates local copy of TokenArray for processing to make Symbol Table
 	var tokens = makeASTReturns.tokenArray;
 	
-	// Initialize AST Variables
+	// Initialize Symbol Table Variables
 	var currentToken = 0;
 
 	// Creates Symbol Tree and adds root node
@@ -12,41 +12,53 @@ function makeSymbolTable() {
 	var scopeLevel = -1;
 	var st = new symbolTable();
 	var symbolTableStrings = "";
+	var symbolArray = [];
 
 	// Symbol Global Variables
 	var variableKey = "";
 	var variableType = "";
 	var variableLine = 0;
 	
+	// Initialize Semantic Analysis Warning and Error Counts
+	var saErrorCount = 0;
+	var saWarningCount = 0;
+	
+	// Initialize Console Variables
+	var txt = $('#log').val();
+	txt = $('#log').val(txt + "Beginning Semantic Analysis Session...\n\n");
+	txt = $('#log').val();
+	
 	parseProgram();
-
-	if (verbose) {
-		traverseTree(st.cur);
-		console.log(st.toString());
-	}
 	
 	var makeSymbolTableReturns = {
 		AST: makeASTReturns.AST,
 		ST: st,
 		tokenArray: tokens,
+		symbolArray: symbolArray,
 		totalWarningCount: makeASTReturns.totalWarningCount,
 		totalErrorCount: makeASTReturns.totalErrorCount
 	}
 	
-	printSymbolTable(symbolTableStrings);
+	// Semantic Analysis Succeeded - Determines how semantic analysis went and updates appropriate fields
+	if (saErrorCount == 0) {
+		// Semantic Analysis Success
+		semanticComplete = true;
+		
+		// Updates Progess Status Bar
+		if (saWarningCount == 0) 
+			$('#saResults').html("<span style=\"color:green;\"> PASSED </span>");
+		else
+			$('#saResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
+		// Prints Last Semantic Analysis Message
+		printLastSAMessage(semanticComplete);
+	}
+	// Semantic Analysis Failed
+		/* See throwError Section of Code */
 	
 	if (verbose)
 		console.log(makeSymbolTableReturns);
 
 	return makeSymbolTableReturns;
-
-	function traverseTree(node) {
-		if (node.children.length != 0) {
-			node.children.forEach(function(element) {
-				traverseTree(element);
-			});
-		}
-	}
 	
 	function parseProgram() {
 		// Initialize parsing of Block
@@ -68,7 +80,7 @@ function makeSymbolTable() {
 		scope++;
 		
 		// Creates Scope Node in Symbol Tree
-		st.addNode("ScopeLevel: "+scopeLevel, "branch", scope);
+		st.addNode("ScopeLevel: "+scope, "branch", scope);
 		
 		// Checks and consumes the required first character of a Block [ { ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
@@ -177,9 +189,16 @@ function makeSymbolTable() {
 			parseId();
 		}
 		
-		// Adds Symbol to Symbol Tree
+		// Creates Symbol in Current Scope
 		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
+		
+		// Pushes symbol to Current Branches Symbols Array
 		st.cur.symbols.push(symbol);
+		
+		// Pushes symbol to Global Symbol Array
+		symbolArray.push(symbol);
+		
+		// Appends Symbol and Symbol Details for printing out to table
 		symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>";
 		
 		// Clears data stored in variableKey && variableType
@@ -203,6 +222,8 @@ function makeSymbolTable() {
 			parseId();
 		}
 		
+		checkVarDeclared(st.cur);
+		
 		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
 			consumeToken();
@@ -211,6 +232,32 @@ function makeSymbolTable() {
 		// Initialize parsing of Expr
 		parseExpr();
 	}
+	
+	// Checks whether the assigned variable name has been declared -- BROKEN
+	/*function checkVarDeclared(node) {
+		console.log(node.symbols);
+		console.log(node.parents)
+		if (node.symbols > 0) {
+			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
+					node.symbols[symbol].initialized = true;
+					if (verbose)
+						printSAAssignMessage(tokens[currentToken-1].value);
+					break
+				}
+				else if (symbol == node.symbols.length-1 && node.parents.length != 0) {
+					node.parents.forEach(function(parent) {
+						checkVarDeclared(parent)
+					});
+					break;
+				}
+			}
+		}
+		else if (node.parents.length != 0) {
+			node.parents.forEach(function(parent) {
+				checkVarDeclared(parent)
+			});
+		}*/
 	
 	function parseId() {
 		// Checks and consumes the required first character of Id [ T_ID ]
@@ -357,9 +404,6 @@ function makeSymbolTable() {
 			parseIntOp();
 			// Initialize parsing of Expr
 			parseExpr();
-			// Kicks you one level up the tree
-			ast.kick();
-			
 		}
 		// Checks the required character to be a digit [ T_DIGIT ]
 		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
@@ -402,5 +446,33 @@ function makeSymbolTable() {
 	function printSymbolTable(symbolTableStrings) {
 		// Prints out the Symbol Table Based - Defined by Order of Declaration
 		document.getElementById('symbolTable').innerHTML = "<th class=\"symbolHeader\">Key</th><th class=\"symbolHeader\">Type</th><th class=\"symbolHeader\">Scope</th><th class=\"symbolHeader\">Scope Level</th><th class=\"symbolHeader\">Line Number</th>" + symbolTableStrings;
+	}
+	
+	// Functions to print Semantic Analysis Messages
+	function printLastSAMessage(semanticComplete) {
+		if (semanticComplete) {
+			txt = $('#log').val(txt + "\nSemantic Analysis Completed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
+			$('#streeLog').val(st.toString());
+			printSymbolTable(symbolTableStrings);
+		}
+		
+		else {
+			txt = $('#log').val(txt + "\nSemantic Analysis Failed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...");
+		}
+		
+		scrollDown();
+	}
+	
+	function throwSAUndeclaredAssignError(varKey) {
+		txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " is assigned before it is declared...\n";
+		saErrorCount++;
+		printLastSAMessage(semanticComplete);
+		// Updates Progess Status Bar
+		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
+		throw new Error("HOLY SHIT! IT DIED...");
+	}
+	
+	function printSAAssignMessage(varKey) {
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been declared and is now initialized...\n";
 	}
 }
