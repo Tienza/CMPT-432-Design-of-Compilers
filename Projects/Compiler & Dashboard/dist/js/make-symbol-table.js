@@ -222,7 +222,7 @@ function makeSymbolTable() {
 			parseId();
 		}
 		
-		checkVarDeclared(st.cur);
+		checkVarDeclaredForAssign(st.cur);
 		
 		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
@@ -233,31 +233,29 @@ function makeSymbolTable() {
 		parseExpr();
 	}
 	
-	// Checks whether the assigned variable name has been declared -- BROKEN
-	/*function checkVarDeclared(node) {
-		console.log(node.symbols);
-		console.log(node.parents)
-		if (node.symbols > 0) {
+	function checkVarDeclaredForAssign(node) {
+		// Checks whether the assigned variable name has been declared
+		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+				console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
 					node.symbols[symbol].initialized = true;
 					if (verbose)
 						printSAAssignMessage(tokens[currentToken-1].value);
 					break
 				}
-				else if (symbol == node.symbols.length-1 && node.parents.length != 0) {
-					node.parents.forEach(function(parent) {
-						checkVarDeclared(parent)
-					});
+				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
+					checkVarDeclared(node.parent);
 					break;
 				}
 			}
 		}
-		else if (node.parents.length != 0) {
-			node.parents.forEach(function(parent) {
-				checkVarDeclared(parent)
-			});
-		}*/
+		else if (node.parent != undefined || node.parent != null) {
+			checkVarDeclared(node.parent);
+		}
+		else
+			throwSAUndeclaredAssignError(tokens[currentToken-1].value);
+	}
 	
 	function parseId() {
 		// Checks and consumes the required first character of Id [ T_ID ]
