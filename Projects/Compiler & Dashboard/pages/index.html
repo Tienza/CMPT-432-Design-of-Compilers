@@ -21,7 +21,6 @@
 
     <!-- Custom CSS -->
     <link href="../dist/css/sb-admin-2.css" rel="stylesheet">
-	<link href="../dist/css/jquery.numberedtextarea.css" rel="stylesheet">
 	<link href="../dist/css/title.css" rel="stylesheet">
 	<link href="../dist/css/token-display.css" rel="stylesheet">
 	<link href="../dist/css/toast.css" rel="stylesheet">
@@ -52,7 +51,7 @@
 		<!-- /.row -->
 		<div class="row text-center">
 			<div class="col-lg-12 text-center">
-				<button type="button" onclick="makeSymbolTable()" class="btn btn-primary btn-lg">Lex/Parse/SA</button>
+				<button type="button" onclick="semanticAnalysis()" class="btn btn-primary btn-lg">Lex/Parse/SA</button>
 				<div class="btn-group">
 					<button type="button" class="btn btn-success btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Programs <span class="caret"></span>
 					</button>
@@ -181,6 +180,7 @@
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="active"><a href=".cst" role="tab" data-toggle="tab">Concrete Syntax Tree</a></li>
 					<li><a href=".ast" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
+					<li><a href=".stree" role="tab" data-toggle="tab">Symbol Tree</a></li>
 					<li><a href=".st" role="tab" data-toggle="tab">Symbol Table</a></li>
 				</ul>
 				<div class="tab-content">
@@ -192,6 +192,11 @@
 					<div id="astDisplay" class="tab-pane ast" style="text-align: center; font-weight: bold;">
 						<div class="panel panel-default">
 							<textarea readonly id="astLog" class="form-control" onclick="copyText('#astLog')" rows="10" placeholder="NO AST GENERATED"></textarea>
+						</div>
+					</div>
+					<div id="streeDisplay" class="tab-pane stree" style="text-align: center; font-weight: bold;">
+						<div class="panel panel-default">
+							<textarea readonly id="streeLog" class="form-control" onclick="copyText('#streeLog')" rows="10" placeholder="NO SYMBOL TREE GENERATED"></textarea>
 						</div>
 					</div>
 					<div id="stDisplay" class="tab-pane st">
@@ -266,10 +271,11 @@
 	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/parser.js"></script>
 	<script src="../dist/js/make-ast-tokens.js"></script>
+	<script src="../dist/js/make-ast.js"></script>
 	<script src="../dist/js/symbol.js"></script>
 	<script src="../dist/js/symbol-table.js"></script>
-	<script src="../dist/js/make-ast.js"></script>
 	<script src="../dist/js/make-symbol-table.js"></script>
+	<script src="../dist/js/semantic-analysis.js"></script>
 	<script src="../dist/js/test-programs.js"></script>
 	
 	<!-- Custom JavaScript -->
