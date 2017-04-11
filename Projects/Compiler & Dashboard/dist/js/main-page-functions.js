@@ -94,6 +94,8 @@ function resetIndexPage() {
 	$('#tokenTable').html("<th>No Tokens</th>");
 	$('#cstLog').val("");
 	$('#astLog').val("");
+	$('#streeLog').val("");
+	$('#symbolTable').html("<th>No Symbols</th>");
 }
 
 // Copies all log messages to clipboard
