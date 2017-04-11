@@ -23,7 +23,7 @@ function symbolTable() {
         var node = {
             name: name,
             children: [],
-            parents: {},
+            parent: {},
             symbols: [],
             scope: scope
         };
