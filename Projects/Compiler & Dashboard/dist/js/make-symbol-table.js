@@ -233,8 +233,10 @@ function makeSymbolTable() {
 		parseExpr();
 	}
 	
+	// Checks whether the assigned variable name has been declared -- BROKEN
 	function checkVarDeclaredForAssign(node) {
-		// Checks whether the assigned variable name has been declared
+		console.log(node.symbols);
+		console.log(node.parents)
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
@@ -245,13 +247,13 @@ function makeSymbolTable() {
 					break
 				}
 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
-					checkVarDeclared(node.parent);
+					checkVarDeclaredForAssign(node.parent);
 					break;
 				}
 			}
 		}
 		else if (node.parent != undefined || node.parent != null) {
-			checkVarDeclared(node.parent);
+			checkVarDeclaredForAssign(node.parent);
 		}
 		else
 			throwSAUndeclaredAssignError(tokens[currentToken-1].value);
