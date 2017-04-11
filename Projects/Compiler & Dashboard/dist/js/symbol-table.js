@@ -23,7 +23,7 @@ function symbolTable() {
         var node = {
             name: name,
             children: [],
-            parent: {},
+            parents: {},
             symbols: [],
             scope: scope
         };
@@ -77,11 +77,20 @@ function symbolTable() {
             if (!node.children || node.children.length === 0) {
                 // ... note the leaf node.
                 traversalResult += "[ " + node.name + " ]";
+				traversalResult += ":";
+				node.symbols.forEach(function(symbol){
+					traversalResult += " " + symbol.type + " " + symbol.key + " |";
+				});
                 traversalResult += "\n";
             } 
 			else {
                 // There are children, so note these interior/branch nodes and ...
-                traversalResult += "<" + node.name + "> \n";
+                traversalResult += "<" + node.name + ">";
+				traversalResult += ":";
+				node.symbols.forEach(function(symbol){
+					traversalResult += " " + symbol.type + " " + symbol.key + " |";
+				});
+                traversalResult += "\n";
                 // .. recursively expand them.
                 for (var i = 0; i < node.children.length; i++) {
                     expand(node.children[i], depth + 1);
