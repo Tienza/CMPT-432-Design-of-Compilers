@@ -10,7 +10,7 @@ function semanticAnalysis() {
 	var saErrorCount = 0;
 	var saWarningCount = 0;
 	
-	traverseTree(st.cur);
+	//traverseTree(st.cur);
 	
 	function traverseTree(node) {
 		node.symbols.forEach(function(symbol) {
