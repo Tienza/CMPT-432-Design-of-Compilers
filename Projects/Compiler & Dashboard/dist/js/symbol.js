@@ -13,6 +13,10 @@ class Symbol {
 	getKey() {
 		return this.key;
 	}
+	
+	getType() {
+		return this.type;
+	}
 
 	getDetails() {
 		var details = {
