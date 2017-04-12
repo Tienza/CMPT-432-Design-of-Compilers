@@ -296,8 +296,10 @@ function makeSymbolTable() {
 
 		if (idType != exprType)
 			throwSATypeError(idKey,idType,"assigned",exprType);
-		else
-			printSATypeCheckMessage(idKey,idType,"assigned",exprType);
+		else {
+			if (verbose)
+				printSATypeCheckMessage(idKey,idType,"assigned",exprType);
+		}
 	}
 	
 	function checkVarDeclared(node,usage) {
