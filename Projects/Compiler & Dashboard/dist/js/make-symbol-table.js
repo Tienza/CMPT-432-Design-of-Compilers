@@ -30,8 +30,8 @@ function makeSymbolTable() {
 	
 	parseProgram();
 
-	checkUsed(st.cur);
-	checkInit(st.cur);
+	checkInit(st.root);
+	checkUsed(st.root);
 
 	var makeSymbolTableReturns = {
 		AST: makeASTReturns.AST,
@@ -63,33 +63,40 @@ function makeSymbolTable() {
 
 	return makeSymbolTableReturns;
 
-	// Checks whether the variable has been initialized but not used
 	function checkUsed(node) {
-		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
-			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
-				if (node.symbols[symbol].initialized == true && node.symbols[symbol].utilized == false) {
-						saWarningCount++;
-						printUnusedWarningMessage(node.symbols[symbol].key,node.symbols[symbol].line)
-				}
-				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
-					checkUsed(node.parent);
-				}
+		// Checks whether the variable has been initialized but not used
+		for (var symbol = 0; symbol < node.symbols.length; symbol++) {		
+			if (node.symbols[symbol].initialized == true && node.symbols[symbol].utilized == false) {
+					saWarningCount++;
+					printUnusedWarningMessage(node.symbols[symbol].key,node.symbols[symbol].line);
 			}
+		}
+		if (node.children.length != 0) {
+			node.children.forEach(function(child) {
+				checkUsed(child);
+			});
+		}
+		else {
+			console.log("Reached Leaf Node...");
 		}
 	}
 
-	// Checks whether the variable has been defined but not initialized
+	
 	function checkInit(node) {
-		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
-			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
-				if (node.symbols[symbol].initialized == false && node.symbols[symbol].utilized == false) {
-						saWarningCount++;
-						printUninitWarningMessage(node.symbols[symbol].key,node.symbols[symbol].line)
-				}
-				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
-					checkUsed(node.parent);
-				}
+		// Checks whether the variable has been declared but not initialized
+		for (var symbol = 0; symbol < node.symbols.length; symbol++) {		
+			if (node.symbols[symbol].initialized == false && node.symbols[symbol].utilized == false) {
+					saWarningCount++;
+					printUninitWarningMessage(node.symbols[symbol].key,node.symbols[symbol].line);
 			}
+		}
+		if (node.children.length != 0) {
+			node.children.forEach(function(child) {
+				checkInit(child);
+			});
+		}
+		else {
+			console.log("Reached Leaf Node...");
 		}
 	}
 	
@@ -209,6 +216,15 @@ function makeSymbolTable() {
 		parseBlock();
 	}
 	
+	function checkVarName(node) {
+		// Checks to see if variable has already been declared in scope
+		for(var symbol = 0; symbol < node.symbols.length; symbol++) {
+			console.log("Comparing " + variableKey + " and " + node.symbols[symbol].getKey());
+			if (variableKey == node.symbols[symbol].getKey())
+				throwVarRedeclaredError(variableKey);
+		}
+	}
+	
 	function parseVarDecl() {
 		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
@@ -221,6 +237,9 @@ function makeSymbolTable() {
 			// Initialize parsing of Id
 			parseId();
 		}
+		
+		// Checks to see if the variable name has been used or not
+		checkVarName(st.cur);
 		
 		// Creates Symbol in Current Scope
 		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
@@ -247,6 +266,8 @@ function makeSymbolTable() {
 			variableType = tokens[currentToken].value;
 			consumeToken();
 		}
+		
+		return tokens[currentToken].value;
 	}
 	
 	function parseAssignment() {
@@ -266,8 +287,8 @@ function makeSymbolTable() {
 		parseExpr();
 	}
 	
-	// Checks whether the assigned variable name has been declared
 	function checkVarDeclared(node,usage) {
+		// Checks whether the assigned variable name has been declared
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
@@ -289,9 +310,9 @@ function makeSymbolTable() {
 		else
 			throwSAUndeclaredError(tokens[currentToken-1].value,usage);
 	}
-
-	// Checks whether the assigned variable name has been declared
+	
 	function declareUsed(node) {
+		// Checks whether the assigned variable name has been used
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
@@ -434,6 +455,8 @@ function makeSymbolTable() {
 		if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
 			consumeToken();
 		}
+		
+		return "boolean";
 	}
 	
 	function parseStringExpr() {
@@ -443,7 +466,7 @@ function makeSymbolTable() {
 		}
 		
 		// Initialize parsting of CharList
-		parseCharList();
+		var parseStringExprType = parseCharList();
 		
 		var fullString = tokens[currentToken-1].value;
 		
@@ -451,6 +474,8 @@ function makeSymbolTable() {
 		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
 			consumeToken();
 		}
+		
+		return parseStringExprType;
 	}
 	
 	function parseCharList() {
@@ -462,6 +487,8 @@ function makeSymbolTable() {
 		else {
 			/* Do Nothing λ Production */
 		}
+		
+		return "string";
 	}
 	
 	function parseIntExpr() {
@@ -490,6 +517,8 @@ function makeSymbolTable() {
 		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
 			consumeToken();
 		}
+		
+		return "oper";
 	}
 	
 	function parseDigit() {
@@ -497,6 +526,8 @@ function makeSymbolTable() {
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
 			consumeToken();
 		}
+		
+		return "int";
 	}
 	
 	// Matches token and returns True if it matches
@@ -537,33 +568,40 @@ function makeSymbolTable() {
 		scrollDown();
 	}
 	
+	/* Error Section */
 	function throwSAUndeclaredError(varKey, usage) {
 		txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " is " + usage + " before it is declared...\n";
-		saErrorCount++;
-		printLastSAMessage(semanticComplete);
-		// Updates Progess Status Bar
-		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
-		throw new Error("HOLY SHIT! IT DIED...");
+		killCompiler();
 	}
 
 	function throwSAUnusedError(varKey) {
 		txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " is declared but never used...\n";
+		killCompiler();
+	}
+	
+	function throwVarRedeclaredError(varKey) {
+		txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has already been declared in current scope...\n";
+		killCompiler();
+	}
+	
+	function killCompiler() {
 		saErrorCount++;
 		printLastSAMessage(semanticComplete);
 		// Updates Progess Status Bar
 		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
 		throw new Error("HOLY SHIT! IT DIED...");
 	}
-
+	
+	/* Print Section */
 	function printUnusedWarningMessage(varKey, lineNum) {
-		txt = txt + " S.ANALYZE --> | WARNING! Variable " + varKey + " on line " + lineNum + " has been initialized but is untilized...\n";
+		txt = txt + " S.ANALYZE --> | WARNING! Variable " + varKey + " on line " + lineNum + " has been initialized but is not used...\n";
 	}
 
 	function printUninitWarningMessage(varKey, lineNum) {
-		txt = txt + " S.ANALYZE --> | WARNING! Variable " + varKey + " on line " + lineNum + " has been declared but is uninitialized...\n";
+		txt = txt + " S.ANALYZE --> | WARNING! Variable " + varKey + " on line " + lineNum + " has been declared but is not initialized...\n";
 	}
 	
 	function printSAAssignMessage(varKey) {
-		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been declared and is now initialized...\n";
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been initialized...\n";
 	}
 }
