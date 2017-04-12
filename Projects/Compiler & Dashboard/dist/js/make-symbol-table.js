@@ -85,7 +85,7 @@ function makeSymbolTable() {
 	function checkInit(node) {
 		// Checks whether the variable has been declared but not initialized
 		for (var symbol = 0; symbol < node.symbols.length; symbol++) {		
-			if (node.symbols[symbol].initialized == false && node.symbols[symbol].utilized == false) {
+			if (node.symbols[symbol].initialized == false) {
 					saWarningCount++;
 					printUninitWarningMessage(node.symbols[symbol].key,node.symbols[symbol].line);
 			}
@@ -281,6 +281,7 @@ function makeSymbolTable() {
 		checkVarDeclared(st.cur, "assigned");
 		checkVarType(st.cur, "assigned");
 		var idType = checkedType;
+		declareInit(st.cur)
 		console.log("Variable being assigned has type " + idType);
 		
 		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
@@ -305,9 +306,9 @@ function makeSymbolTable() {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
-					node.symbols[symbol].initialized = true;
+					//node.symbols[symbol].initialized = true;
 					if (verbose)
-						printSAAssignMessage(tokens[currentToken-1].value);
+						printSADeclaredMessage(tokens[currentToken-1].value);
 					break
 				}
 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
@@ -331,7 +332,7 @@ function makeSymbolTable() {
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
 					checkedType = node.symbols[symbol].getType();
 					if (verbose)
-						printSAAssignMessage(tokens[currentToken-1].value);
+						printSAVarTypeMessage(tokens[currentToken-1].value, checkedType);
 					break
 				}
 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
@@ -348,14 +349,36 @@ function makeSymbolTable() {
 	}
 	
 	function declareUsed(node) {
-		// Checks whether the assigned variable name has been used
+		// Sets variable as utilized
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
 					node.symbols[symbol].utilized = true;
 					if (verbose)
-						printSAAssignMessage(tokens[currentToken-1].value);
+						printSAUsedMessage(tokens[currentToken-1].value);
+					break
+				}
+				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
+					declareUsed(node.parent);
+					break;
+				}
+			}
+		}
+		else if (node.parent != undefined || node.parent != null) {
+			declareUsed(node.parent);
+		}
+	}
+	
+	function declareInit(node) {
+		// Sets variable as initialized;
+		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
+			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+				console.log(node.symbols[symbol].getKey());
+				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
+					node.symbols[symbol].initialized = true;
+					if (verbose)
+						printSAUsedMessage(tokens[currentToken-1].value);
 					break
 				}
 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
@@ -392,12 +415,6 @@ function makeSymbolTable() {
 		
 		// Initialize parsing of Expr
 		parseExpr();
-		console.log(tokens[currentToken-1].kind);
-		// Run checkVarDeclared() if previous token is an ID
-		if (matchToken(tokens[currentToken-1].kind, "T_ID")) {
-			checkVarDeclared(st.cur, "printed");
-			declareUsed(st.cur);
-		}
 		
 		// Checks and consumes the required last character of print [ ) ]
 		if (matchToken(tokens[currentToken].kind, "T_CLOSING_PARENTHESIS")) {
@@ -430,7 +447,11 @@ function makeSymbolTable() {
 		// Checks the required first character of Id [ T_ID ]
 		else if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Initialize parsing of Id
-			exprType = parseId();
+			parseId();
+			checkVarDeclared(st.cur, "used");
+			declareUsed(st.cur);
+			checkVarType(st.cur, "used");
+			exprType = checkedType;
 		}
 
 		return exprType;
@@ -453,21 +474,17 @@ function makeSymbolTable() {
 			}
 				
 			// Initialize parsing of Expr
-			parseExpr();
-			// Run checkVarDeclared() if previous token is an ID
-			if (matchToken(tokens[currentToken-1].kind, "T_ID")) {
-				checkVarDeclared(st.cur, "compared");
-				declareUsed(st.cur);
-			}
+			var booleanExpr1 = parseExpr();
 			// Initialize parsing of BoolOp
 			parseBoolOp();
 			// Initialize parsing of Expr
-			parseExpr();
-			// Run checkVarDeclared() if previous token is an ID
-			if (matchToken(tokens[currentToken-1].kind, "T_ID")) {
-				checkVarDeclared(st.cur, "compared");
-				declareUsed(st.cur);
-			}
+			var booleanExpr2 = parseExpr();
+			
+			if (booleanExpr1 != booleanExpr2)
+				throwSATypeError("",booleanExpr1,"compared to",booleanExpr2);
+			else	
+				booleanExprReturn = "boolean";
+			
 			// Checks and consumes the required last character of BooleanExpr(1) [ T_CLOSING_PARENTHESIS ]
 			if (matchToken(tokens[currentToken].kind, "T_CLOSING_PARENTHESIS")) {
 				consumeToken();
@@ -543,17 +560,8 @@ function makeSymbolTable() {
 			parseIntOp();
 			// Initialize parsing of Expr
 			var intExpr2 = parseExpr();
-			// Run checkVarDeclared() if previous token is an ID
-			if (matchToken(tokens[currentToken-1].kind, "T_ID")) {
-				console.log("I am here");
-				checkVarDeclared(st.cur, "added");
-				declareUsed(st.cur);
-				checkVarType(st.cur, "added");
-				intExpr2 = checkedType;
-				if (intExpr1 != intExpr2)
-					throwSATypeError(tokens[currentToken-1].value,intExpr2,"added",intExpr1);
-			}
-			else if (intExpr1 != intExpr2)
+			// Type Checks IntExpr
+			if (intExpr1 != intExpr2)
 				throwSATypeError("",intExpr1,"added",intExpr2);
 			else
 				intExprReturn = intExpr2;
@@ -640,9 +648,9 @@ function makeSymbolTable() {
 
 	function throwSATypeError(varKey, idType, usage, exprType) {
 		if (varKey == "")
-			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " had type " + idType + " and is " + usage + " the wrong type: " + exprType + "...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type: " + exprType + "...\n";
 		else
-			txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " had type " + idType + " and is " + usage + " the wrong type: " + exprType + "...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type: " + exprType + "...\n";
 		killCompiler();
 	}
 	
@@ -666,8 +674,20 @@ function makeSymbolTable() {
 	function printSAAssignMessage(varKey) {
 		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been initialized...\n";
 	}
+	
+	function printSADeclaredMessage(varKey) {
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been declared...\n";
+	}
+	
+	function printSAUsedMessage(varKey) {
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has been used...\n";
+	}
+	
+	function printSAVarTypeMessage(varKey, varType) {
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has " + varType + " type...\n";
+	}
 
 	function printSATypeCheckMessage(varKey, idType, usage, exprType) {
-		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " had type " + idType + " and is " + usage + " the correct type: " + exprType + "...\n";
+		txt = txt + " S.ANALYZE --> | PASSED! Variable " + varKey + " on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the correct type: " + exprType + "...\n";
 	}
 }
