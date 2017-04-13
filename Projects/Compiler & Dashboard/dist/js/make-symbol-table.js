@@ -293,7 +293,8 @@ function makeSymbolTable() {
 		var exprType = parseExpr();
 
 		console.log("Expr being assigned has type " + exprType);
-
+		
+		// Type Checkes Assignment Operation
 		if (idType != exprType)
 			throwSATypeError(idKey,idType,"assigned",exprType);
 		else {
@@ -303,7 +304,7 @@ function makeSymbolTable() {
 	}
 	
 	function checkVarDeclared(node,usage) {
-		// Checks whether the assigned variable name has been declared
+		// Checks whether the variable name has been declared
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getKey());
@@ -327,7 +328,7 @@ function makeSymbolTable() {
 	}
 
 	function checkVarType(node,usage) {
-		// Checks whether the assigned variable name has been declared
+		// Checks the type of the variable in question
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				console.log(node.symbols[symbol].getType());
@@ -613,6 +614,8 @@ function makeSymbolTable() {
 	
 	// Prints out the Symbol Table
 	function printSymbolTable(symbolTableStrings) {
+		// Removes set height
+		$('#symbolTable').removeAttr("style");
 		// Prints out the Symbol Table Based - Defined by Order of Declaration
 		document.getElementById('symbolTable').innerHTML = "<th class=\"symbolHeader\">Key</th><th class=\"symbolHeader\">Type</th><th class=\"symbolHeader\">Scope</th><th class=\"symbolHeader\">Scope Level</th><th class=\"symbolHeader\">Line Number</th>" + symbolTableStrings;
 	}
