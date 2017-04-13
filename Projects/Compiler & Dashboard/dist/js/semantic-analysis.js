@@ -637,34 +637,42 @@ function semanticAnalysis() {
 	
 	/* Error Section */
 	function throwSAUndeclaredError(varKey, usage) {
-		txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is " + usage + " before it is declared...\n";
-		killCompiler();
+		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is " + usage + " before it is declared...\n"
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
 	}
 
 	function throwSAUnusedError(varKey) {
-		txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is declared but never used...\n";
-		killCompiler();
+		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is declared but never used...\n";
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
 	}
 	
 	function throwVarRedeclaredError(varKey) {
-		txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in current scope...\n";
-		killCompiler();
+		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in current scope...\n";
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
 	}
 
 	function throwSATypeError(varKey, idType, usage, exprType) {
-		if (varKey == "")
+		var reason = "";
+		if (varKey == "") {
+			reason = "Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-		else
+		}
+		else {
+			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-		killCompiler();
+		}
+		killCompiler(reason);
 	}
 	
-	function killCompiler() {
+	function killCompiler(reason) {
 		saErrorCount++;
 		printLastSAMessage(semanticComplete);
 		// Updates Progess Status Bar
 		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
-		throw new Error("HOLY SHIT! IT DIED...");
+		throw new Error("HOLY SHIT! IT DIED..." + reason);
 	}
 	
 	/* Print Section */
