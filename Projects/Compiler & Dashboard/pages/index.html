@@ -61,6 +61,7 @@
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(0)">Test Case 0</a></li>
 								<li><a onclick="insertProgram(1)">Test Case 1</a></li>
+								<li><a onclick="insertProgram(17)">Test Case 2</a></li>
 								<li><a onclick="insertProgram(3)">Long Test Case</a></li>
 								<li><a onclick="insertProgram(5)">If Statement</a></li>
 								<li><a onclick="insertProgram(14)">Boolean Statement</a></li>
@@ -70,6 +71,7 @@
 							<a tabindex="-1">Warning Programs</a>
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(4)">Missing End $</a></li>
+								<li><a onclick="insertProgram(20)">11 Semantic Warnings</a></li>
 							</ul>
 						</li>
 						<li class="dropdown-submenu">
@@ -94,6 +96,11 @@
 							<ul class="dropdown-menu">
 								<li><a onclick="insertProgram(12)">Undeclared Variable [ b ]</a></li>
 								<li><a onclick="insertProgram(15)">Undeclared Variable [ b ] - FUGLY</a></li>
+								<li><a onclick="insertProgram(18)">Alan Case: Undeclared Variable - [ b ]</a></li>
+								<li><a onclick="insertProgram(19)">String Assigned Bool</a></li>
+								<li><a onclick="insertProgram(21)">BooleanExpr: String == Int</a></li>
+								<li><a onclick="insertProgram(22)">IntExpr: Int + String</a></li>
+								<li><a onclick="insertProgram(23)">Variable Redeclaration</a></li>
 							</ul>
 						</li>
 						<li class="dropdown-submenu">
@@ -172,12 +179,10 @@
 		<!-- /.row -->
 		<br/>
 		<div class="row">
-			<div class="col-lg-12">
+			<div class="col-lg-6">
 				<ul class="nav nav-tabs" role="tablist">
 					<li class="active"><a href=".cst" role="tab" data-toggle="tab">Concrete Syntax Tree</a></li>
 					<li><a href=".ast" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
-					<li><a href=".stree" role="tab" data-toggle="tab">Symbol Tree</a></li>
-					<li><a href=".st" role="tab" data-toggle="tab">Symbol Table</a></li>
 				</ul>
 				<div class="tab-content">
 					<div id="cstDisplay" class="tab-pane active cst" style="font-weight: bold;">
@@ -190,7 +195,15 @@
 							<textarea readonly id="astLog" class="form-control" onclick="copyText('#astLog')" rows="10" placeholder="NO AST GENERATED"></textarea>
 						</div>
 					</div>
-					<div id="streeDisplay" class="tab-pane stree" style="text-align: center; font-weight: bold;">
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<ul class="nav nav-tabs" role="tablist">
+					<li class="active"><a href=".stree" role="tab" data-toggle="tab">Symbol Tree</a></li>
+					<li><a href=".st" role="tab" data-toggle="tab">Symbol Table</a></li>
+				</ul>
+				<div class="tab-content">
+					<div id="streeDisplay" class="tab-pane active stree" style="text-align: center; font-weight: bold;">
 						<div class="panel panel-default">
 							<textarea readonly id="streeLog" class="form-control" onclick="copyText('#streeLog')" rows="10" placeholder="NO SYMBOL TREE GENERATED"></textarea>
 						</div>
@@ -260,13 +273,13 @@
 	<script src="../js/ace/src-min-noconflict/ace.js" charset="utf-8"></script>
 	<script src="../dist/js/main-page-functions.js"></script>
 	<script src="../dist/js/tree.js"></script>
+	<script src="../dist/js/token.js"></script>
 	<script src="../dist/js/lexer.js"></script>
 	<script src="../dist/js/parser.js"></script>
 	<script src="../dist/js/make-ast-tokens.js"></script>
 	<script src="../dist/js/make-ast.js"></script>
 	<script src="../dist/js/symbol.js"></script>
 	<script src="../dist/js/symbol-table.js"></script>
-	<script src="../dist/js/make-symbol-table.js"></script>
 	<script src="../dist/js/semantic-analysis.js"></script>
 	<script src="../dist/js/test-programs.js"></script>
 	
