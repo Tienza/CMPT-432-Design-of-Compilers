@@ -473,7 +473,7 @@ function lex() {
                 $('#lexResults').html("<span style=\"color:#d58512;\"> PASSED </span>");
 
             // Prints token into marquee and table
-            document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();'>" + marqueeTokens.join("") + "</marquee>";
+            document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();' scrollamount='20'>" + marqueeTokens.join("") + "</marquee>";
             document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
         } else {
             // LEX fail
