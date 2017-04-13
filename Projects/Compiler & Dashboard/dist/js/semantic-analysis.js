@@ -278,18 +278,24 @@ function semanticAnalysis() {
 			parseId();
 		}
 		
+		// Checks to see if the variable was declared before its assignment
 		checkVarDeclared(st.cur, "assigned");
+		// Checks to see if the variable type and the type of the expr being 
+		// assigned are the same
 		checkVarType(st.cur, "assigned");
+		// Retrieves the type of the variable
 		var idType = checkedType;
+		// Declare the the variable has been initialized
 		declareInit(st.cur)
 		//console.log("Variable being assigned has type " + idType);
 		
-		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
+		// Checks and consumes required second character of assignment statement 
+		// [ T_ASSIGNMENT_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
 			consumeToken();
 		}
 		
-		// Initialize parsing of Expr
+		// Initialize parsing of Expr, and get its type
 		var exprType = parseExpr();
 
 		//console.log("Expr being assigned has type " + exprType);
@@ -309,7 +315,6 @@ function semanticAnalysis() {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				//console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
-					//node.symbols[symbol].initialized = true;
 					if (verbose)
 						printSADeclaredMessage(tokens[currentToken-1].value);
 					break
@@ -333,6 +338,8 @@ function semanticAnalysis() {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				//console.log(node.symbols[symbol].getType());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
+					// Gets variable type and stores it in global checkedType to be evaluated
+					// at a later time during type checking
 					checkedType = node.symbols[symbol].getType();
 					if (verbose)
 						printSAVarTypeMessage(tokens[currentToken-1].value, checkedType);
@@ -357,6 +364,7 @@ function semanticAnalysis() {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				//console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
+					// Declares that the variable has been used for an operation
 					node.symbols[symbol].utilized = true;
 					if (verbose)
 						printSAUsedMessage(tokens[currentToken-1].value);
@@ -379,6 +387,7 @@ function semanticAnalysis() {
 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
 				//console.log(node.symbols[symbol].getKey());
 				if (node.symbols[symbol].getKey() == tokens[currentToken-1].value) {
+					// Declares that the variable has been initialized in an assignment operation
 					node.symbols[symbol].initialized = true;
 					if (verbose)
 						printSAUsedMessage(tokens[currentToken-1].value);
@@ -400,6 +409,7 @@ function semanticAnalysis() {
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Assigns ID to Global Variable Key
 			variableKey = tokens[currentToken].value;
+			// Assigns the ID Line to the Global Variable Line
 			variableLine = tokens[currentToken].line;
 			consumeToken();
 		}
@@ -451,9 +461,13 @@ function semanticAnalysis() {
 		else if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Initialize parsing of Id
 			parseId();
+			// Checks to see if the variable was declared before its use
 			checkVarDeclared(st.cur, "used");
+			// Declares that the variable has been used
 			declareUsed(st.cur);
+			// Checks the type of the variable being used
 			checkVarType(st.cur, "used");
+			// Stores the type of the variable to be used for type checking later
 			exprType = checkedType;
 		}
 
@@ -527,7 +541,7 @@ function semanticAnalysis() {
 			consumeToken();
 		}
 		
-		// Initialize parsting of CharList
+		// Initialize parsing of CharList, and get its type
 		var parseStringExprType = parseCharList();
 		
 		var fullString = tokens[currentToken-1].value;
