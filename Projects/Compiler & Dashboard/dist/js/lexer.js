@@ -1,12 +1,3 @@
-// Creates the Token Class to store token information 
-class Token {
-    constructor(tokenKind, tokenValue, tokenLine) {
-        this.kind = tokenKind;
-        this.value = tokenValue;
-        this.line = tokenLine;
-    }
-}
-
 // Initialize the Lexing Process
 function lex() {
     // Boolean for determining whether to print tokens or not (in case of Lex Failure)
