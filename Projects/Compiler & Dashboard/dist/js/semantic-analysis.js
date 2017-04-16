@@ -715,6 +715,6 @@ function semanticAnalysis() {
 	}
 
 	function printSATypeCheckMessage(varKey, idType, usage, exprType) {
-		txt = txt + " S.ANALYZE --> | PASSED! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the correct type: " + exprType + "...\n";
+		txt = txt + " S.ANALYZE --> | PASSED! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the correct type [ " + exprType + " ]...\n";
 	}
 }
