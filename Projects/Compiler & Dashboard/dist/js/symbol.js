@@ -18,6 +18,10 @@ class Symbol {
 		return this.type;
 	}
 
+	getLine() {
+		return this.line;
+	}
+
 	getDetails() {
 		var details = {
 			type: this.type,

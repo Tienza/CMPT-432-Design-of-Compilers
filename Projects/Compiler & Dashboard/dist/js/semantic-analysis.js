@@ -221,7 +221,7 @@ function semanticAnalysis() {
 		for(var symbol = 0; symbol < node.symbols.length; symbol++) {
 			//console.log("Comparing " + variableKey + " and " + node.symbols[symbol].getKey());
 			if (variableKey == node.symbols[symbol].getKey())
-				throwVarRedeclaredError(variableKey);
+				throwVarRedeclaredError(variableKey, node.symbols[symbol].getLine());
 		}
 	}
 	
@@ -662,8 +662,8 @@ function semanticAnalysis() {
 		killCompiler(reason);
 	}
 	
-	function throwVarRedeclaredError(varKey) {
-		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in current scope...\n";
+	function throwVarRedeclaredError(varKey, varLineNum) {
+		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in current scope on line " + varLineNum + "...\n";
 		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
 		killCompiler(reason);
 	}
