@@ -540,7 +540,7 @@ function parse() {
 
 		// Kicks you one level up the tree
 		cst.kick();
-	};
+	}
 
 	function parseCharList() {
 		// Creates a CharList Branch
