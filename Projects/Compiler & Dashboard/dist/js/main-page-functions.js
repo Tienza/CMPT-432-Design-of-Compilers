@@ -96,6 +96,7 @@ function resetIndexPage() {
 	$('#astLog').val("");
 	$('#streeLog').val("");
 	$('#symbolTable').html("<th style=\"line-height:209px;\">No Symbols</th>");
+    console.clear();
 }
 
 // Copies all log messages to clipboard
