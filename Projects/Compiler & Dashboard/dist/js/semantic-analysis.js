@@ -64,6 +64,7 @@ function semanticAnalysis() {
 
 	return makeSymbolTableReturns;
 
+	/*********************************************** Scope/Type Checking Section **********************************************/
 	function checkUsed(node) {
 		// Checks whether the variable has been initialized but not used
 		for (var symbol = 0; symbol < node.symbols.length; symbol++) {		
@@ -99,216 +100,7 @@ function semanticAnalysis() {
 			/* Do Nothing */
 		}
 	}
-	
-	function parseProgram() {
-		// Initialize parsing of Block
-		parseBlock();
-		
-		// Checks and consumes the character following the Block is a T_EOPS
-		if (matchToken(tokens[currentToken].kind, "T_EOPS")) {
-			consumeToken();
-		}
-		
-		// Checks to see if there is another program (If there is then run parse again)
-		if (currentToken < tokens.length) {
-			parseProgram();
-		}
-	}
-	
-	function parseBlock() {
-		scopeLevel++;
-		scope++;
-		
-		// Creates Scope Node in Symbol Tree
-		st.addNode("ScopeLevel: "+scope, "branch", scope);
-		
-		// Checks and consumes the required first character of a Block [ { ]
-		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
-			consumeToken();
-		}
 
-		// Initialize parsing of StatementList
-		parseStatementList();
-		
-		// Checks and consumes the required last character of a Block [ } ]
-		if (matchToken(tokens[currentToken].kind, "T_CLOSING_BRACE")){
-			consumeToken();
-		}
-		
-		scopeLevel--;
-		// Kicks you one Scope up the Symbol Tree
-		st.kick();
-	}
-	
-	function parseStatementList() {
-		// Checks to see if the following is a statement is another statement
-		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
-			// Initialize parsing of Statement
-			parseStatement();	
-		}
-
-		// Checks to see if following the statement is another statement
-		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
-			// Initialize parsing of Statement
-			parseStatementList();
-		}
-		// Empty production
-		else {
-			/* Do Nothing λ Production */
-		}
-	}
-	
-	function parseStatement() {
-		// Checks to see if the following token is the start of a PrintStatement
-		if (tokens[currentToken].kind == "T_PRINT") {
-			// Initialize parsing of PrintStatement
-			parsePrint();
-		}
-		// Checks to see if the following token is the start of an AssignmentStatement
-		else if (tokens[currentToken].kind == "T_ID") {
-			// Initialize parsing of AssignmentStatement
-			parseAssignment();
-		}
-		// Checks to see if the following token is the start of a VarDecl
-		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE") {
-			// Initialize parsing of VarDecl
-			parseVarDecl();
-		}
-		// Checks to see if the following token is the start of a WhileStatement
-		else if (tokens[currentToken].kind == "T_WHILE") {
-			// Initialize parsing of WhileStatement
-			parseWhile();
-		}
-		// Checks to see if the following token is the start of a IfStatement
-		else if (tokens[currentToken].kind == "T_IF") {
-			// Initialize parsing of IfStatement
-			parseIf();
-		}
-		
-		else if (tokens[currentToken].kind == "T_OPENING_BRACE") {
-			parseBlock();
-		}
-	}
-	
-	function parseIf() {
-		// Checks and consumes the required first character of IfStatement
-		if (matchToken(tokens[currentToken].kind, "T_IF")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-	}
-	
-	function parseWhile() {
-		// Checks and consumes the required first character of WhileStatement
-		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-	}
-	
-	function checkVarName(node) {
-		// Checks to see if variable has already been declared in scope
-		for(var symbol = 0; symbol < node.symbols.length; symbol++) {
-			//console.log("Comparing " + variableKey + " and " + node.symbols[symbol].getKey());
-			if (variableKey == node.symbols[symbol].getKey())
-				throwVarRedeclaredError(variableKey, node.symbols[symbol].getLine());
-		}
-	}
-	
-	function parseVarDecl() {
-		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			// Initialize parsing of Type
-			parseType();
-		}
-		
-		// Checks required second character of VariableDeclaration [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			// Initialize parsing of Id
-			parseId();
-		}
-		
-		// Checks to see if the variable name has been used or not
-		checkVarName(st.cur);
-		
-		// Creates Symbol in Current Scope
-		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
-		
-		// Pushes symbol to Current Branches Symbols Array
-		st.cur.symbols.push(symbol);
-		
-		// Pushes symbol to Global Symbol Array
-		symbolArray.push(symbol);
-		
-		// Appends Symbol and Symbol Details for printing out to table
-		symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>";
-		
-		// Clears data stored in variableKey && variableType
-		variableKey = "";
-		variableType = ""; 
-		variableLine = 0;
-	}
-	
-	function parseType() {
-		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			// Assigns Type to Global Variable Type
-			variableType = tokens[currentToken].value;
-			consumeToken();
-		}
-		
-		return tokens[currentToken].value;
-	}
-	
-	function parseAssignment() {
-		var idKey = ""
-		// Checks required first character of assignment statement [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			idKey = tokens[currentToken].value;
-			parseId();
-		}
-		
-		// Checks to see if the variable was declared before its assignment
-		checkVarDeclared(st.cur, "assigned");
-		// Checks to see if the variable type and the type of the expr being 
-		// assigned are the same
-		checkVarType(st.cur, "assigned");
-		// Retrieves the type of the variable
-		var idType = checkedType;
-		// Declare the the variable has been initialized
-		declareInit(st.cur)
-		//console.log("Variable being assigned has type " + idType);
-		
-		// Checks and consumes required second character of assignment statement 
-		// [ T_ASSIGNMENT_OP ]
-		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of Expr, and get its type
-		var exprType = parseExpr();
-
-		//console.log("Expr being assigned has type " + exprType);
-		
-		// Type Checkes Assignment Operation
-		if (idType != exprType)
-			throwSATypeError(idKey,idType,"assigned",exprType);
-		else {
-			if (verbose)
-				printSATypeCheckMessage(idKey,idType,"assigned",exprType);
-		}
-	}
-	
 	function checkVarDeclared(node,usage) {
 		// Checks whether the variable name has been declared
 		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
@@ -403,18 +195,107 @@ function semanticAnalysis() {
 			declareInit(node.parent);
 		}
 	}
+
+	function checkVarName(node) {
+		// Checks to see if variable has already been declared in scope
+		for(var symbol = 0; symbol < node.symbols.length; symbol++) {
+			//console.log("Comparing " + variableKey + " and " + node.symbols[symbol].getKey());
+			if (variableKey == node.symbols[symbol].getKey())
+				throwVarRedeclaredError(variableKey, node.symbols[symbol].getLine());
+		}
+	}
 	
-	function parseId() {
-		// Checks and consumes the required first character of Id [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			// Assigns ID to Global Variable Key
-			variableKey = tokens[currentToken].value;
-			// Assigns the ID Line to the Global Variable Line
-			variableLine = tokens[currentToken].line;
+	/********************************************** Reparse - Scope/Type Checking **********************************************/
+	function parseProgram() {
+		// Initialize parsing of Block
+		parseBlock();
+		
+		// Checks and consumes the character following the Block is a T_EOPS
+		if (matchToken(tokens[currentToken].kind, "T_EOPS")) {
 			consumeToken();
 		}
-	};
+		
+		// Checks to see if there is another program (If there is then run parse again)
+		if (currentToken < tokens.length) {
+			parseProgram();
+		}
+	}
 	
+	function parseBlock() {
+		scopeLevel++;
+		scope++;
+		
+		// Creates Scope Node in Symbol Tree
+		st.addNode("ScopeLevel: "+scope, "branch", scope);
+		
+		// Checks and consumes the required first character of a Block [ { ]
+		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
+			consumeToken();
+		}
+
+		// Initialize parsing of StatementList
+		parseStatementList();
+		
+		// Checks and consumes the required last character of a Block [ } ]
+		if (matchToken(tokens[currentToken].kind, "T_CLOSING_BRACE")){
+			consumeToken();
+		}
+		
+		scopeLevel--;
+		// Kicks you one Scope up the Symbol Tree
+		st.kick();
+	}
+	
+	function parseStatementList() {
+		// Checks to see if the following is a statement is another statement
+		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
+			// Initialize parsing of Statement
+			parseStatement();	
+		}
+
+		// Checks to see if following the statement is another statement
+		if (tokens[currentToken].kind == "T_PRINT" || tokens[currentToken].kind == "T_ID" || tokens[currentToken].kind == "T_VARIABLE_TYPE" || tokens[currentToken].kind == "T_WHILE" || tokens[currentToken].kind == "T_IF" || tokens[currentToken].kind == "T_OPENING_BRACE") {
+			// Initialize parsing of Statement
+			parseStatementList();
+		}
+		// Empty production
+		else {
+			/* Do Nothing λ Production */
+		}
+	}
+	
+	function parseStatement() {
+		// Checks to see if the following token is the start of a PrintStatement
+		if (tokens[currentToken].kind == "T_PRINT") {
+			// Initialize parsing of PrintStatement
+			parsePrint();
+		}
+		// Checks to see if the following token is the start of an AssignmentStatement
+		else if (tokens[currentToken].kind == "T_ID") {
+			// Initialize parsing of AssignmentStatement
+			parseAssignment();
+		}
+		// Checks to see if the following token is the start of a VarDecl
+		else if (tokens[currentToken].kind == "T_VARIABLE_TYPE") {
+			// Initialize parsing of VarDecl
+			parseVarDecl();
+		}
+		// Checks to see if the following token is the start of a WhileStatement
+		else if (tokens[currentToken].kind == "T_WHILE") {
+			// Initialize parsing of WhileStatement
+			parseWhile();
+		}
+		// Checks to see if the following token is the start of a IfStatement
+		else if (tokens[currentToken].kind == "T_IF") {
+			// Initialize parsing of IfStatement
+			parseIf();
+		}
+		
+		else if (tokens[currentToken].kind == "T_OPENING_BRACE") {
+			parseBlock();
+		}
+	}
+
 	function parsePrint() {
 		// Checks and consumes the required first character of print [ T_PRINT ]
 		if (matchToken(tokens[currentToken].kind, "T_PRINT")) {
@@ -434,7 +315,106 @@ function semanticAnalysis() {
 			consumeToken();
 		}
 	}
+
+	function parseAssignment() {
+		var idKey = ""
+		// Checks required first character of assignment statement [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			idKey = tokens[currentToken].value;
+			parseId();
+		}
+		
+		// Checks to see if the variable was declared before its assignment
+		checkVarDeclared(st.cur, "assigned");
+		// Checks to see if the variable type and the type of the expr being 
+		// assigned are the same
+		checkVarType(st.cur, "assigned");
+		// Retrieves the type of the variable
+		var idType = checkedType;
+		// Declare the the variable has been initialized
+		declareInit(st.cur)
+		//console.log("Variable being assigned has type " + idType);
+		
+		// Checks and consumes required second character of assignment statement 
+		// [ T_ASSIGNMENT_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of Expr, and get its type
+		var exprType = parseExpr();
+
+		//console.log("Expr being assigned has type " + exprType);
+		
+		// Type Checkes Assignment Operation
+		if (idType != exprType)
+			throwSATypeError(idKey,idType,"assigned",exprType);
+		else {
+			if (verbose)
+				printSATypeCheckMessage(idKey,idType,"assigned",exprType);
+		}
+	}
+
+	function parseVarDecl() {
+		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			// Initialize parsing of Type
+			parseType();
+		}
+		
+		// Checks required second character of VariableDeclaration [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			// Initialize parsing of Id
+			parseId();
+		}
+		
+		// Checks to see if the variable name has been used or not
+		checkVarName(st.cur);
+		
+		// Creates Symbol in Current Scope
+		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
+		
+		// Pushes symbol to Current Branches Symbols Array
+		st.cur.symbols.push(symbol);
+		
+		// Pushes symbol to Global Symbol Array
+		symbolArray.push(symbol);
+		
+		// Appends Symbol and Symbol Details for printing out to table
+		symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>";
+		
+		// Clears data stored in variableKey && variableType
+		variableKey = "";
+		variableType = ""; 
+		variableLine = 0;
+	}
+
+	function parseWhile() {
+		// Checks and consumes the required first character of WhileStatement
+		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+	}
 	
+	function parseIf() {
+		// Checks and consumes the required first character of IfStatement
+		if (matchToken(tokens[currentToken].kind, "T_IF")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+	}
+
 	function parseExpr() {
 		var exprType = "";
 		// Checks the required first character of IntExpr [ T_DIGIT ]
@@ -473,7 +453,50 @@ function semanticAnalysis() {
 
 		return exprType;
 	}
-	
+
+	function parseIntExpr() {
+		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
+		var intExprReturn = "";
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
+			// Initialize parsing of digit
+			var intExpr1 = parseDigit();
+			// Initialize parsing of IntOp
+			parseIntOp();
+			// Initialize parsing of Expr
+			var intExpr2 = parseExpr();
+			// Type Checks IntExpr
+			if (intExpr1 != intExpr2)
+				throwSATypeError("",intExpr1,"added",intExpr2);
+			else
+				intExprReturn = intExpr2;
+		}
+		// Checks the required character to be a digit [ T_DIGIT ]
+		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			intExprReturn = parseDigit();
+		}
+
+		return intExprReturn;
+	}
+
+	function parseStringExpr() {
+		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of CharList, and get its type
+		var parseStringExprType = parseCharList();
+		
+		var fullString = tokens[currentToken-1].value;
+		
+		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			consumeToken();
+		}
+		
+		return parseStringExprType;
+	}
+
 	function parseBooleanExpr() {
 		var booleanExprReturn = "";
 		// Checks and consumes the required first character of BooleanExpr(1) [ T_OPENING_PARENTHESIS ]
@@ -514,6 +537,50 @@ function semanticAnalysis() {
 
 		return booleanExprReturn;
 	}
+
+	function parseId() {
+		// Checks and consumes the required first character of Id [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			// Assigns ID to Global Variable Key
+			variableKey = tokens[currentToken].value;
+			// Assigns the ID Line to the Global Variable Line
+			variableLine = tokens[currentToken].line;
+			consumeToken();
+		}
+	}
+
+	function parseCharList() {
+		// Checks the required first character of CharList [ T_CHAR ]
+		if (matchToken(tokens[currentToken].kind, "T_CHARLIST")) {
+			consumeToken()
+		}
+		// Empty production
+		else {
+			/* Do Nothing λ Production */
+		}
+		
+		return "string";
+	}
+	
+	function parseType() {
+		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			// Assigns Type to Global Variable Type
+			variableType = tokens[currentToken].value;
+			consumeToken();
+		}
+		
+		return tokens[currentToken].value;
+	}
+
+	function parseDigit() {
+		// Checks and consumes the required character to be a digit [ T_DIGIT ]
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			consumeToken();
+		}
+		
+		return "int";
+	}
 	
 	function parseBoolOp() {
 		// Checks and consumes the first possible character of BoolOp [ T_EQUALITY_OP ]
@@ -535,62 +602,6 @@ function semanticAnalysis() {
 		return "boolean";
 	}
 	
-	function parseStringExpr() {
-		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of CharList, and get its type
-		var parseStringExprType = parseCharList();
-		
-		var fullString = tokens[currentToken-1].value;
-		
-		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			consumeToken();
-		}
-		
-		return parseStringExprType;
-	}
-	
-	function parseCharList() {
-		// Checks the required first character of CharList [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHARLIST")) {
-			consumeToken()
-		}
-		// Empty production
-		else {
-			/* Do Nothing λ Production */
-		}
-		
-		return "string";
-	}
-	
-	function parseIntExpr() {
-		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
-		var intExprReturn = "";
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
-			// Initialize parsing of digit
-			var intExpr1 = parseDigit();
-			// Initialize parsing of IntOp
-			parseIntOp();
-			// Initialize parsing of Expr
-			var intExpr2 = parseExpr();
-			// Type Checks IntExpr
-			if (intExpr1 != intExpr2)
-				throwSATypeError("",intExpr1,"added",intExpr2);
-			else
-				intExprReturn = intExpr2;
-		}
-		// Checks the required character to be a digit [ T_DIGIT ]
-		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			intExprReturn = parseDigit();
-		}
-
-		return intExprReturn;
-	}
-	
 	function parseIntOp() {
 		// Checks and consumes the required character of IntOp [ T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
@@ -600,15 +611,7 @@ function semanticAnalysis() {
 		return "oper";
 	}
 	
-	function parseDigit() {
-		// Checks and consumes the required character to be a digit [ T_DIGIT ]
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			consumeToken();
-		}
-		
-		return "int";
-	}
-	
+	/*********************************************** Token Manipulation Section ***********************************************/
 	// Matches token and returns True if it matches
 	function matchToken(tokenKind, expectedKind){
 		var match;
@@ -626,70 +629,14 @@ function semanticAnalysis() {
 		currentToken++;
 	}
 	
-	// Prints out the Symbol Table
+	/************************************************ Message Printing Section ************************************************/
 	function printSymbolTable(symbolTableStrings) {
 		// Removes set height
 		$('#symbolTable').removeAttr("style");
 		// Prints out the Symbol Table Based - Defined by Order of Declaration
 		document.getElementById('symbolTable').innerHTML = "<th class=\"symbolHeader\">Key</th><th class=\"symbolHeader\">Type</th><th class=\"symbolHeader\">Scope</th><th class=\"symbolHeader\">Scope Level</th><th class=\"symbolHeader\">Line Number</th>" + symbolTableStrings;
 	}
-	
-	// Functions to print Semantic Analysis Messages
-	function printLastSAMessage(semanticComplete) {
-		if (semanticComplete) {
-			txt = $('#log').val(txt + "\nSemantic Analysis Completed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
-			$('#streeLog').val(st.toString());
-			printSymbolTable(symbolTableStrings);
-		}
-		
-		else {
-			txt = $('#log').val(txt + "\nSemantic Analysis Failed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...");
-		}
-		
-		scrollDown();
-	}
-	
-	/* Error Section */
-	function throwSAUndeclaredError(varKey, usage) {
-		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is " + usage + " before it is declared...\n"
-		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
-		killCompiler(reason);
-	}
 
-	function throwSAUnusedError(varKey) {
-		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is declared but never used...\n";
-		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
-		killCompiler(reason);
-	}
-	
-	function throwVarRedeclaredError(varKey, varLineNum) {
-		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in current scope on line " + varLineNum + "...\n";
-		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
-		killCompiler(reason);
-	}
-
-	function throwSATypeError(varKey, idType, usage, exprType) {
-		var reason = "";
-		if (varKey == "") {
-			reason = "Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-		}
-		else {
-			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-		}
-		killCompiler(reason);
-	}
-	
-	function killCompiler(reason) {
-		saErrorCount++;
-		printLastSAMessage(semanticComplete);
-		// Updates Progess Status Bar
-		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
-		throw new Error("HOLY SHIT! IT DIED..." + reason);
-	}
-	
-	/* Print Section */
 	function printUnusedWarningMessage(varKey, lineNum) {
 		txt = txt + " S.ANALYZE --> | WARNING! Variable [ " + varKey + " ] on line " + lineNum + " has been initialized but is not used...\n";
 	}
@@ -716,5 +663,61 @@ function semanticAnalysis() {
 
 	function printSATypeCheckMessage(varKey, idType, usage, exprType) {
 		txt = txt + " S.ANALYZE --> | PASSED! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the correct type [ " + exprType + " ]...\n";
+	}
+	
+	// Functions to print Semantic Analysis Messages
+	function printLastSAMessage(semanticComplete) {
+		if (semanticComplete) {
+			txt = $('#log').val(txt + "\nSemantic Analysis Completed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
+			$('#streeLog').val(st.toString());
+			printSymbolTable(symbolTableStrings);
+		}
+		
+		else {
+			txt = $('#log').val(txt + "\nSemantic Analysis Failed With " + saWarningCount + " WARNING(S) and " + saErrorCount + " ERROR(S)" + "...");
+		}
+		
+		scrollDown();
+	}
+	
+	/************************************************* Error Printing Section *************************************************/
+	function throwSAUndeclaredError(varKey, usage) {
+		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is " + usage + " before it is declared...\n"
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
+	}
+
+	function throwSAUnusedError(varKey) {
+		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " is declared but never used...\n";
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
+	}
+	
+	function throwVarRedeclaredError(varKey, varLineNum) {
+		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in the current scope at line " + varLineNum + "...\n";
+		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
+		killCompiler(reason);
+	}
+
+	function throwSATypeError(varKey, idType, usage, exprType) {
+		var reason = "";
+		if (varKey == "") {
+			reason = "Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+		}
+		else {
+			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+		}
+		killCompiler(reason);
+	}
+	
+	/**************************************************** Compiler Killer ****************************************************/
+	function killCompiler(reason) {
+		saErrorCount++;
+		printLastSAMessage(semanticComplete);
+		// Updates Progess Status Bar
+		$('#saResults').html("<span style=\"color:red;\"> FAILED </span>");
+		throw new Error("HOLY SHIT! IT DIED..." + reason);
 	}
 }

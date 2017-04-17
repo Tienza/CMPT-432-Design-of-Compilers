@@ -56,6 +56,7 @@ function parse() {
 		return parseReturns;
 	}
 	
+	/************************************************** Token Parsing Section **************************************************/
 	function parseProgram() {
 		// Creates a Program Branch
 		cst.addNode("Program", "branch", "");
@@ -204,152 +205,7 @@ function parse() {
 		// Kicks you one level up the tree
 		cst.kick();
 	}
-	
-	function parseIf() {
-		// Creates a IfStatement Branch
-		cst.addNode("IfStatement", "branch");
-		
-		// Checks and consumes the required first character of IfStatement
-		if (matchToken(tokens[currentToken].kind, "T_IF")) {
-			if (verbose)
-				printParseMessage("T_IF", tokens[currentToken].value);
-			// Creates [ if ] leaf
-			cst.addNode("if", "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else 
-			throwParseError("if");
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseWhile() {
-		// Creates a WhileStatement Branch
-		cst.addNode("WhileStatement", "branch");
-		
-		// Checks and consumes the required first character of WhileStatement
-		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
-			if (verbose)
-				printParseMessage("T_WHILE", tokens[currentToken].value);
-			// Creates [ while ] leaf
-			cst.addNode("while", "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else 
-			throwParseError("while");
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseVarDecl() {
-		// Creates a VariableDeclaration Branch
-		cst.addNode("VariableDeclaration", "branch");
-		
-		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			if (verbose)
-				printParseMessage("T_VARIABLE_TYPE", "");
-			// Initialize parsing of Type
-			parseType();
-		}
-		// Throws an error if the character does not match what is expected
-		else 
-			throwParseError("T_VARIABLE_TYPE");
-		
-		// Checks required second character of VariableDeclaration [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			if (verbose)
-				printParseMessage("T_ID", "");
-			// Initialize parsing of Id
-			parseId();
-		}
-		// Throws an error if the character does not match what is expected
-		else 
-			throwParseError("T_ID");
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseType() {
-		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			if (verbose)
-				printParseMessage("T_VARIABLE_TYPE", tokens[currentToken].value);
-			// Creates [ type ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-	}
-	
-	function parseAssignment() {
-		// Creates a AssignmentStatement Branch
-		cst.addNode("AssignmentStatement", "branch");
-		
-		// Checks required first character of assignment statement [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			if (verbose)
-				printParseMessage("T_ID", "T_ID");
-			parseId();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("T_ID")
-		
-		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
-		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
-			if (verbose)
-				printParseMessage("T_ASSIGNMENT_OP", tokens[currentToken].value);
-			// Creates [ = ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("=")
-		
-		// Initialize parsing of Expr
-		parseExpr();
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseId() {
-		// Creates a Id Branch
-		cst.addNode("Id", "branch");
-		
-		// Checks and consumes the required first character of Id [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			if (verbose)
-				printParseMessage("T_ID", tokens[currentToken].value);
-			// Creates [ Id ] leaf
-			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		else
-			throwParseError("T_ID");
 
-		// Kicks you one level up the tree
-		cst.kick();
-	};
-	
 	function parsePrint() {
 		// Creates a PrintStatement Branch
 		cst.addNode("PrintStatement", "branch");
@@ -396,7 +252,122 @@ function parse() {
 		// Kicks you one level up the tree
 		cst.kick();
 	}
+
+	function parseAssignment() {
+		// Creates a AssignmentStatement Branch
+		cst.addNode("AssignmentStatement", "branch");
+		
+		// Checks required first character of assignment statement [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			if (verbose)
+				printParseMessage("T_ID", "T_ID");
+			parseId();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("T_ID")
+		
+		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
+			if (verbose)
+				printParseMessage("T_ASSIGNMENT_OP", tokens[currentToken].value);
+			// Creates [ = ] leaf
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("=")
+		
+		// Initialize parsing of Expr
+		parseExpr();
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+
+	function parseVarDecl() {
+		// Creates a VariableDeclaration Branch
+		cst.addNode("VariableDeclaration", "branch");
+		
+		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			if (verbose)
+				printParseMessage("T_VARIABLE_TYPE", "");
+			// Initialize parsing of Type
+			parseType();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("T_VARIABLE_TYPE");
+		
+		// Checks required second character of VariableDeclaration [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			if (verbose)
+				printParseMessage("T_ID", "");
+			// Initialize parsing of Id
+			parseId();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("T_ID");
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+
+	function parseWhile() {
+		// Creates a WhileStatement Branch
+		cst.addNode("WhileStatement", "branch");
+		
+		// Checks and consumes the required first character of WhileStatement
+		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
+			if (verbose)
+				printParseMessage("T_WHILE", tokens[currentToken].value);
+			// Creates [ while ] leaf
+			cst.addNode("while", "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("while");
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
 	
+	function parseIf() {
+		// Creates a IfStatement Branch
+		cst.addNode("IfStatement", "branch");
+		
+		// Checks and consumes the required first character of IfStatement
+		if (matchToken(tokens[currentToken].kind, "T_IF")) {
+			if (verbose)
+				printParseMessage("T_IF", tokens[currentToken].value);
+			// Creates [ if ] leaf
+			cst.addNode("if", "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else 
+			throwParseError("if");
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+
 	function parseExpr() {
 		// Creates a Expr Branch
 		cst.addNode("Expr", "branch");
@@ -443,7 +414,72 @@ function parse() {
 		// Kicks you one level up the tree
 		cst.kick();
 	}
-	
+
+	function parseIntExpr() {
+		// Creates a IntExpr Branch
+		cst.addNode("IntExpr", "branch");
+		
+		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
+			if (verbose)
+				printParseMessage("IntExpr", "");
+			// Initialize parsing of digit
+			parseDigit();
+			// Initialize parsing of IntOp
+			parseIntOp();
+			// Initialize parsing of Expr
+			parseExpr();
+			
+		}
+		// Checks the required character to be a digit [ T_DIGIT ]
+		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			if (verbose)
+				printParseMessage("IntExpr", "IntExpr");
+			parseDigit();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("T_DIGIT & T_ADDITION_OP || T_DIGIT");
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+
+	function parseStringExpr() {
+		// Creates a StringExpr Branch
+		cst.addNode("StringExpr", "branch");
+		
+		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			if (verbose)
+				printParseMessage("T_QUOTE", "");
+			// Creates [ \" ] leaf
+			cst.addNode("\"", "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("\"");
+		
+		// Initialize parsting of CharList
+		parseCharList();
+			
+		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			if (verbose)
+				printParseMessage("T_QUOTE", "");
+			// Creates [ \" ] leaf
+			cst.addNode("\"", "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("\"");
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+
 	function parseBooleanExpr() {
 		// Creates a BooleanExpr Branch
 		cst.addNode("BooleanExpr", "branch");
@@ -486,6 +522,86 @@ function parse() {
 		// Kicks you one level up the tree
 		cst.kick();
 	}
+
+	function parseId() {
+		// Creates a Id Branch
+		cst.addNode("Id", "branch");
+		
+		// Checks and consumes the required first character of Id [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			if (verbose)
+				printParseMessage("T_ID", tokens[currentToken].value);
+			// Creates [ Id ] leaf
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		else
+			throwParseError("T_ID");
+
+		// Kicks you one level up the tree
+		cst.kick();
+	};
+
+	function parseCharList() {
+		// Creates a CharList Branch
+		cst.addNode("CharList", "branch");
+		
+		// Checks the required first character of CharList [ T_CHAR ]
+		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
+			if (verbose)
+				printParseMessage("T_CHAR", "");
+			parseChar();
+		}
+		// Empty production
+		else {
+			if (verbose)
+				printParseMessage(lambdaChar, "");
+			/* Do Nothing λ Production */
+		}
+		
+		// Kicks you one level up the tree
+		cst.kick();
+	}
+	
+	function parseType() {
+		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			if (verbose)
+				printParseMessage("T_VARIABLE_TYPE", tokens[currentToken].value);
+			// Creates [ type ] leaf
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+	}
+
+	function parseChar() {
+		// Checks and consumes the required first character of Char [ T_CHAR ]
+		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
+			if (verbose)
+				printParseMessage("T_CHAR", tokens[currentToken].value);
+			// Creates a char leaf
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+			parseCharList();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("T_CHAR");
+	}
+
+	function parseDigit() {
+		// Checks and consumes the required character to be a digit [ T_DIGIT ]
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			if (verbose)
+				printParseMessage("T_DIGIT", tokens[currentToken].value);
+			// Creates a Digit leaf
+			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+		// Throws an error if the character does not match what is expected
+		else
+			throwParseError("T_DIGIT");
+	}
 	
 	function parseBoolOp() {
 		// Checks and consumes the first possible character of BoolOp [ T_EQUALITY_OP ]
@@ -523,107 +639,6 @@ function parse() {
 			throwParseError("true || false");
 	}
 	
-	function parseStringExpr() {
-		// Creates a StringExpr Branch
-		cst.addNode("StringExpr", "branch");
-		
-		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			if (verbose)
-				printParseMessage("T_QUOTE", "");
-			// Creates [ \" ] leaf
-			cst.addNode("\"", "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("\"");
-		
-		// Initialize parsting of CharList
-		parseCharList();
-			
-		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			if (verbose)
-				printParseMessage("T_QUOTE", "");
-			// Creates [ \" ] leaf
-			cst.addNode("\"", "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("\"");
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseCharList() {
-		// Creates a CharList Branch
-		cst.addNode("CharList", "branch");
-		
-		// Checks the required first character of CharList [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
-			if (verbose)
-				printParseMessage("T_CHAR", "");
-			parseChar();
-		}
-		// Empty production
-		else {
-			if (verbose)
-				printParseMessage(lambdaChar, "");
-			/* Do Nothing λ Production */
-		}
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
-	function parseChar() {
-		// Checks and consumes the required first character of Char [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHAR")) {
-			if (verbose)
-				printParseMessage("T_CHAR", tokens[currentToken].value);
-			// Creates a char leaf
-			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-			parseCharList();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("T_CHAR");
-	}
-	
-	function parseIntExpr() {
-		// Creates a IntExpr Branch
-		cst.addNode("IntExpr", "branch");
-		
-		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
-			if (verbose)
-				printParseMessage("IntExpr", "");
-			// Initialize parsing of digit
-			parseDigit();
-			// Initialize parsing of IntOp
-			parseIntOp();
-			// Initialize parsing of Expr
-			parseExpr();
-			
-		}
-		// Checks the required character to be a digit [ T_DIGIT ]
-		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			if (verbose)
-				printParseMessage("IntExpr", "IntExpr");
-			parseDigit();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("T_DIGIT & T_ADDITION_OP || T_DIGIT");
-		
-		// Kicks you one level up the tree
-		cst.kick();
-	}
-	
 	function parseIntOp() {
 		// Checks and consumes the required character of IntOp [ T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
@@ -638,20 +653,7 @@ function parse() {
 			throwParseError("+");
 	}
 	
-	function parseDigit() {
-		// Checks and consumes the required character to be a digit [ T_DIGIT ]
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			if (verbose)
-				printParseMessage("T_DIGIT", tokens[currentToken].value);
-			// Creates a Digit leaf
-			cst.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-		// Throws an error if the character does not match what is expected
-		else
-			throwParseError("T_DIGIT");
-	}
-	
+	/*********************************************** Token Manipulation Section ***********************************************/
 	// Matches token and returns True if it matches
 	function matchToken(tokenKind, expectedKind){
 		var match;
@@ -668,7 +670,17 @@ function parse() {
 		currentToken++;
 	}
 	
-	// Funtions to print last message for parser
+	/************************************************ Message Printing Section ************************************************/
+	function printParseMessage(expectVal, foundVal) {
+		if (foundVal !== "")
+			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + foundVal + " ] on line " + tokens[currentToken].line + "...\n";
+		else if (expectVal == lambdaChar)
+			txt = txt + " PARSER --> | PASSED! " + expectVal + " production on line " + tokens[currentToken].line + "...\n";
+		else
+			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n";
+
+	}
+
 	function printLastParseMessage(parseComplete) {
 		if (parseComplete) {
 			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
@@ -682,6 +694,7 @@ function parse() {
 		scrollDown();
 	}
 	
+	/************************************************* Error Printing Section *************************************************/
 	function throwParseError(expectVal) {
 		txt = txt + " PARSER --> | ERROR! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n";
 		parseErrorCount++;
@@ -689,15 +702,5 @@ function parse() {
 		// Updates Progess Status Bar
 		$('#parseResults').html("<span style=\"color:red;\"> FAILED </span>");
 		throw new Error("HOLY SHIT! IT DIED..." + "Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].value + " ] on line " + tokens[currentToken].line + "...\n");
-	}
-	
-	function printParseMessage(expectVal, foundVal) {
-		if (foundVal !== "")
-			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + foundVal + " ] on line " + tokens[currentToken].line + "...\n";
-		else if (expectVal == lambdaChar)
-			txt = txt + " PARSER --> | PASSED! " + expectVal + " production on line " + tokens[currentToken].line + "...\n";
-		else
-			txt = txt + " PARSER --> | PASSED! Expecting [ " + expectVal + " ] found [ " + tokens[currentToken].kind + " ] on line " + tokens[currentToken].line + "...\n";
-
 	}
 }
