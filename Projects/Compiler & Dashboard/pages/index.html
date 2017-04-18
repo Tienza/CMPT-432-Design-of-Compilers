@@ -113,7 +113,7 @@
 						</li>
 					</ul>
 				</div>
-				<button type="button" class="btn btn-warning btn-lg">Run Tests</button>
+				<button type="button" class="btn btn-warning btn-lg" data-toggle="modal" data-target="#fullView">Full Tree View</button>
 				<button id="verboseToggle" type="button" onclick="toggleVerbose()" class="btn btn-danger btn-lg">Verbose: On</button>
 				<div style="display: none;" class="btn-group">	
 					<button id ="verboseDropDown" type="button" class="btn btn-danger btn-lg dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -229,7 +229,40 @@
 			</div>
 		</div>
 		<!-- /.row -->
-		
+
+		<!-- Modal -->
+		<div class="modal fade" id="fullView" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title" id="myModalLabel" style="text-align: center;">CST & AST Fullview</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<div class="col-lg-12">
+								<ul class="nav nav-tabs" role="tablist">
+									<li class="active"><a href=".cst2" role="tab" data-toggle="tab">Concrete Syntax Tree</a></li>
+									<li><a href=".ast2" role="tab" data-toggle="tab">Abstract Syntax Tree</a></li>
+								</ul>
+								<div class="tab-content">
+									<div id="cstDisplay2" class="tab-pane active cst2" style="font-weight: bold;">
+										<div class="panel panel-default">
+											<textarea readonly id="cstLog2" class="form-control" rows="35" placeholder="NO CST GENERATED"></textarea>
+										</div>
+									</div>
+									<div id="astDisplay2" class="tab-pane ast2" style="text-align: center; font-weight: bold;">
+										<div class="panel panel-default">
+											<textarea readonly id="astLog2" class="form-control" rows="35" placeholder="NO AST GENERATED"></textarea>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 		<!-- Toast Messages -->
 		<div class="row">
 			<div id="copyMessage" class="toast">Copied to Clipboard</div>
