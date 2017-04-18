@@ -685,6 +685,7 @@ function parse() {
 		if (parseComplete) {
 			txt = $('#log').val(txt + "\nParse Completed With " + parseWarningCount + " WARNING(S) and " + parseErrorCount + " ERROR(S)" + "...\n_______________________________________________________________\n\n");
 			$('#cstLog').val(cst.toString());
+			$('#cstLog2').val(cst.toString());
 		}
 		
 		else {

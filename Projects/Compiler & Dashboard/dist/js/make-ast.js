@@ -14,6 +14,7 @@ function makeAST() {
 	parseProgram();
 	
 	$('#astLog').val(ast.toString());
+	$('#astLog2').val(ast.toString());
 
 	var makeASTReturns = {
 		AST: ast,
