@@ -4,7 +4,7 @@
 // By Alan G. Labouseur, based on the 2009
 // work by Michael Ardizzone and Tim Smith.
 //-----------------------------------------
-function symbolTable() {
+function symbolTree() {
     // ----------
     // Attributes
     // ----------
@@ -85,7 +85,7 @@ function symbolTable() {
             } 
 			else {
                 // There are children, so note these interior/branch nodes and ...
-                traversalResult += "<" + node.name + ">";
+                traversalResult += "[ " + node.name + " ]";
 				traversalResult += ":";
 				node.symbols.forEach(function(symbol){
 					traversalResult += " " + symbol.type + " " + symbol.key + " |";
