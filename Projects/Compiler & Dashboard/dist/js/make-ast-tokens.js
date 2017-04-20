@@ -134,9 +134,6 @@ function makeASTTokens() {
 		totalErrorCount: parseReturns.totalErrorCount
 	}
 	
-	if (verbose)
-		console.log(makeASTTokensReturns);
-	
 	return makeASTTokensReturns;
 	
 	function checkEOPS(tokenArray) {

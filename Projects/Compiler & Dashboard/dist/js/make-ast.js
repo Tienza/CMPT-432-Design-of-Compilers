@@ -23,23 +23,7 @@ function makeAST() {
 		totalErrorCount: makeASTTokensReturns.totalErrorCount
 	}
 
-	if (verbose)
-		console.log(makeASTReturns);
-
 	return makeASTReturns;
-
-	function traverseTree(node) {
-		if (node.symbols.length > 0) {
-			/*node.symbols.forEach(function(symbol) {
-				symbolTableStrings = symbolTableStrings + "<tr class=\"tokenRow\"><td>" + symbol.key + "</td><td>" + symbol.type + "</td><td>" + symbol.scope + "</td><td>" + symbol.scopeLevel + "</td><td>" + symbol.line + "</td></tr>"
-			});*/
-		}
-		if (node.children.length != 0) {
-			node.children.forEach(function(element) {
-				traverseTree(element);
-			});
-		}
-	}
 	
 	function parseProgram() {
 		// Creates a Program Branch
