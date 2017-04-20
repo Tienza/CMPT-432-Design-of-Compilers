@@ -706,8 +706,8 @@ function semanticAnalysis() {
 			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 		}
 		else {
-			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 		}
 		killCompiler(reason);
 	}
