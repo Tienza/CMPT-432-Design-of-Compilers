@@ -10,7 +10,7 @@ function semanticAnalysis() {
 	// Creates Symbol Tree and adds root node
 	var scope = -1;
 	var scopeLevel = -1;
-	var st = new symbolTable();
+	var st = new symbolTree();
 	var symbolTableStrings = "";
 	var symbolArray = [];
 
@@ -698,7 +698,7 @@ function semanticAnalysis() {
 	}
 	
 	function throwVarRedeclaredError(varKey, varLineNum) {
-		var reason = "Variable [ " + varKey + " ]  on line " + tokens[currentToken-1].line + " has already been declared in the current scope at line " + varLineNum + "...\n";
+		var reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has already been declared in the current scope at line " + varLineNum + "...\n";
 		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
 		killCompiler(reason);
 	}
@@ -710,8 +710,8 @@ function semanticAnalysis() {
 			txt = txt + " S.ANALYZE --> | ERROR! Expr on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 		}
 		else {
-			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
-			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type " + idType + " and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			reason = "Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
+			txt = txt + " S.ANALYZE --> | ERROR! Variable [ " + varKey + " ] on line " + tokens[currentToken-1].line + " has type [ " + idType + " ] and is " + usage + " the wrong type [ " + exprType + " ]...\n";
 		}
 		killCompiler(reason);
 	}
