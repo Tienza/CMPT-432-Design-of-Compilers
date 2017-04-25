@@ -381,7 +381,11 @@ function lex() {
             warningCount: lexWarningCount,
             errorCount: lexErrorCount
         }
-		
+
+        // Break Teeth
+        if (lexComplete)
+            brokenTeeth(1);
+
         return lexReturns;
     }
     // If console is empty and the user tries to lex then return an error
@@ -430,10 +434,6 @@ function lex() {
         checkEOPS.lexWarningCount = lexWarningCount;
         checkEOPS.lexErrorCount = lexErrorCount;
 
-        // Break Teeth
-        if (lexComplete)
-            brokenTeeth(1);
-
         return checkEOPS;
     }
 
@@ -479,10 +479,9 @@ function lex() {
             // Prints token into marquee and table
             document.getElementById('marquee-holder').innerHTML = "<marquee id='token-banner' behavior='scroll' direction='left' onmouseover='this.stop();' onmouseout='this.start();' scrollamount='20'>" + marqueeTokens.join("") + "</marquee>";
             document.getElementById('tokenTable').innerHTML = "<th>Token Number</th><th>Token Type</th><th>Value</th><th>Line Number</th>" + tableTokens.join("");
-        } else {
-            // LEX fail
-            lexComplete = false;
+        } 
 
+        else {
             txt = $('#log').val();
 
             // Prints Final Lex Fail Message

@@ -63,7 +63,7 @@ function semanticAnalysis() {
 		console.log(makeSymbolTableReturns);
 
 	// Break Teeth
-	if (semanticCompleten)
+	if (semanticComplete)
 		brokenTeeth(3);
 
 	return makeSymbolTableReturns;
