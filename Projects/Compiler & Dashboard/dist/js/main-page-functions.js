@@ -86,6 +86,7 @@ function resetIndexPage() {
 	semanticComplete = false;
 	codeComplete = false;
 	// Reset Page Elements
+    brokenTeeth(0);
 	$('#lexResults').html(" --- ");
 	$('#parseResults').html(" --- ");
 	$('#saResults').html(" --- ");
@@ -134,4 +135,8 @@ function brokenTeeth(brokenLevel) {
 		$('#teeth').attr('src', '../img/teeth.png');
 	else if (brokenLevel == 1)
 		$('#teeth').attr('src', '../img/lexTeeth.png');
+    else if (brokenLevel == 2)
+        $('#teeth').attr('src', '../img/parseTeeth.png');
+    else if (brokenLevel == 3)
+        $('#teeth').attr('src', '../img/saTeeth.png');
 }

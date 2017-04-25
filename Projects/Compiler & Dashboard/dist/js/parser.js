@@ -52,6 +52,10 @@ function parse() {
 		
 		if (verbose)
 			console.log(parseReturns);
+
+		// Break Teeth
+		if(parseComplete)
+			brokenTeeth(2);
 		
 		return parseReturns;
 	}

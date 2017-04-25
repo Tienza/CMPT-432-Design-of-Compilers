@@ -62,6 +62,10 @@ function semanticAnalysis() {
 	if (verbose)
 		console.log(makeSymbolTableReturns);
 
+	// Break Teeth
+	if (semanticCompleten)
+		brokenTeeth(3);
+
 	return makeSymbolTableReturns;
 
 	/*********************************************** Scope/Type Checking Section **********************************************/

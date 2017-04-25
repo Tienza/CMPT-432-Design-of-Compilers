@@ -430,6 +430,10 @@ function lex() {
         checkEOPS.lexWarningCount = lexWarningCount;
         checkEOPS.lexErrorCount = lexErrorCount;
 
+        // Break Teeth
+        if (lexComplete)
+            brokenTeeth(1);
+
         return checkEOPS;
     }
 
