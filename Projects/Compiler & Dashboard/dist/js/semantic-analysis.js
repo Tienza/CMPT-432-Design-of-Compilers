@@ -34,7 +34,7 @@ function semanticAnalysis() {
 	checkInit(st.root);
 	checkUsed(st.root);
 
-	var makeSymbolTableReturns = {
+	var semanticAnalysisReturns = {
 		AST: makeASTReturns.AST,
 		ST: st,
 		tokenArray: tokens,
@@ -60,13 +60,13 @@ function semanticAnalysis() {
 		/* See throwError Section of Code */
 	
 	if (verbose)
-		console.log(makeSymbolTableReturns);
+		console.log(semanticAnalysisReturns);
 
 	// Break Teeth
 	if (semanticComplete)
 		brokenTeeth(3);
 
-	return makeSymbolTableReturns;
+	return semanticAnalysisReturns;
 
 	/*********************************************** Scope/Type Checking Section **********************************************/
 	function checkUsed(node) {
