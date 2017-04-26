@@ -506,17 +506,6 @@ function semanticAnalysis() {
 		// Checks and consumes the required first character of BooleanExpr(1) [ T_OPENING_PARENTHESIS ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
 			consumeToken();
-			
-			if (matchToken(tokens[currentToken+1].value, "==")) {
-				/* Do Nothing */
-			}
-			else if (matchToken(tokens[currentToken+3].value, "==")) {
-				/* Do Nothing */
-			}
-			else {
-				/* Do Nothing */
-			}
-				
 			// Initialize parsing of Expr
 			var booleanExpr1 = parseExpr();
 			// Initialize parsing of BoolOp
