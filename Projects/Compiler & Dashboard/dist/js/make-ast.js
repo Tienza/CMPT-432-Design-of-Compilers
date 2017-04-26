@@ -25,6 +25,7 @@ function makeAST() {
 
 	return makeASTReturns;
 	
+	/********************************************** Reparse - Make AST **********************************************/
 	function parseProgram() {
 		// Creates a Program Branch
 		ast.addNode("Program", "branch");
@@ -116,104 +117,7 @@ function makeAST() {
 			parseBlock();
 		}
 	}
-	
-	function parseIf() {
-		// Creates a IfStatement Branch
-		ast.addNode("IfStatement", "branch");
-		
-		// Checks and consumes the required first character of IfStatement
-		if (matchToken(tokens[currentToken].kind, "T_IF")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-		
-		// Kicks you one level up the tree
-		ast.kick();
-	}
-	
-	function parseWhile() {
-		// Creates a WhileStatement Branch
-		ast.addNode("WhileStatement", "branch");
-		
-		// Checks and consumes the required first character of WhileStatement
-		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of BooleanExpr
-		parseBooleanExpr();
-		
-		// Initialize parsing of Block
-		parseBlock();
-		
-		// Kicks you one level up the tree
-		ast.kick();
-	}
-	
-	function parseVarDecl() {
-		// Creates a VariableDeclaration Branch
-		ast.addNode("VariableDeclaration", "branch");
-		
-		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			// Initialize parsing of Type
-			parseType();
-		}
-		
-		// Checks required second character of VariableDeclaration [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			// Initialize parsing of Id
-			parseId();
-		}
 
-		// Kicks you one level up the tree
-		ast.kick();
-	}
-	
-	function parseType() {
-		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
-		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
-			// Creates [ type ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-	}
-	
-	function parseAssignment() {
-		// Creates a AssignmentStatement Branch
-		ast.addNode("AssignmentStatement", "branch");
-		
-		// Checks required first character of assignment statement [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			parseId();
-		}
-		
-		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
-		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
-			consumeToken();
-		}
-		
-		// Initialize parsing of Expr
-		parseExpr();
-		
-		// Kicks you one level up the tree
-		ast.kick();
-	}
-	
-	function parseId() {
-		// Checks and consumes the required first character of Id [ T_ID ]
-		if (matchToken(tokens[currentToken].kind, "T_ID")) {
-			// Creates [ Id ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
-			consumeToken();
-		}
-	};
-	
 	function parsePrint() {
 		// Creates a PrintStatement Branch
 		ast.addNode("PrintStatement", "branch");
@@ -239,7 +143,86 @@ function makeAST() {
 		// Kicks you one level up the tree
 		ast.kick();
 	}
+
+	function parseAssignment() {
+		// Creates a AssignmentStatement Branch
+		ast.addNode("AssignmentStatement", "branch");
+		
+		// Checks required first character of assignment statement [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			parseId();
+		}
+		
+		// Checks and consumes required second character of assignment statement [ T_ASSIGNMENT_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_ASSIGNMENT_OP")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of Expr
+		parseExpr();
+		
+		// Kicks you one level up the tree
+		ast.kick();
+	}
+
+	function parseVarDecl() {
+		// Creates a VariableDeclaration Branch
+		ast.addNode("VariableDeclaration", "branch");
+		
+		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			// Initialize parsing of Type
+			parseType();
+		}
+		
+		// Checks required second character of VariableDeclaration [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			// Initialize parsing of Id
+			parseId();
+		}
+
+		// Kicks you one level up the tree
+		ast.kick();
+	}
+
+	function parseWhile() {
+		// Creates a WhileStatement Branch
+		ast.addNode("WhileStatement", "branch");
+		
+		// Checks and consumes the required first character of WhileStatement
+		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+		
+		// Kicks you one level up the tree
+		ast.kick();
+	}
 	
+	function parseIf() {
+		// Creates a IfStatement Branch
+		ast.addNode("IfStatement", "branch");
+		
+		// Checks and consumes the required first character of IfStatement
+		if (matchToken(tokens[currentToken].kind, "T_IF")) {
+			consumeToken();
+		}
+		
+		// Initialize parsing of BooleanExpr
+		parseBooleanExpr();
+		
+		// Initialize parsing of Block
+		parseBlock();
+		
+		// Kicks you one level up the tree
+		ast.kick();
+	}
+
 	function parseExpr() {
 		// Checks the required first character of IntExpr [ T_DIGIT ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
@@ -267,17 +250,60 @@ function makeAST() {
 			parseId();
 		}
 	}
+
+	function parseIntExpr() {
+		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
+			// Creates a Addition Branch
+			ast.addNode("Addition", "branch");
+			// Initialize parsing of digit
+			parseDigit();
+			// Initialize parsing of IntOp
+			parseIntOp();
+			// Initialize parsing of Expr
+			parseExpr();
+			// Kicks you one level up the tree
+			ast.kick();
+			
+		}
+		// Checks the required character to be a digit [ T_DIGIT ]
+		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			parseDigit();
+		}
+	}
 	
+	function parseStringExpr() {
+		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			consumeToken();
+		}
+		
+		// Initialize parsting of CharList
+		parseCharList();
+		
+		var fullString = tokens[currentToken-1].value;
+		
+		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
+		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
+			consumeToken();
+		}
+		
+		// Creates a StringExpr leaf
+		ast.addNode(fullString, "leaf", tokens[currentToken].line);
+		
+	}
+
 	function parseBooleanExpr() {
 		// Checks and consumes the required first character of BooleanExpr(1) [ T_OPENING_PARENTHESIS ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
 			consumeToken();
-			
+			// Creates a Comparison Branch to be renamed later
 			ast.addNode("Comp","branch");	
 			// Initialize parsing of Expr
 			parseExpr();
 			// Initialize parsing of BoolOp
 			var branchType = parseBoolOp();
+			// Rename Comparison Branch based on the return value of parseBoolOp
 			ast.cur.name = branchType;
 			// Initialize parsing of Expr
 			parseExpr();
@@ -293,6 +319,44 @@ function makeAST() {
 		
 		// Kicks you one level up the tree
 		ast.kick();
+	}
+
+	function parseId() {
+		// Checks and consumes the required first character of Id [ T_ID ]
+		if (matchToken(tokens[currentToken].kind, "T_ID")) {
+			// Creates [ Id ] leaf
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+	}
+
+	function parseCharList() {
+		// Checks the required first character of CharList [ T_CHAR ]
+		if (matchToken(tokens[currentToken].kind, "T_CHARLIST")) {
+			consumeToken()
+		}
+		// Empty production
+		else {
+			/* Do Nothing λ Production */
+		}
+	}
+
+	function parseType() {
+		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
+		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
+			// Creates [ type ] leaf
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
+	}
+
+	function parseDigit() {
+		// Checks and consumes the required character to be a digit [ T_DIGIT ]
+		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
+			// Creates a Digit leaf
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			consumeToken();
+		}
 	}
 	
 	function parseBoolOp() {
@@ -320,71 +384,9 @@ function makeAST() {
 		}
 	}
 	
-	function parseStringExpr() {
-		// Checks and consumes the required first character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			consumeToken();
-		}
-		
-		// Initialize parsting of CharList
-		parseCharList();
-		
-		var fullString = tokens[currentToken-1].value;
-		
-		// Checks and consumes the required last character of StringExpr [ T_QUOTE ]
-		if (matchToken(tokens[currentToken].kind, "T_QUOTE")) {
-			consumeToken();
-		}
-		
-		// Creates a StringExpr leaf
-		ast.addNode(fullString, "leaf", tokens[currentToken].line);
-		
-	}
-	
-	function parseCharList() {
-		// Checks the required first character of CharList [ T_CHAR ]
-		if (matchToken(tokens[currentToken].kind, "T_CHARLIST")) {
-			consumeToken()
-		}
-		// Empty production
-		else {
-			/* Do Nothing λ Production */
-		}
-	}
-	
-	function parseIntExpr() {
-		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
-			// Creates a Addition Branch
-			ast.addNode("Addition", "branch");
-			// Initialize parsing of digit
-			parseDigit();
-			// Initialize parsing of IntOp
-			parseIntOp();
-			// Initialize parsing of Expr
-			parseExpr();
-			// Kicks you one level up the tree
-			ast.kick();
-			
-		}
-		// Checks the required character to be a digit [ T_DIGIT ]
-		else if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			parseDigit();
-		}
-	}
-	
 	function parseIntOp() {
 		// Checks and consumes the required character of IntOp [ T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_ADDITION_OP")) {
-			consumeToken();
-		}
-	}
-	
-	function parseDigit() {
-		// Checks and consumes the required character to be a digit [ T_DIGIT ]
-		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
-			// Creates a Digit leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
 			consumeToken();
 		}
 	}
