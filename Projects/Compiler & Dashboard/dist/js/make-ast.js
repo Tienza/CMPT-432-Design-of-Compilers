@@ -273,23 +273,12 @@ function makeAST() {
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
 			consumeToken();
 			
-			if (matchToken(tokens[currentToken+1].value, "==")) {
-				// Creates a Equality Branch
-				ast.addNode("Equality", "branch");
-			}
-			else if (matchToken(tokens[currentToken+3].value, "==")) {
-				// Creates a Equality Branch
-				ast.addNode("Equality", "branch");
-			}
-			else {
-				// Creates a Inequality Branch
-				ast.addNode("Inequality", "branch");
-			}
-				
+			ast.addNode("Comp","branch");	
 			// Initialize parsing of Expr
 			parseExpr();
 			// Initialize parsing of BoolOp
-			parseBoolOp();
+			var branchType = parseBoolOp();
+			ast.cur.name = branchType;
 			// Initialize parsing of Expr
 			parseExpr();
 			// Checks and consumes the required last character of BooleanExpr(1) [ T_CLOSING_PARENTHESIS ]
@@ -307,14 +296,19 @@ function makeAST() {
 	}
 	
 	function parseBoolOp() {
+		branchType = "";
 		// Checks and consumes the first possible character of BoolOp [ T_EQUALITY_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_EQUALITY_OP")) {
 			consumeToken();
+			branchType = "Equality";
 		}
 		// Checks and consumes the second possible character of BoolOp [ T_EQUALITY_OP ]
 		else if (matchToken(tokens[currentToken].kind, "T_INEQUALITY_OP")) {
 			consumeToken();
+			branchType = "Inequality";
 		}
+
+		return branchType;
 	}
 	
 	function parseBoolVal() {
