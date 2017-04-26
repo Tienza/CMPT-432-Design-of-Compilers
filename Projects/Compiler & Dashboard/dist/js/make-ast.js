@@ -10,6 +10,10 @@ function makeAST() {
 	// Creates Abstract Syntax Tree and adds root node
 	var ast = new Tree();
 	ast.addNode("Root", "branch");
+
+	// Creates Scope Tree to keep track and add scope to AST
+	var scope = -1;
+	var scopeTree = new symbolTree();
 	
 	parseProgram();
 	
@@ -48,8 +52,13 @@ function makeAST() {
 	}
 	
 	function parseBlock() {
+		scope++;
+
+		// Creates Scope Node in Symbol Tree
+		scopeTree.addNode("ScopeLevel: "+scope, "branch", scope);
+
 		// Creates a Block Branch
-		ast.addNode("Block", "branch");
+		ast.addNode("Block", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks and consumes the required first character of a Block [ { ]
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_BRACE")) {
@@ -65,6 +74,7 @@ function makeAST() {
 		}
 		
 		// Kicks you one level up the tree
+		scopeTree.kick();
 		ast.kick();
 	}
 	
@@ -120,7 +130,7 @@ function makeAST() {
 
 	function parsePrint() {
 		// Creates a PrintStatement Branch
-		ast.addNode("PrintStatement", "branch");
+		ast.addNode("PrintStatement", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks and consumes the required first character of print [ T_PRINT ]
 		if (matchToken(tokens[currentToken].kind, "T_PRINT")) {
@@ -146,7 +156,7 @@ function makeAST() {
 
 	function parseAssignment() {
 		// Creates a AssignmentStatement Branch
-		ast.addNode("AssignmentStatement", "branch");
+		ast.addNode("AssignmentStatement", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks required first character of assignment statement [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
@@ -167,7 +177,7 @@ function makeAST() {
 
 	function parseVarDecl() {
 		// Creates a VariableDeclaration Branch
-		ast.addNode("VariableDeclaration", "branch");
+		ast.addNode("VariableDeclaration", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks required first character of VariableDeclaration [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
@@ -187,7 +197,7 @@ function makeAST() {
 
 	function parseWhile() {
 		// Creates a WhileStatement Branch
-		ast.addNode("WhileStatement", "branch");
+		ast.addNode("WhileStatement", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks and consumes the required first character of WhileStatement
 		if (matchToken(tokens[currentToken].kind, "T_WHILE")) {
@@ -206,7 +216,7 @@ function makeAST() {
 	
 	function parseIf() {
 		// Creates a IfStatement Branch
-		ast.addNode("IfStatement", "branch");
+		ast.addNode("IfStatement", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 		
 		// Checks and consumes the required first character of IfStatement
 		if (matchToken(tokens[currentToken].kind, "T_IF")) {
@@ -255,7 +265,7 @@ function makeAST() {
 		// Checks the required first and second character of AdditionOp [ T_DIGIT & T_ADDITION_OP ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT") && matchToken(tokens[currentToken+1].kind, "T_ADDITION_OP")) {
 			// Creates a Addition Branch
-			ast.addNode("Addition", "branch");
+			ast.addNode("Addition", "branch", tokens[currentToken].line, scopeTree.cur.scope);
 			// Initialize parsing of digit
 			parseDigit();
 			// Initialize parsing of IntOp
@@ -289,7 +299,7 @@ function makeAST() {
 		}
 		
 		// Creates a StringExpr leaf
-		ast.addNode(fullString, "leaf", tokens[currentToken].line);
+		ast.addNode(fullString, "leaf", tokens[currentToken].line, scopeTree.cur.scope);
 		
 	}
 
@@ -298,7 +308,7 @@ function makeAST() {
 		if (matchToken(tokens[currentToken].kind, "T_OPENING_PARENTHESIS")) {
 			consumeToken();
 			// Creates a Comparison Branch to be renamed later
-			ast.addNode("Comp","branch");	
+			ast.addNode("Comp","branch", tokens[currentToken].line, scopeTree.cur.scope);	
 			// Initialize parsing of Expr
 			parseExpr();
 			// Initialize parsing of BoolOp
@@ -325,7 +335,7 @@ function makeAST() {
 		// Checks and consumes the required first character of Id [ T_ID ]
 		if (matchToken(tokens[currentToken].kind, "T_ID")) {
 			// Creates [ Id ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line, scopeTree.cur.scope);
 			consumeToken();
 		}
 	}
@@ -345,7 +355,7 @@ function makeAST() {
 		// Checks and consumes the required first character of type [ T_VARIABLE_TYPE ]
 		if (matchToken(tokens[currentToken].kind, "T_VARIABLE_TYPE")) {
 			// Creates [ type ] leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line, scopeTree.cur.scope);
 			consumeToken();
 		}
 	}
@@ -354,7 +364,7 @@ function makeAST() {
 		// Checks and consumes the required character to be a digit [ T_DIGIT ]
 		if (matchToken(tokens[currentToken].kind, "T_DIGIT")) {
 			// Creates a Digit leaf
-			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line);
+			ast.addNode(tokens[currentToken].value, "leaf", tokens[currentToken].line, scopeTree.cur.scope);
 			consumeToken();
 		}
 	}
@@ -379,7 +389,7 @@ function makeAST() {
 		// Checks and consumes the first required character of BoolOp [ T_BOOLEAN_VALUE ]
 		if (matchToken(tokens[currentToken].kind, "T_BOOLEAN_VALUE")) {
 			// Creates a BoolVal leaf
-			ast.addNode(tokens[currentToken].value, "branch");
+			ast.addNode(tokens[currentToken].value, "branch", tokens[currentToken].line, scopeTree.cur.scope);
 			consumeToken();
 		}
 	}

@@ -18,13 +18,14 @@ function Tree() {
     // -- ------- --
 
     // Add a node: kind in {branch, leaf}.
-    this.addNode = function(name, kind, line) {
+    this.addNode = function(name, kind, line, scope) {
         // Construct the node object.
         var node = {
             name: name,
             children: [],
             parent: {},
-            line: line
+            line: line,
+            scope: scope
         };
 
         // Check to see if it needs to be the root node.
