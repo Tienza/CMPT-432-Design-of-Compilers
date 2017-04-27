@@ -12,7 +12,7 @@ function parse() {
 		// Sets carry-over variables from LEXER to be used in PARSER
 		var tokens = lexReturns.tokenArray;
 		
-		// Resets and initialize LEXER Error and Warning Count
+		// Resets and initialize Parser Error and Warning Count
 		var parseErrorCount = 0;
 		var parseWarningCount = 0;
 		

@@ -20,7 +20,7 @@ function semanticAnalysis() {
 	var variableLine = 0;
 	var checkedType = "";
 
-	// Initialize Semantic Analysis Warning and Error Counts
+	// Initialize Semantic Analysis Error and Warning Counts
 	var saErrorCount = 0;
 	var saWarningCount = 0;
 	
