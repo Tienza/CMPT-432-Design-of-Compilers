@@ -21,11 +21,15 @@ function codeGeneration() {
 
 	// Initialize Code Generation Variables
 	var codeTable = [];
+	var staticTable = [];
 	var maxByteSize = 256;
 	var curMemLoc = maxByteSize - 1;
-	var tempVarMemRef;
-	var tempVarMemRef2;
+	var varType = "";
+	var varKey = "";
+	var varTempAddr = "";
 	var depth = 0;
+	var varLocHead = "T";
+	var varLocNum = -1;
 
 	/********************************************** Code Gen - 6502a Instructions **********************************************/
 	var loadAccWithConst = "A9"; /* LDA - Load the accumulator with a constant */
@@ -51,9 +55,9 @@ function codeGeneration() {
 
 	// Begin Code Generation
 	generate();
-	console.log(toHex("t"));
+	/*console.log(toHex("t"));
 	console.log(toHex("there is no spoon"));
-	console.log(toHex(5));
+	console.log(toHex(5));*/
 
 	// Code Generation Succeeded - Determines how code generation went and updates appropriate fields
 	if (cgErrorCount == 0) {
@@ -76,6 +80,7 @@ function codeGeneration() {
 		traverseTree(ast.root);
 
 		console.log(codeTable);
+		console.log(staticTable);
 	}
 
 	function traverseTree(node) {
@@ -85,6 +90,10 @@ function codeGeneration() {
  				if (element.name == "VariableDeclaration") {
  					codeTable.push(loadAccWithConst);
  					codeTable.push("00");
+ 					varLocNum++;
+ 				}
+ 				else if (element.name == "AssignmentStatement") {
+ 					codeTable.push(loadAccWithConst);
  				}
  				traverseTree(element);
  			});
@@ -92,33 +101,58 @@ function codeGeneration() {
  		// Separates Leaf Nodes for easier management
  		else {
  			printFoundLeaf(node.name,node.line,node.scope);
+ 			// Generate Code for Variable Declaration Statements
+ 			if (node.parent.name == "VariableDeclaration" && /^[a-z]$/.test(node.name)) {
+ 				var tempName = varLocHead+varLocNum;
+ 				var tempLoc = "XX";
+ 				var tempAddr = 0;
+ 				if (staticTable.length != 0)
+ 					tempAddr = staticTable[staticTable.length-1].address + 1;
+ 				var elem = new tempVarElem(tempName+tempLoc,node.name,tempAddr);
+ 				staticTable.push(elem);
+ 				codeTable.push(storeAccInMemo);
+ 				codeTable.push(tempName);
+ 				codeTable.push(tempLoc);
+ 			}
+ 			// Generates Code for Assignment Statements - Int and Bool
+ 			else if (node.parent.name == "AssignmentStatement") {
+ 				if (/^[a-z]$/.test(node.name)) {
+ 					varKey = node.name;
+ 				}
+ 				else if (/^[0-9]$/.test(node.name)) {
+ 					var tempAddr = "";
+ 					for (var i = 0; i < staticTable.length; i++) {
+ 						if (varKey == staticTable[i].getVarKey()) {
+ 							tempAddr = staticTable[i].getTempLoc();
+ 							break;
+ 						}
+ 					}
+ 					var hexConst = "0" + node.name;
+ 					var tempAddr = chunk(tempAddr,2);
+ 					codeTable.push(hexConst);
+ 					codeTable.push(storeAccInMemo);
+ 					codeTable.push(tempAddr[0]);
+ 					codeTable.push(tempAddr[1]);
+ 				}
+ 			}
  		}
  	}
 
  	function toHex(val) {
 		var hex = '';
-
-		if (typeof val == "string") {
-			for(var i = 0; i < val.length; i++) {
-				hex += '' + val.charCodeAt(i).toString(16).toUpperCase();
-			}
-			hex = chunk(hex, 2);
+		for(var i = 0; i < val.length; i++) {
+			hex += '' + val.charCodeAt(i).toString(16).toUpperCase();
 		}
-
-		else if (typeof val == "number" && /[0-9]/.test(val))
-			hex = "0" + val.toString(16);
-
 		return hex;
-
-		function chunk(str, n) {
-    		var ret = [];
-			for(i = 0; i < str.length; i += n) {
-		    	ret.push(str.substr(i, n))
-		    }
-    		return ret
-		}
 	}
 
+	function chunk(str, n) {
+		var ret = [];
+		for(i = 0; i < str.length; i += n) {
+	    	ret.push(str.substr(i, n))
+	    }
+		return ret
+	}
 
 	/************************************************ Message Printing Section ************************************************/
 	function printFoundBranch(branchName, lineNum, scopeNum) {
