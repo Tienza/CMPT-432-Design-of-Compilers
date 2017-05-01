@@ -51,6 +51,9 @@ function codeGeneration() {
 
 	// Begin Code Generation
 	generate();
+	console.log(toHex("t"));
+	console.log(toHex("there is no spoon"));
+	console.log(toHex(5));
 
 	// Code Generation Succeeded - Determines how code generation went and updates appropriate fields
 	if (cgErrorCount == 0) {
@@ -70,10 +73,6 @@ function codeGeneration() {
 
 	/********************************************** Code Gen - Traversing AST *************************************************/
 	function generate() {
-		for (var i = 0; i < maxByteSize; i++) {
-			codeTable.push(breakOp);
-		}
-
 		traverseTree(ast.root);
 
 		console.log(codeTable);
@@ -83,10 +82,43 @@ function codeGeneration() {
  		if (node.children.length != 0) {
  			node.children.forEach(function(element) {
  				printFoundBranch(element.name,element.line,element.scope);
+ 				if (element.name == "VariableDeclaration") {
+ 					codeTable.push(loadAccWithConst);
+ 					codeTable.push("00");
+ 				}
  				traverseTree(element);
  			});
  		}
+ 		// Separates Leaf Nodes for easier management
+ 		else {
+ 			printFoundLeaf(node.name,node.line,node.scope);
+ 		}
  	}
+
+ 	function toHex(val) {
+		var hex = '';
+
+		if (typeof val == "string") {
+			for(var i = 0; i < val.length; i++) {
+				hex += '' + val.charCodeAt(i).toString(16).toUpperCase();
+			}
+			hex = chunk(hex, 2);
+		}
+
+		else if (typeof val == "number" && /[0-9]/.test(val))
+			hex = "0" + val.toString(16);
+
+		return hex;
+
+		function chunk(str, n) {
+    		var ret = [];
+			for(i = 0; i < str.length; i += n) {
+		    	ret.push(str.substr(i, n))
+		    }
+    		return ret
+		}
+	}
+
 
 	/************************************************ Message Printing Section ************************************************/
 	function printFoundBranch(branchName, lineNum, scopeNum) {
@@ -94,6 +126,10 @@ function codeGeneration() {
 		branches = ["Block","PrintStatement","AssignmentStatement","VariableDeclaration","WhileStatement","IfStatement","Addition","Equality","Inequality"];
 		if (!notBranches.includes(branchName) && branches.includes(branchName))
 			txt = txt + " C.GEN --> | Found! [ " + branchName + " ] Branch on line " + lineNum + " in scope " + scopeNum + " ...\n";
+	}
+
+	function printFoundLeaf(leafName, lineNum, scopeNum) {
+		txt = txt + " C.GEN --> | Found! [ " + leafName + " ] Leaf on line " + lineNum + " in scope " + scopeNum + " ...\n";
 	}
 
 	function printLastCGMessage(codeComplete) {
