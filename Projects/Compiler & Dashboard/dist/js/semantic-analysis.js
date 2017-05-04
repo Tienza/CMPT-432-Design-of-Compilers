@@ -376,7 +376,7 @@ function semanticAnalysis() {
 		checkVarName(st.cur);
 		
 		// Creates Symbol in Current Scope
-		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false);
+		var symbol = new Symbol(variableKey, variableType, variableLine, st.cur.scope, scopeLevel, false, false, "");
 		
 		// Pushes symbol to Current Branches Symbols Array
 		st.cur.symbols.push(symbol);

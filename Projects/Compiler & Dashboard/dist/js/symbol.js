@@ -1,6 +1,6 @@
 // Creates Symbol class for Symbol Table
 class Symbol {
-	constructor(key, type, line, scope, scopeLevel, initialized, utilized) {
+	constructor(key, type, line, scope, scopeLevel, initialized, utilized, tempLoc) {
 		this.key = key;
 		this.type = type;
 		this.line = line;
@@ -8,6 +8,7 @@ class Symbol {
 		this.scopeLevel = scopeLevel;
 		this.initialized = initialized;
 		this.utilized = utilized;
+		this.tempLoc = tempLoc;
 	}
 
 	getKey() {
