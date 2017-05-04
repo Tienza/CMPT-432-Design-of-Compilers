@@ -82,13 +82,20 @@ function codeGeneration() {
 	/********************************************** Code Gen - Traversing AST *************************************************/
 	function generate() {
 		traverseTree(ast.root, 0);
-		//pushHex(breakOp);
-		console.log(codeTable);
-		console.log("Static Memory Starts At: " + hexTable[codeTable.length]);
+		pushHex(breakOp);
 		var fullSymbolTable = getFullSymbolTable(st.root);
 		fullSymbolTable = flattenStaticTable(fullSymbolTable);
+		console.log(codeTable);
+		backPatchStatVal(codeTable, fullSymbolTable);
+		backPatchJumpVal(codeTable, jumpTable);
+		console.log(codeTable);
 		console.log(fullSymbolTable);
 		console.log(jumpTable);
+		var str = "";
+		for (var i = 0; i < codeTable.length; i++) {
+			str = str + codeTable[i] + " ";
+		}
+		console.log(str);
 	}
 
 	function traverseTree(node, depth) {
@@ -102,6 +109,7 @@ function codeGeneration() {
         	console.log(node.name + " at depth " + depth);
 
         } 
+        // See what's kind of node we are currently on and decides which function to call
 		else {
 			console.log(node.name + " at depth " + depth);
 			if (node.name == "Root")
@@ -116,6 +124,8 @@ function codeGeneration() {
 				assignStateCodeGen(node, depth);
 			else if (node.name == "PrintStatement")
 				printStateCodeGen(node, depth);
+			else if (node.name == "IfStatement")
+				ifStateCodeGen(node, depth);
 			else {
 				console.log("I got here...");
 				for (var i = 0; i < node.children.length; i++) {
@@ -125,6 +135,7 @@ function codeGeneration() {
         }
 
         function rootCodeGen(node, depth) {
+        	// Continues the traversal
         	console.log("Generating Code For Root");
         	for (var i = 0; i < node.length; i++) {
                 traverseTree(node[i], depth + 1);
@@ -135,6 +146,7 @@ function codeGeneration() {
         }
 
         function programCodeGen(node, depth) {
+        	// Continues the traversal
         	console.log("Generating Code For Program");
         	for (var i = 0; i < node.length; i++) {
                 traverseTree(node[i], depth + 1);
@@ -145,7 +157,12 @@ function codeGeneration() {
         }
 
         function blockCodeGen(node, depth) {
-        	console.log("Generating Code For Block");
+        	// Continues the traversal
+        	if (verbose) {
+        		printFoundBranch(node.name, node.line, node.scope);
+        		console.log("Generating Code For Block");
+        	}
+
         	var startBlock = codeTable.length;
             for (var i = 0; i < node.length; i++) {
                 traverseTree(node[i], depth + 1);
@@ -159,21 +176,30 @@ function codeGeneration() {
         }
 
         function varDeclCodeGen(node, depth) {
+        	// Generates code for Varaible Declarations
+        	if (verbose) {
+        		printFoundBranch(node.name, node.line, node.scope);
+        		console.log("Generating Code For VariableDeclaration");
+        	}
+
         	varLocNum++;
-        	console.log("Generating Code For VariableDeclaration");
         	var startVarDecl = codeTable.length;
         	var endVarDecl = 0;
         	var hexGenNum = 0;
+        	// Assigns the nodes to local variables
         	var typeNode = node.children[0];
         	var varKeyNode = node.children[1];
+        	// Checks to see if the variable is an int or boolean
         	if (typeNode.name == "int" || typeNode.name == "boolean") {
         		pushHex(loadAccWithConst);
         		pushHex("00");
         		if (/^[a-z]$/.test(varKeyNode.name)) {
         			pushHex(storeAccInMemo);
+        			// Creates the Temporary Location Reference Name
         			var tempLoc = varLocHead + varLocNum;
         			pushHex(tempLoc);
         			pushHex("XX");
+        			// Assigns The Temporary Location Name to the appropriate symbol in the symbol table
         			assignTempLoc(varKeyNode.name, node.scope, tempLoc+"XX");
         			var elem = new tempVarElem(tempLoc+"XX", varKeyNode.name, 0, node.scope);
         			staticTable.push(elem);
@@ -188,18 +214,27 @@ function codeGeneration() {
         }
 
         function assignStateCodeGen(node, depth) {
-        	console.log("Generating Code For AssignmentStatement");
+        	if (verbose) {
+        		printFoundBranch(node.name, node.line, node.scope);
+        		console.log("Generating Code For AssignmentStatement");
+        	}
+
         	var startAssign = codeTable.length;
         	var endAssign = 0;
         	var hexGenNum = 0;
+        	// Assigns the nodes to local vairables
         	var varKeyNode = node.children[0];
         	var assignValNode = node.children[1];
+        	// Checks to see if the assigning value is an int or not
         	if (assignValNode.type == "T_DIGIT") {
         		console.log(varKeyNode.name);
         		console.log(varKeyNode.scope);
         		//var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
         		var tempLoc = getTempLoc(varKeyNode.name, varKeyNode.scope);
         		var assignVal = "0" + assignValNode.name;
+        		if (verbose)
+        			printAssignLeaf(varKeyNode.name, varKeyNode.line, assignVal);
+
         		pushHex(loadAccWithConst);
         		pushHex(assignVal);
         		pushHex(storeAccInMemo);
@@ -209,16 +244,21 @@ function codeGeneration() {
         		endAssign = codeTable.length;
         		hexGenNum = endAssign - startAssign;
         	}
+        	// Checks to see if the assigning value is a boolean or not
         	else if (assignValNode.type == "T_BOOLEAN_VALUE") {
         		console.log(varKeyNode.name);
         		console.log(varKeyNode.scope);
-        		//var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
+        		// Gets the Temporary Location of the variable being assigned
         		var tempLoc = getTempLoc(varKeyNode.name, varKeyNode.scope);
         		var assignVal = "";
         		if (assignValNode.name == "true")
         			assignVal = "01";
         		else
         			assignVal = "00";
+
+        		if (verbose)
+        			printAssignLeaf(varKeyNode.name, varKeyNode.line, assignVal);
+
         		pushHex(loadAccWithConst);
         		pushHex(assignVal);
         		pushHex(storeAccInMemo);
@@ -228,11 +268,17 @@ function codeGeneration() {
         		endAssign = codeTable.length;
         		hexGenNum = endAssign - startAssign;
         	}
+        	// Checks to see if the assigning value is an id
         	else if (assignValNode.type == "T_ID") {
         		console.log(varKeyNode.name);
         		console.log(varKeyNode.scope);
+        		// Gets the Temporary Location of both the variable bing assigned and the assigning varaible
         		var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope);
         		var tempLocVal = getTempLoc(assignValNode.name, assignValNode.scope);
+
+        		if (verbose)
+        			printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
+
         		pushHex(loadAccFromMemo);
         		pushHex(tempLocVal[0]);
         		pushHex(tempLocVal[1]);
@@ -251,14 +297,19 @@ function codeGeneration() {
     }
 
     function printStateCodeGen(node, depth) {
-    	console.log("Generating Code For PrintStatement");
+    	if (verbose) {
+        	printFoundBranch(node.name, node.line, node.scope);
+    		console.log("Generating Code For PrintStatement");
+    	}
     	var startPrint = codeTable.length;
     	var endPrint = 0;
     	var hexGenNum = 0;
     	var printNode = node.children[0];
+    	// Checks to see if the value being printed is a variable or not
     	if (printNode.type == "T_ID") {
     		console.log(printNode.name);
         	console.log(printNode.scope);
+        	// Gets the Temporary Location of the variable being printed
         	var tempLoc = getTempLoc(printNode.name, printNode.scope);
         	pushHex(loadYFromMemo);
         	pushHex(tempLoc[0]);
@@ -276,9 +327,136 @@ function codeGeneration() {
     	return hexGenNum;
     }
 
+    function ifStateCodeGen(node, depth) {
+    	if (verbose) {
+    		printFoundBranch(node.name, node.line, node.scope);
+    		console.log("Generating Code For IfStatement");
+    	}
+    	jumpNum++;
+    	var startIf = codeTable.length;
+    	var endIf = 0;
+    	var hexGenNum = 0;
+    	var booleanExpNode = node.children[0];
+    	var blockNode = node.children[1];
+    	if (booleanExpNode.name == "Equality")
+    		equalityCodeGen(booleanExpNode, depth);
+    	
+    	// Push JumpVal to Jump Table
+    	var jumpName = jumpHead + jumpNum;
+    	var elem = new jumpVarElem(jumpName,"?");
+    	jumpTable.push(elem)
+
+    	pushHex(branchNBytes);
+    	pushHex(jumpName);
+
+    	// Traverse Tree for Block
+    	var startBlock = codeTable.length;
+    	traverseTree(blockNode, depth);
+    	var endBlock = codeTable.length;
+    	var blockHexGenNum = endBlock - startBlock;
+    	console.log("Jump Distance for Block: " + blockHexGenNum);
+
+    	for (var i = 0; i < jumpTable.length; i++) {
+    		if (jumpTable[i].tempName == jumpName)
+    			jumpTable[i].distance = "0" + blockHexGenNum;
+    	}
+
+    	endIf = codeTable.length;
+    	hexGenNum = endIf - startIf;
+    	console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
+        console.log("IfStatement Finished Hex Generated: " + hexGenNum);
+    }
+
+    function equalityCodeGen(node, depth) {
+    	if (verbose) {
+    		printFoundBranch(node.name, node.line, node.scope);
+    		console.log("Generating Code For Equality");
+    	}
+    	var startEquality = codeTable.length;
+    	var endEquality = 0;
+    	var hexGenNum = 0;
+    	var leftNode = node.children[0];
+    	var rightNode = node.children[1];
+
+    	if (leftNode.type == "T_ID") {
+    		var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+
+    		pushHex(loadXFromMemo);
+    		pushHex(tempLoc[0]);
+    		pushHex(tempLoc[1]);
+    		pushHex(compareMemoToX);
+    	}
+
+    	if (rightNode.type == "T_ID") {
+    		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+
+    		pushHex(tempLoc[0]);
+    		pushHex(tempLoc[1]);
+    	}
+
+    	endEquality = codeTable.length;
+    	hexGenNum = endEquality - startEquality;
+    	console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
+        console.log("IfStatement Finished Hex Generated: " + hexGenNum);
+    }
+
  	function pushHex(hexVal) {
  		codeTable.push(hexVal);
- 		printPushHex(hexVal);
+ 		if (verbose)
+ 			printPushHex(hexVal);
+ 	}
+
+ 	function backPatchStatVal(codeTable, staticTable) {
+ 		var staticMemStart = hexTable[codeTable.length + 1];
+ 		var tempLocs = [];
+
+ 		for (var symbol = 0; symbol < staticTable.length; symbol++) {
+ 			tempLocs.push(staticTable[symbol].tempLoc);
+ 		}
+
+ 		console.log(tempLocs);
+		console.log("Static Memory Starts At: " + staticMemStart);
+
+		var endCode = codeTable.length;
+		for (var loc = 0; loc < tempLocs.length; loc++) {
+			endCode++;
+			var availMem = hexTable[endCode];
+			tempLocs[loc] = availMem + "00";
+		}
+
+		console.log(tempLocs);
+
+		for (var newLoc = 0; newLoc < tempLocs.length; newLoc++) {
+ 			var codeLoc = chunk(tempLocs[newLoc],2);
+ 			var tempLoc = chunk(staticTable[newLoc].tempLoc,2);
+ 			for (var hexCode = 0; hexCode < codeTable.length-1; hexCode++) {
+ 				if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
+ 					if (verbose)
+ 						printStatValBackPatch(staticTable[newLoc].tempLoc, tempLocs[newLoc]);
+ 					codeTable[hexCode] = codeLoc[0];
+ 					codeTable[hexCode+1] = codeLoc[1];
+ 				}
+ 			}
+ 		}
+
+		for (var symbol = 0; symbol < staticTable.length; symbol++) {
+ 			staticTable[symbol].tempLoc = tempLocs[symbol];
+ 		}
+ 	}
+
+ 	function backPatchJumpVal(codeTable, jumpTable) {
+ 		for (var i = 0; i < jumpTable.length; i++) {
+ 			var jumpName = jumpTable[i].tempName;
+ 			var jumpDistance = jumpTable[i].distance;
+ 			for (var hexCode = 0; hexCode < codeTable.length; hexCode++) {
+ 				
+ 				if (codeTable[hexCode] == jumpName) {
+ 					if (verbose)
+ 						printJumpBackPatch(jumpName, jumpDistance);
+ 					codeTable[hexCode] = jumpDistance;
+ 				}
+ 			}
+ 		}
  	}
 
  	function getFullSymbolTable(node) {
@@ -463,15 +641,20 @@ function codeGeneration() {
 		txt = txt + " C.GEN --> | Pushing [ " + hexVal + " ] byte to memory...\n";
 	}
 
+	function printStatValBackPatch(hexVal, statMem) {
+		txt = txt + " C.GEN --> | BackPatching memory location for [ " + hexVal + " ] to [ " + statMem + " ]...\n";
+	}
+
+	function printJumpBackPatch(hexVal, jumpDistance) {
+		txt = txt + " C.GEN --> | BackPatching jump distance for [ " + hexVal + " ] to [ " + jumpDistance + " ]...\n";
+	}
+
 	function printPushStaticTable(elem) {
 		txt = txt + " C.GEN --> | Pushing [ " + elem + " ] to Static Table...\n";
 	}
 
 	function printAssignLeaf(varKey, lineNum, value) {
-		if (value == "")
-			txt = txt + " C.GEN --> | Variable [ " + varKey + " ] on line " + lineNum + " is being assigned a value...\n";
-		else
-			txt = txt + " C.GEN --> | Variable [ " + varKey + " ] on line " + lineNum + " is assigned [ " + value + " ]...\n";
+		txt = txt + " C.GEN --> | Variable [ " + varKey + " ] on line " + lineNum + " is assigned [ " + value + " ]...\n";
 	}
 
 	function printCompareLeaf(varKey, lineNum, value) {
