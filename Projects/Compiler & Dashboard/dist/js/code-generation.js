@@ -82,9 +82,13 @@ function codeGeneration() {
 	/********************************************** Code Gen - Traversing AST *************************************************/
 	function generate() {
 		traverseTree(ast.root, 0);
-		pushHex(breakOp);
+		//pushHex(breakOp);
 		console.log(codeTable);
-		console.log(staticTable);
+		console.log("Static Memory Starts At: " + hexTable[codeTable.length]);
+		var fullSymbolTable = getFullSymbolTable(st.root);
+		fullSymbolTable = collaspeStaticTable(fullSymbolTable);
+		console.log(fullSymbolTable);
+		//console.log(staticTable);
 		console.log(jumpTable);
 	}
 
@@ -111,6 +115,8 @@ function codeGeneration() {
 				varDeclCodeGen(node, depth);
 			else if (node.name == "AssignmentStatement")
 				assignStateCodeGen(node, depth);
+			else if (node.name == "PrintStatement")
+				printStateCodeGen(node, depth);
 			else {
 				console.log("I got here...");
 				for (var i = 0; i < node.children.length; i++) {
@@ -125,6 +131,7 @@ function codeGeneration() {
                 traverseTree(node[i], depth + 1);
             }
             console.log("Root Finished codeTableLoc: " + codeTable.length);
+
             return codeTable.length;
         }
 
@@ -134,6 +141,7 @@ function codeGeneration() {
                 traverseTree(node[i], depth + 1);
             }
             console.log("Program Finished codeTableLoc: " + codeTable.length);
+
             return codeTable.length;
         }
 
@@ -147,6 +155,7 @@ function codeGeneration() {
             var hexGenNum = endBlock - startBlock;
             console.log("Block Finished codeTableLoc: " + codeTable.length);
         	console.log("Block Finished Hex Generated: " + hexGenNum);
+
             return codeTable.length;
         }
 
@@ -154,9 +163,10 @@ function codeGeneration() {
         	varLocNum++;
         	console.log("Generating Code For VariableDeclaration");
         	var startVarDecl = codeTable.length;
+        	var endVarDecl = 0;
+        	var hexGenNum = 0;
         	var typeNode = node.children[0];
         	var varKeyNode = node.children[1];
-        	var hexGenNum = 0;
         	if (typeNode.name == "int" || typeNode.name == "boolean") {
         		pushHex(loadAccWithConst);
         		pushHex("00");
@@ -165,26 +175,31 @@ function codeGeneration() {
         			var tempLoc = varLocHead + varLocNum;
         			pushHex(tempLoc);
         			pushHex("XX");
-        			var elem = new tempVarElem(tempLoc+"XX",varKeyNode.name,0,node.scope);
+        			assignTempLoc(varKeyNode.name, node.scope, tempLoc+"XX");
+        			var elem = new tempVarElem(tempLoc+"XX", varKeyNode.name, 0, node.scope);
         			staticTable.push(elem);
         		}
-        		var endVarDecl = codeTable.length;
+        		endVarDecl = codeTable.length;
         		hexGenNum = endVarDecl - startVarDecl;
         	}
         	console.log("VariableDeclaration Finished codeTableLoc: " + codeTable.length);
         	console.log("VariableDeclaration Finished Hex Generated: " + hexGenNum);
+
         	return hexGenNum;
         }
 
         function assignStateCodeGen(node, depth) {
-        	console.log("Generating Code For VariableDeclaration");
+        	console.log("Generating Code For AssignmentStatement");
         	var startAssign = codeTable.length;
+        	var endAssign = 0;
+        	var hexGenNum = 0;
         	var varKeyNode = node.children[0];
         	var assignValNode = node.children[1];
         	if (assignValNode.type == "T_DIGIT") {
         		console.log(varKeyNode.name);
         		console.log(varKeyNode.scope);
-        		var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
+        		//var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
+        		var tempLoc = getTempLoc(varKeyNode.name, varKeyNode.scope);
         		var assignVal = "0" + assignValNode.name;
         		pushHex(loadAccWithConst);
         		pushHex(assignVal);
@@ -192,13 +207,14 @@ function codeGeneration() {
         		pushHex(tempLoc[0]);
         		pushHex(tempLoc[1]);
 
-        		var endAssign = codeTable.length;
-        		var hexGenNum = endAssign - startAssign;
+        		endAssign = codeTable.length;
+        		hexGenNum = endAssign - startAssign;
         	}
         	else if (assignValNode.type == "T_BOOLEAN_VALUE") {
         		console.log(varKeyNode.name);
         		console.log(varKeyNode.scope);
-        		var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
+        		//var tempLoc = getStaticTableLoc(varKeyNode.name,varKeyNode.scope);
+        		var tempLoc = getTempLoc(varKeyNode.name, varKeyNode.scope);
         		var assignVal = "";
         		if (assignValNode.name == "true")
         			assignVal = "01";
@@ -210,18 +226,175 @@ function codeGeneration() {
         		pushHex(tempLoc[0]);
         		pushHex(tempLoc[1]);
 
-        		var endAssign = codeTable.length;
-        		var hexGenNum = endAssign - startAssign;
+        		endAssign = codeTable.length;
+        		hexGenNum = endAssign - startAssign;
+        	}
+        	else if (assignValNode.type == "T_ID") {
+        		console.log(varKeyNode.name);
+        		console.log(varKeyNode.scope);
+        		var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope);
+        		var tempLocVal = getTempLoc(assignValNode.name, assignValNode.scope);
+        		pushHex(loadAccFromMemo);
+        		pushHex(tempLocVal[0]);
+        		pushHex(tempLocVal[1]);
+        		pushHex(storeAccInMemo);
+        		pushHex(tempLocVar[0]);
+        		pushHex(tempLocVar[1]);
+
+        		endAssign = codeTable.length;
+        		hexGenNum = endAssign - startAssign;
         	}
         	console.log("AssignmentStatement Finished codeTableLoc: " + codeTable.length);
         	console.log("AssignmentStatement Finished Hex Generated: " + hexGenNum);
+
         	return hexGenNum;
         }
+    }
+
+    function printStateCodeGen(node, depth) {
+    	console.log("Generating Code For PrintStatement");
+    	var startPrint = codeTable.length;
+    	var endPrint = 0;
+    	var hexGenNum = 0;
+    	var printNode = node.children[0];
+    	if (printNode.type == "T_ID") {
+    		console.log(printNode.name);
+        	console.log(printNode.scope);
+        	var tempLoc = getTempLoc(printNode.name, printNode.scope);
+        	pushHex(loadYFromMemo);
+        	pushHex(tempLoc[0]);
+        	pushHex(tempLoc[1]);
+        	pushHex(loadXWithConst);
+        	pushHex("01");
+        	pushHex(systemCall);
+
+        	endPrint = codeTable.length;
+        	hexGenNum = endPrint - startPrint;
+    	}
+    	console.log("PrintStatement Finished codeTableLoc: " + codeTable.length);
+        console.log("PrintStatement Finished Hex Generated: " + hexGenNum);
+
+    	return hexGenNum;
     }
 
  	function pushHex(hexVal) {
  		codeTable.push(hexVal);
  		printPushHex(hexVal);
+ 	}
+
+ 	function getFullSymbolTable(node) {
+ 		var staticMem = [];
+
+ 		if (node.symbols.length > 0) {
+			console.log("Adding Symbols to Static Memory...");
+			staticMem.push(node.symbols);
+			for (var child = 0; child < node.children.length; child++) {
+				console.log("Going to children...");
+				var tempArray = getFullSymbolTable(node.children[child]);
+				staticMem.push(tempArray);
+			}
+		}
+		else {
+			for (var child = 0; child < node.children.length; child++) {
+				var tempArray = getFullSymbolTable(node.children[child]);
+				staticMem.push(tempArray);
+			}
+		}
+
+		return staticMem;
+ 	}
+
+ 	function collaspeStaticTable(array) {
+ 		var collaspedArray = [];
+
+ 		for (var symbol = 0; symbol < array.length; symbol++) {
+ 			var tempVal = [].concat.apply([], array[symbol]);
+ 			collaspedArray.push(tempVal);
+ 		}
+ 		collaspedArray = [].concat.apply([], collaspedArray);
+
+ 		return collaspedArray;
+ 	}
+
+ 	function getTempLoc(varKey, varKeyScope) {
+ 		var node = traverseST(st.root, varKeyScope);
+ 		console.log("Returning scope where variable was assigned...");
+ 		console.log(node);
+ 		var tempLoc = getLocForVal(node, varKey);
+ 		console.log(tempLoc);
+ 		tempLoc = chunk(tempLoc,2);
+
+ 		return tempLoc;
+
+ 		function traverseST(node, varKeyScope) {
+ 			var returnNode;
+ 			if (node.scope == varKeyScope) {
+ 				console.log("Found matching scope branch...");
+ 				returnNode = node;
+ 			}
+ 			else {
+ 				for (var scope = 0; scope < node.children.length; scope++) {
+ 					returnNode = traverseST(node.children[scope], varKeyScope);
+ 					if (returnNode != null || returnNode != undefined)
+ 						break;
+ 				}
+ 			}
+
+ 			return returnNode;
+ 		}
+
+ 		function getLocForVal(node, varKey) {
+ 			var tempLoc = "";
+ 			if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
+	 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+	 				if (varKey == node.symbols[symbol].getKey()) {
+	 					console.log("Retrieving TempLoc for varable [ " + varKey + " ]");
+	 					tempLoc = node.symbols[symbol].tempLoc;
+	 					break;
+	 				}
+	 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
+	 					tempLoc = getLocForVal(node.parent, varKey);
+	 				}
+	 			}
+ 			}
+ 			else if (node.parent != undefined || node.parent != null) {
+				tempLoc = getLocForVal(node.parent, varKey);
+			}
+
+ 			return tempLoc;
+ 		}
+ 	}
+
+ 	function assignTempLoc(varKey, varKeyScope, tempLoc) {
+ 		var node = traverseST(st.root, varKeyScope);
+
+ 		for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+ 			if (varKey == node.symbols[symbol].getKey()) {
+ 				node.symbols[symbol].tempLoc = tempLoc;
+ 				break;
+ 			}
+ 		}
+
+ 		console.log(node);
+
+ 		return node;
+
+ 		function traverseST(node, varKeyScope) {
+ 			var returnNode;
+ 			if (node.scope == varKeyScope) {
+ 				console.log("Found matching scope branch...");
+ 				returnNode = node;
+ 			}
+ 			else {
+ 				for (var child = 0; child < node.children.length; child++) {
+ 					returnNode = traverseST(node.children[child], varKeyScope);
+ 					if (returnNode != null || returnNode != undefined)
+ 						break;
+ 				}
+ 			}
+ 			console.log(returnNode);
+ 			return returnNode;
+ 		}
  	}
 
  	function getStaticTableLoc(varKey, varKeyScope) {
@@ -239,6 +412,7 @@ function codeGeneration() {
 				break;
 		}
  		tempLoc = chunk(tempLoc,2);
+
  		return tempLoc;
  	}
 
@@ -255,6 +429,7 @@ function codeGeneration() {
 		for(i = 0; i < str.length; i += n) {
 	    	ret.push(str.substr(i, n))
 	    }
+
 		return ret
 	}
 
