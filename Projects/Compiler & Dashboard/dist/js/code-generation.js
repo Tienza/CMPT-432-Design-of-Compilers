@@ -86,9 +86,8 @@ function codeGeneration() {
 		console.log(codeTable);
 		console.log("Static Memory Starts At: " + hexTable[codeTable.length]);
 		var fullSymbolTable = getFullSymbolTable(st.root);
-		fullSymbolTable = collaspeStaticTable(fullSymbolTable);
+		fullSymbolTable = flattenStaticTable(fullSymbolTable);
 		console.log(fullSymbolTable);
-		//console.log(staticTable);
 		console.log(jumpTable);
 	}
 
@@ -304,16 +303,31 @@ function codeGeneration() {
 		return staticMem;
  	}
 
- 	function collaspeStaticTable(array) {
- 		var collaspedArray = [];
+ 	function flattenStaticTable(array) {
+ 		var flattenedTable = array;
+		var arrayDepth = array_depth(array);
 
- 		for (var symbol = 0; symbol < array.length; symbol++) {
- 			var tempVal = [].concat.apply([], array[symbol]);
- 			collaspedArray.push(tempVal);
- 		}
- 		collaspedArray = [].concat.apply([], collaspedArray);
+		for (i = 0; i < arrayDepth; i++) {
+			flattenedTable = [].concat.apply([], flattenedTable);
+		}
 
- 		return collaspedArray;
+		return flattenedTable;
+
+		function array_depth(array) {
+			var max_depth = 0;
+
+			array.forEach(function(value) {
+				if (Array.isArray(value)) {
+					var depth = array_depth(value) + 1;
+		
+					if (depth > max_depth) {
+						max_depth = depth;
+					}
+				}
+			});
+
+			return max_depth;
+		}
  	}
 
  	function getTempLoc(varKey, varKeyScope) {
