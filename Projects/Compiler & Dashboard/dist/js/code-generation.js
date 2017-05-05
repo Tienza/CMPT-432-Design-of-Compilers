@@ -204,9 +204,11 @@ function codeGeneration() {
         			var elem = new tempVarElem(tempLoc+"XX", varKeyNode.name, 0, node.scope);
         			staticTable.push(elem);
         		}
-        		endVarDecl = codeTable.length;
-        		hexGenNum = endVarDecl - startVarDecl;
         	}
+
+    		endVarDecl = codeTable.length;
+    		hexGenNum = endVarDecl - startVarDecl;
+
         	console.log("VariableDeclaration Finished codeTableLoc: " + codeTable.length);
         	console.log("VariableDeclaration Finished Hex Generated: " + hexGenNum);
 
@@ -240,9 +242,6 @@ function codeGeneration() {
         		pushHex(storeAccInMemo);
         		pushHex(tempLoc[0]);
         		pushHex(tempLoc[1]);
-
-        		endAssign = codeTable.length;
-        		hexGenNum = endAssign - startAssign;
         	}
         	// Checks to see if the assigning value is a boolean or not
         	else if (assignValNode.type == "T_BOOLEAN_VALUE") {
@@ -264,9 +263,6 @@ function codeGeneration() {
         		pushHex(storeAccInMemo);
         		pushHex(tempLoc[0]);
         		pushHex(tempLoc[1]);
-
-        		endAssign = codeTable.length;
-        		hexGenNum = endAssign - startAssign;
         	}
         	// Checks to see if the assigning value is an id
         	else if (assignValNode.type == "T_ID") {
@@ -285,10 +281,11 @@ function codeGeneration() {
         		pushHex(storeAccInMemo);
         		pushHex(tempLocVar[0]);
         		pushHex(tempLocVar[1]);
-
-        		endAssign = codeTable.length;
-        		hexGenNum = endAssign - startAssign;
         	}
+
+        	endAssign = codeTable.length;
+        	hexGenNum = endAssign - startAssign;
+
         	console.log("AssignmentStatement Finished codeTableLoc: " + codeTable.length);
         	console.log("AssignmentStatement Finished Hex Generated: " + hexGenNum);
 
@@ -316,11 +313,21 @@ function codeGeneration() {
         	pushHex(tempLoc[1]);
         	pushHex(loadXWithConst);
         	pushHex("01");
-        	pushHex(systemCall);
-
-        	endPrint = codeTable.length;
-        	hexGenNum = endPrint - startPrint;
     	}
+    	// Checks to see if the value being princted is an int or not
+    	else if (printNode.type == "T_DIGIT") {
+    		var printInt = "0" + printNode.name;
+    		pushHex(loadYWithConst);
+    		pushHex(printInt);
+    		pushHex(loadXWithConst);
+    		pushHex("01");
+    	}
+
+        pushHex(systemCall);
+
+    	endPrint = codeTable.length;
+    	hexGenNum = endPrint - startPrint;
+
     	console.log("PrintStatement Finished codeTableLoc: " + codeTable.length);
         console.log("PrintStatement Finished Hex Generated: " + hexGenNum);
 
@@ -363,6 +370,7 @@ function codeGeneration() {
 
     	endIf = codeTable.length;
     	hexGenNum = endIf - startIf;
+
     	console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
         console.log("IfStatement Finished Hex Generated: " + hexGenNum);
     }
@@ -378,6 +386,23 @@ function codeGeneration() {
     	var leftNode = node.children[0];
     	var rightNode = node.children[1];
 
+    	// If the right comparator is a digit we need to store it in memory
+    	if (rightNode.type == "T_DIGIT") {
+    		varLocNum++;
+    		var compInt = "0" + rightNode.name;
+			var scope = getScope(rightNode.scope);
+			var tempLoc = varLocHead + varLocNum;
+			var numSymbol = new Symbol(rightNode.name, "int", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+			scope.symbols.push(numSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compInt);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
+
+    	// Checks if left comparator is an id
     	if (leftNode.type == "T_ID") {
     		var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
 
@@ -386,8 +411,17 @@ function codeGeneration() {
     		pushHex(tempLoc[1]);
     		pushHex(compareMemoToX);
     	}
+    	// Checks if the left compartor is a digit
+    	else if (leftNode.type == "T_DIGIT") {
+    		var compInt = "0" + leftNode.name;
 
-    	if (rightNode.type == "T_ID") {
+    		pushHex(loadXWithConst);
+    		pushHex(compInt);
+    		pushHex(compareMemoToX);
+    	}
+
+    	// Checks if right comparator is an id or digit
+    	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT") {
     		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
 
     		pushHex(tempLoc[0]);
@@ -396,6 +430,7 @@ function codeGeneration() {
 
     	endEquality = codeTable.length;
     	hexGenNum = endEquality - startEquality;
+
     	console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
         console.log("IfStatement Finished Hex Generated: " + hexGenNum);
     }
@@ -554,6 +589,29 @@ function codeGeneration() {
 			}
 
  			return tempLoc;
+ 		}
+ 	}
+
+ 	function getScope(digitScope) {
+ 		var node = traverseST(st.root ,digitScope);
+
+ 		return node;
+
+ 		function traverseST(node, digitScope) {
+ 			var returnNode;
+ 			if (node.scope == digitScope) {
+ 				console.log("Found matching scope branch...");
+ 				returnNode = node;
+ 			}
+ 			else {
+ 				for (var child = 0; child < node.children.length; child++) {
+ 					returnNode = traverseST(node.children[child], digitScope);
+ 					if (returnNode != null || returnNode != undefined)
+ 						break;
+ 				}
+ 			}
+ 			console.log(returnNode);
+ 			return returnNode;
  		}
  	}
 
