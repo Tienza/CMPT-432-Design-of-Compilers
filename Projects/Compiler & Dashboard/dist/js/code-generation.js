@@ -315,10 +315,10 @@ function codeGeneration() {
                     printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
 
                 pushHex(loadAccWithConst);
-                pushHex(tempStoreVal[0]);
-                pushHex(storeAccInMemo);
                 pushHex(tempLocVar[0]);
-                pushHex(tempLocVar[1]);
+                pushHex(storeAccInMemo);
+                pushHex(tempStoreVal[0]);
+                pushHex(tempStoreVal[1]);
             }
 
         	endAssign = codeTable.length;
