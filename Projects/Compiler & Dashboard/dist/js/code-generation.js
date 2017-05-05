@@ -20,10 +20,9 @@ function codeGeneration() {
 	txt = $('#log').val();
 
 	// Initialize Code Generation Variables
-	var lhs = false;
-	var rhs = false;
 	var codeTable = [];
 	var staticTable = [];
+	var stringTable = [];
 	var jumpTable = [];
 	var maxByteSize = 256;
 	var curMemLoc = maxByteSize - 1;
@@ -34,6 +33,9 @@ function codeGeneration() {
 	var varLocNum = -1;
 	var jumpHead = "J";
 	var jumpNum = -1;
+	var stringHead = "S";
+	var stringNum = -1;
+	var printStringCalled = 0;
 
 	/********************************************** Code Gen - 6502a Instructions **********************************************/
 	var loadAccWithConst = "A9"; /* LDA - Load the accumulator with a constant */
@@ -86,6 +88,8 @@ function codeGeneration() {
 		var fullSymbolTable = getFullSymbolTable(st.root);
 		fullSymbolTable = flattenStaticTable(fullSymbolTable);
 		console.log(codeTable);
+		console.log(fullSymbolTable);
+		backPatchStringVal(codeTable, fullSymbolTable);
 		backPatchStatVal(codeTable, fullSymbolTable);
 		backPatchJumpVal(codeTable, jumpTable);
 		console.log(codeTable);
@@ -306,21 +310,54 @@ function codeGeneration() {
     	if (printNode.type == "T_ID") {
     		console.log(printNode.name);
         	console.log(printNode.scope);
-        	// Gets the Temporary Location of the variable being printed
-        	var tempLoc = getTempLoc(printNode.name, printNode.scope);
-        	pushHex(loadYFromMemo);
-        	pushHex(tempLoc[0]);
-        	pushHex(tempLoc[1]);
-        	pushHex(loadXWithConst);
-        	pushHex("01");
+        	// Checks to see if the value being printed in an int or bool type
+        	var scope = getScope(printNode.scope);
+        	var type = getVarType(scope, printNode.name);
+
+        	console.log("Variable [ " + printNode.name + " ] has type [ " + type + " ]");
+
+        	if (type == "int" || type == "boolean") {
+	        	// Gets the Temporary Location of the variable being printed
+	        	var tempLoc = getTempLoc(printNode.name, printNode.scope);
+	        	pushHex(loadYFromMemo);
+	        	pushHex(tempLoc[0]);
+	        	pushHex(tempLoc[1]);
+	        	pushHex(loadXWithConst);
+	        	pushHex("01");
+        	}
     	}
-    	// Checks to see if the value being princted is an int or not
+    	// Checks to see if the value being printed is an int or not
     	else if (printNode.type == "T_DIGIT") {
     		var printInt = "0" + printNode.name;
     		pushHex(loadYWithConst);
     		pushHex(printInt);
     		pushHex(loadXWithConst);
     		pushHex("01");
+    	}
+    	// Checks to see if the value being printed is a string
+    	else if (printNode.type == "T_CHARLIST") {
+    		stringNum++;
+    		varLocNum++;
+    		printStringCalled = 1;
+    		var hexVal = toHex(printNode.name);
+    		hexVal.push("00");
+    		var scope = getScope(printNode.scope);
+    		console.log(hexVal);
+    		var elem = new Symbol("string"+stringNum, "string", printNode.line, printNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, stringHead+stringNum+"XX", hexVal, varLocHead+varLocNum+"XX");
+    		scope.symbols.push(elem);
+    		var tempLoc = getTempLoc("string"+stringNum, printNode.scope);
+    		var tempStore = getTempStore("string"+stringNum, printNode.scope);
+
+    		pushHex(loadAccFromMemo);
+    		pushHex(tempLoc[0]);
+    		pushHex(tempLoc[1]);
+    		pushHex(loadYWithConst);
+    		pushHex(tempLoc[0]);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempStore[0]);
+    		pushHex(tempStore[1]);
+    		pushHex(loadXWithConst);
+    		pushHex("02");
     	}
 
         pushHex(systemCall);
@@ -361,6 +398,10 @@ function codeGeneration() {
     	traverseTree(blockNode, depth);
     	var endBlock = codeTable.length;
     	var blockHexGenNum = endBlock - startBlock;
+    	if (printStringCalled != 0) {
+    		blockHexGenNum = blockHexGenNum + printStringCalled;
+    		printStringCalled = 0;
+    	}
     	console.log("Jump Distance for Block: " + blockHexGenNum);
 
     	for (var i = 0; i < jumpTable.length; i++) {
@@ -441,12 +482,66 @@ function codeGeneration() {
  			printPushHex(hexVal);
  	}
 
+ 	function backPatchStringVal(codeTable, stringTable) {
+ 		//var dynamicMemStart = hexTable[codeTable.length + 1];
+ 		var codeLocs = [];
+ 		var codeLocNum = -1;
+
+ 		for (var symbol = 0; symbol < stringTable.length; symbol++) {
+ 			if (stringTable[symbol].type == "string") {
+ 				var dynamicMemStart = hexTable[codeTable.length];
+ 				codeLocs.push(dynamicMemStart + "00");
+ 				for (var hexVal = 0; hexVal < stringTable[symbol].stringHex.length; hexVal++) {
+ 					codeTable.push(stringTable[symbol].stringHex[hexVal]);
+ 				}
+ 			}
+ 		}
+
+ 		console.log(codeLocs);
+
+ 		for (var symbol = 0; symbol < stringTable.length; symbol++) {
+ 			if (stringTable[symbol].type == "string") {
+ 				codeLocNum++;
+	 			var tempLoc = chunk(stringTable[symbol].tempLoc,2);
+	 			console.log(tempLoc);
+	 			var tempStore = chunk(stringTable[symbol].tempStore,2);
+	 			console.log(tempStore);
+	 			var codeLoc = chunk(codeLocs[codeLocNum],2);
+	 			console.log(codeLoc);
+		 		for (var newLoc = 0; newLoc < codeLocs.length; newLoc++) {
+		 			for (var hexCode = 0; hexCode < codeTable.length-1; hexCode++) {
+		 				if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
+		 					if (verbose)
+		 						printStatValBackPatch(stringTable[newLoc].tempLoc, codeLocs[newLoc]);
+		 					codeTable[hexCode] = codeLoc[0];
+		 					codeTable[hexCode+1] = codeLoc[1];
+		 				}
+		 				else if (codeTable[hexCode] == tempLoc[0]) {
+		 					if (verbose)
+		 						printStatValBackPatch(stringTable[newLoc].tempLoc, codeLocs[newLoc]);
+		 					codeTable[hexCode] = codeLoc[0];
+		 				}
+		 			}
+		 		}
+		 	}
+ 		}
+
+ 		for (var symbol = 0; symbol < stringTable.length; symbol++) {
+			if (stringTable[symbol].type == "string") {
+ 				stringTable[symbol].tempLoc = codeLocs[symbol];
+			}
+ 		}
+ 	}
+
  	function backPatchStatVal(codeTable, staticTable) {
  		var staticMemStart = hexTable[codeTable.length + 1];
  		var tempLocs = [];
 
  		for (var symbol = 0; symbol < staticTable.length; symbol++) {
- 			tempLocs.push(staticTable[symbol].tempLoc);
+ 			if (staticTable[symbol].type == "int" || staticTable[symbol].type == "boolean")
+ 				tempLocs.push(staticTable[symbol].tempLoc);
+ 			else
+ 				tempLocs.push(staticTable[symbol].tempStore);
  		}
 
  		console.log(tempLocs);
@@ -463,7 +558,12 @@ function codeGeneration() {
 
 		for (var newLoc = 0; newLoc < tempLocs.length; newLoc++) {
  			var codeLoc = chunk(tempLocs[newLoc],2);
- 			var tempLoc = chunk(staticTable[newLoc].tempLoc,2);
+ 			var tempLoc = "";
+ 			if (staticTable[newLoc].type == "int" || staticTable[newLoc].type == "boolean")
+ 				tempLoc = chunk(staticTable[newLoc].tempLoc,2);
+ 			else
+ 				tempLoc = chunk(staticTable[newLoc].tempStore,2);
+
  			for (var hexCode = 0; hexCode < codeTable.length-1; hexCode++) {
  				if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
  					if (verbose)
@@ -475,7 +575,8 @@ function codeGeneration() {
  		}
 
 		for (var symbol = 0; symbol < staticTable.length; symbol++) {
- 			staticTable[symbol].tempLoc = tempLocs[symbol];
+			if (staticTable[symbol].type == "int" || staticTable[symbol].type == "boolean")
+ 				staticTable[symbol].tempLoc = tempLocs[symbol];
  		}
  	}
 
@@ -541,6 +642,55 @@ function codeGeneration() {
 
 			return max_depth;
 		}
+ 	}
+
+ 	function getTempStore(varKey, varKeyScope) {
+ 		var node = traverseST(st.root, varKeyScope);
+ 		console.log("Returning scope where variable was assigned...");
+ 		console.log(node);
+ 		var tempStore = getLocForVal(node, varKey);
+ 		console.log(tempStore);
+ 		tempStore = chunk(tempStore,2);
+
+ 		return tempStore;
+
+ 		function traverseST(node, varKeyScope) {
+ 			var returnNode;
+ 			if (node.scope == varKeyScope) {
+ 				console.log("Found matching scope branch...");
+ 				returnNode = node;
+ 			}
+ 			else {
+ 				for (var scope = 0; scope < node.children.length; scope++) {
+ 					returnNode = traverseST(node.children[scope], varKeyScope);
+ 					if (returnNode != null || returnNode != undefined)
+ 						break;
+ 				}
+ 			}
+
+ 			return returnNode;
+ 		}
+
+ 		function getLocForVal(node, varKey) {
+ 			var tempStore = "";
+ 			if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
+	 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+	 				if (varKey == node.symbols[symbol].getKey()) {
+	 					console.log("Retrieving TempStore for varable [ " + varKey + " ]");
+	 					tempStore = node.symbols[symbol].tempStore;
+	 					break;
+	 				}
+	 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
+	 					tempStore = getLocForVal(node.parent, varKey);
+	 				}
+	 			}
+ 			}
+ 			else if (node.parent != undefined || node.parent != null) {
+				tempStore = getLocForVal(node.parent, varKey);
+			}
+
+ 			return tempStore;
+ 		}
  	}
 
  	function getTempLoc(varKey, varKeyScope) {
@@ -615,6 +765,27 @@ function codeGeneration() {
  		}
  	}
 
+ 	function getVarType(node, varKey) {
+ 		var varType = "";
+		if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
+			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
+				if (varKey == node.symbols[symbol].getKey()) {
+					console.log("Retrieving Type for varable [ " + varKey + " ]");
+					varType = node.symbols[symbol].type;
+					break;
+				}
+				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
+					varType = getVarType(node.parent, varKey);
+				}
+			}
+		}
+		else if (node.parent != undefined || node.parent != null) {
+			varType = getVarType(node.parent, varKey);
+		}
+
+		return varType;
+ 	}
+
  	function assignTempLoc(varKey, varKeyScope, tempLoc) {
  		var node = traverseST(st.root, varKeyScope);
 
@@ -646,7 +817,7 @@ function codeGeneration() {
  			return returnNode;
  		}
  	}
-
+/*
  	function getStaticTableLoc(varKey, varKeyScope) {
  		var tempLoc = "";
  		while (varKeyScope != -1) {
@@ -665,12 +836,13 @@ function codeGeneration() {
 
  		return tempLoc;
  	}
-
+*/
  	function toHex(val) {
-		var hex = '';
+		var hex = "";
 		for(var i = 0; i < val.length; i++) {
-			hex += '' + val.charCodeAt(i).toString(16).toUpperCase();
+			hex += "" + val.charCodeAt(i).toString(16).toUpperCase();
 		}
+		hex = chunk(hex, 2);
 		return hex;
 	}
 
