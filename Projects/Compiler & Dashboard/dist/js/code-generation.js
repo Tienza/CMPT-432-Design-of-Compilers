@@ -37,6 +37,8 @@ function codeGeneration() {
 	var stringNum = -1;
     var booleanHead = "B";
     var booleanNum = -1;
+    var intHead = "I"
+    var intNum = -1;
 	var printStringCalled = 0;
 
 	/********************************************** Code Gen - 6502a Instructions **********************************************/
@@ -138,6 +140,8 @@ function codeGeneration() {
 				printStateCodeGen(node, depth);
 			else if (node.name == "IfStatement")
 				ifStateCodeGen(node, depth);
+			else if (node.name == "Addition")
+				additionCodeGen(node, depth);
 			else {
 				console.log("I got here...");
 				for (var i = 0; i < node.children.length; i++) {
@@ -185,6 +189,85 @@ function codeGeneration() {
         	console.log("Block Finished Hex Generated: " + hexGenNum);
 
             return codeTable.length;
+        }
+
+        function additionCodeGen(node, depth) {
+        	// Generates code for Addition
+        	if (verbose) {
+        		printFoundBranch(node.name, node.line, node.scope);
+        		console.log("Generating Code For Addition");
+        	}
+
+        	var startAddition = codeTable.length;
+        	var endAddition = 0;
+        	var hexGenNum = 0;
+        	// Assigns the nodes to local variables
+        	var digitNode = node.children[0];
+        	var intExprNode = node.children[1];
+
+        	// Var Addition Branch Temporary Location
+        	var addTempLoc = "";
+
+        	// If the right addition is an Addition then we need to perform that first
+			if (intExprNode.type == "Addition") {
+				varLocNum++;
+				var compInt = "0" + intExprNode.name;
+				var scope = getScope(intExprNode.scope);
+				var tempLoc = varLocHead + varLocNum;
+				addTempLoc = tempLoc;
+				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+				scope.symbols.push(numSymbol);
+
+				traverseTree(intExprNode, depth);
+
+				pushHex(tempLoc);
+				pushHex("XX");
+			}
+        	// If the right comparator is a digit we need to store it in memory
+			else if (intExprNode.type == "T_DIGIT") {
+				varLocNum++;
+				var compInt = "0" + intExprNode.name;
+				var scope = getScope(intExprNode.scope);
+				var tempLoc = varLocHead + varLocNum;
+				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+				scope.symbols.push(numSymbol);
+
+				pushHex(loadAccWithConst);
+				pushHex(compInt);
+				pushHex(storeAccInMemo);
+				pushHex(tempLoc);
+				pushHex("XX");
+			}
+
+        	// Stores the digit in the accumulator
+        	var assignVal = "0" + digitNode.name;
+
+        	pushHex(loadAccWithConst);
+        	pushHex(assignVal);
+        	pushHex(addWithCarry);
+
+        	// Checks if right addition is an id or digit
+	    	if (intExprNode.type == "T_ID" || intExprNode.type == "T_DIGIT") {
+	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
+
+	    		pushHex(tempLoc[0]);
+	    		pushHex(tempLoc[1]);
+	    	}
+	    	// If right addition was an AdditionExpr - then assign memory location of previous result
+	    	else {
+	    		pushHex(addTempLoc);
+	    		pushHex("XX");
+	    	}
+
+	    	pushHex(storeAccInMemo);
+
+	    	endAddition = codeTable.length;
+	    	hexGenNum = endAddition - startAddition;
+
+			console.log("Addition Finished codeTableLoc: " + codeTable.length);
+        	console.log("Addition Finished Hex Generated: " + hexGenNum);
+
+	    	return hexGenNum;
         }
 
         function varDeclCodeGen(node, depth) {
@@ -336,6 +419,23 @@ function codeGeneration() {
                 pushHex(storeAccInMemo);
                 pushHex(tempStoreVal[0]);
                 pushHex(tempStoreVal[1]);
+            }
+            // Checks to see if the assigning value is an Addition
+            else if (assignValNode.type == "Addition") {
+            	console.log(varKeyNode.name);
+                console.log(varKeyNode.scope);
+
+                // Traverse Tree for Addition
+                traverseTree(assignValNode, depth);
+                
+				// Store the results in the memory location of the variable being assigned
+				var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
+
+				if (verbose)
+					printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
+
+				pushHex(tempLocVar[0]);
+				pushHex(tempLocVar[1]);
             }
 
         	endAssign = codeTable.length;
