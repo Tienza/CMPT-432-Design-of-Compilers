@@ -489,15 +489,20 @@ function codeGeneration() {
     	traverseTree(blockNode, depth);
     	var endBlock = codeTable.length;
     	var blockHexGenNum = endBlock - startBlock;
-    	if (printStringCalled != 0) {
+    	/*if (printStringCalled != 0) {
     		blockHexGenNum = blockHexGenNum + printStringCalled;
     		printStringCalled = 0;
-    	}
+    	}*/
     	console.log("Jump Distance for Block: " + blockHexGenNum);
 
     	for (var i = 0; i < jumpTable.length; i++) {
+    		var hexVal = blockHexGenNum.toString(16).toUpperCase();
+
+    		if (blockHexGenNum < 16)
+    			hexVal = "0" + hexVal;
+
     		if (jumpTable[i].tempName == jumpName)
-    			jumpTable[i].distance = "0" + blockHexGenNum;
+    			jumpTable[i].distance = hexVal;
     	}
 
     	endIf = codeTable.length;
