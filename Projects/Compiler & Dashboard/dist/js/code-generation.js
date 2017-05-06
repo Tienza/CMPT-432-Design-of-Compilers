@@ -215,7 +215,7 @@ function codeGeneration() {
 				varLocNum++;
 				var compInt = "0" + intExprNode.name;
 				var scope = getScope(intExprNode.scope);
-				var tempLoc = varLocHead + varLocNum;
+				var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
 				lastTempLoc = tempLoc;
 				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 				scope.symbols.push(numSymbol);
@@ -230,7 +230,7 @@ function codeGeneration() {
 				varLocNum++;
 				var compInt = "0" + intExprNode.name;
 				var scope = getScope(intExprNode.scope);
-				var tempLoc = varLocHead + varLocNum;
+				var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
 				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 				scope.symbols.push(numSymbol);
 
@@ -294,7 +294,7 @@ function codeGeneration() {
         		pushHex("00");
     			pushHex(storeAccInMemo);
     			// Creates the Temporary Location Reference Name
-    			var tempLoc = varLocHead + varLocNum;
+    			var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
     			pushHex(tempLoc);
     			pushHex("XX");
     			// Assigns The Temporary Location Name to the appropriate symbol in the symbol table
@@ -305,20 +305,20 @@ function codeGeneration() {
                 pushHex(loadAccWithConst);
                 pushHex("00");
                 pushHex(storeAccInMemo);
-                var tempLoc = varLocHead + varLocNum;
+                var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
                 pushHex(tempLoc);
                 pushHex("XX");
 
                 // Assings the Temporary Loc and Store Name to the appropriate symbol in the symbol table
-                assignTempLoc(varKeyNode.name, node.scope, booleanHead+booleanNum+"XX");
-                assignTempStore(varKeyNode.name, node.scope, tempLoc+"XX");
+                assignTempLoc(varKeyNode.name, node.scope, tempLoc+"XX");
+                //assignTempStore(varKeyNode.name, node.scope, tempLoc+"XX");
             }
             else if (typeNode.name == "string") {
                 stringNum++;
                 pushHex(loadAccWithConst);
                 pushHex("00");
                 pushHex(storeAccInMemo);
-                var tempLoc = varLocHead + varLocNum;
+                var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
                 pushHex(tempLoc);
                 pushHex("XX");
                 // Assings the Temporary Loc and Store Name to the appropriate symbol in the symbol table
@@ -512,7 +512,7 @@ function codeGeneration() {
                 boolVal = "01";
             else 
                 boolVal = "00";
-            var elem = new Symbol("boolean"+booleanNum, "boolean", printNode.line, printNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, booleanHead+booleanNum+"XX", boolVal, varLocHead+varLocNum+"XX");
+            var elem = new Symbol("boolean"+booleanNum, "boolean", printNode.line, printNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, booleanHead+booleanNum+"XX", boolVal, varLocHead+varLocNumtoHex(varLocNum)+"XX");
             scope.symbols.push(elem);
             var tempLoc = getTempLoc("boolean"+booleanNum, printNode.scope);
             var tempStore = getTempStore("boolean"+booleanNum, printNode.scope);
@@ -538,7 +538,7 @@ function codeGeneration() {
     		hexVal.push("00");
     		var scope = getScope(printNode.scope);
     		console.log(hexVal);
-    		var elem = new Symbol("string"+stringNum, "string", printNode.line, printNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, stringHead+stringNum+"XX", hexVal, varLocHead+varLocNum+"XX");
+    		var elem = new Symbol("string"+stringNum, "string", printNode.line, printNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, stringHead+stringNum+"XX", hexVal, varLocHead+varLocNumtoHex(varLocNum)+"XX");
     		scope.symbols.push(elem);
     		var tempLoc = getTempLoc("string"+stringNum, printNode.scope);
     		var tempStore = getTempStore("string"+stringNum, printNode.scope);
@@ -638,13 +638,15 @@ function codeGeneration() {
     	var hexGenNum = 0;
     	var leftNode = node.children[0];
     	var rightNode = node.children[1];
+    	var leftString = "";
+    	var rightString = "";
 
-    	// If the right comparator is a digit we need to store it in memory
+    	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
     		varLocNum++;
     		var compInt = "0" + rightNode.name;
 			var scope = getScope(rightNode.scope);
-			var tempLoc = varLocHead + varLocNum;
+			var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
 			var numSymbol = new Symbol(rightNode.name, "int", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 			scope.symbols.push(numSymbol);
 
@@ -654,6 +656,43 @@ function codeGeneration() {
     		pushHex(tempLoc);
     		pushHex("XX");
     	}
+    	// If the right comparator is a pure boolean we need to store it in memory
+    	else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    		varLocNum++;
+    		var compBool = "";
+    		if (rightNode.name == "true")
+    			compBool = "01";
+    		else
+    			compBool = "00";
+    		var scope = getScope(rightNode.scope);
+    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+    		var boolSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		scope.symbols.push(boolSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compBool);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
+    	// Checks if the right compartor is a pure string
+    	else if (rightNode.type == "T_CHARLIST") {
+    		varLocNum++;
+    		rightString = rightNode.name;
+    		var compBool = "01";
+    		var scope = getScope(rightNode.scope);
+    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+    		var stringSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX")
+    		scope.symbols.push(stringSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compBool);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
+
+    	/* Handles Left Expression */
 
     	// Checks if left comparator is an id
     	if (leftNode.type == "T_ID") {
@@ -664,7 +703,7 @@ function codeGeneration() {
     		pushHex(tempLoc[1]);
     		pushHex(compareMemoToX);
     	}
-    	// Checks if the left compartor is a digit
+    	// Checks if the left comparator is a pure digit
     	else if (leftNode.type == "T_DIGIT") {
     		var compInt = "0" + leftNode.name;
 
@@ -672,9 +711,38 @@ function codeGeneration() {
     		pushHex(compInt);
     		pushHex(compareMemoToX);
     	}
+    	// Check if the left comparator is a pure boolean
+    	else if (leftNode.type == "T_BOOLEAN_VALUE") {
+    		var compBool = "";
+    		if (leftNode.name == "true")
+    			compBool = "01";
+    		else
+    			compBool = "00";
+
+    		pushHex(loadXWithConst);
+    		pushHex(compBool);
+    		pushHex(compareMemoToX);
+    	}
+    	// Cheks if the left comparator is a pure string
+    	else if (leftNode.type == "T_CHARLIST") {
+    		leftString = leftNode.name;
+    		var compBool = "";
+    		// I swear this isn't cheating...
+    		if (leftString == rightString) {
+    			compBool = "01";
+    		}
+    		else
+    			compBool = "00";
+
+    		pushHex(loadXWithConst);
+    		pushHex(compBool);
+    		pushHex(compareMemoToX);
+    	}
+
+    	/* Handles Right Expression */
 
     	// Checks if right comparator is an id or digit
-    	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT") {
+    	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT" || rightNode.type == "T_BOOLEAN_VALUE" || rightNode.type == "T_CHARLIST") {
     		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
 
     		pushHex(tempLoc[0]);
@@ -705,7 +773,7 @@ function codeGeneration() {
         var codeLocNum = -1;
 
         for (var symbol = 0; symbol < booleanTable.length; symbol++) {
-            if (booleanTable[symbol].type == "boolean") {
+            if (booleanTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
                 if (booleanTable[symbol].stringHex == "01")
                     codeLocs.push(trueStringLoc+"00");
                 else 
@@ -716,7 +784,7 @@ function codeGeneration() {
         console.log(codeLocs);
 
         for (var symbol = 0; symbol < booleanTable.length; symbol++) {
-            if (booleanTable[symbol].type == "boolean") {
+            if (booleanTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
                 codeLocNum++;
                 var tempLoc = chunk(booleanTable[symbol].tempLoc,2);
                 console.log(tempLoc);
@@ -741,7 +809,7 @@ function codeGeneration() {
         }
 
         for (var symbol = 0; symbol < stringTable.length; symbol++) {
-            if (stringTable[symbol].type == "string") {
+            if (stringTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
                 stringTable[symbol].tempLoc = codeLocs[symbol];
             }
         }
@@ -803,6 +871,8 @@ function codeGeneration() {
  		for (var symbol = 0; symbol < staticTable.length; symbol++) {
  			if (staticTable[symbol].type == "int")
  				tempLocs.push(staticTable[symbol].tempLoc);
+ 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].name))
+ 				tempLocs.push(staticTable[symbol].tempLoc);
  			else
  				tempLocs.push(staticTable[symbol].tempStore);
  		}
@@ -824,6 +894,8 @@ function codeGeneration() {
  			var tempLoc = "";
  			if (staticTable[newLoc].type == "int")
  				tempLoc = chunk(staticTable[newLoc].tempLoc,2);
+ 			else if (staticTable[newLoc].type == "boolean" && !/^boolean\d+$/.test(staticTable[newLoc].name))
+ 				tempLoc = chunk(staticTable[newLoc].tempLoc,2);
  			else
  				tempLoc = chunk(staticTable[newLoc].tempStore,2);
 
@@ -844,6 +916,8 @@ function codeGeneration() {
 
 		for (var symbol = 0; symbol < staticTable.length; symbol++) {
 			if (staticTable[symbol].type == "int")
+ 				staticTable[symbol].tempLoc = tempLocs[symbol];
+ 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].name))
  				staticTable[symbol].tempLoc = tempLocs[symbol];
             else
                 staticTable[symbol].tempStore = tempLocs[symbol];
@@ -1137,26 +1211,12 @@ function codeGeneration() {
  			return returnNode;
  		}
  	}
-/*
- 	function getStaticTableLoc(varKey, varKeyScope) {
- 		var tempLoc = "";
- 		while (varKeyScope != -1) {
-			for (var i = 0; i < staticTable.length; i++) {
-				if (varKey == staticTable[i].getVarKey() && varKeyScope == staticTable[i].getScope()) {
-					tempLoc = staticTable[i].getTempLoc();
-					break;
-				}
-			}
-			if (tempLoc == "")
-				varKeyScope = varKeyScope - 1;
-			else
-				break;
-		}
- 		tempLoc = chunk(tempLoc,2);
 
- 		return tempLoc;
+ 	function varLocNumtoHex(varLocNum) {
+ 		var varLocNum = varLocNum.toString(16).toUpperCase();
+ 		return varLocNum;
  	}
-*/
+
  	function toHex(val) {
 		var hex = "";
 		for(var i = 0; i < val.length; i++) {
