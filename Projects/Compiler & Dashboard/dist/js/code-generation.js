@@ -140,8 +140,10 @@ function codeGeneration() {
 				printStateCodeGen(node, depth);
 			else if (node.name == "IfStatement")
 				ifStateCodeGen(node, depth);
-			else if (node.name == "Addition")
-				additionCodeGen(node, depth);
+			else if (node.name == "Addition") {
+				var lastMemLoc = additionCodeGen(node, depth);
+				return lastMemLoc;
+			}
 			else {
 				console.log("I got here...");
 				for (var i = 0; i < node.children.length; i++) {
@@ -206,7 +208,7 @@ function codeGeneration() {
         	var intExprNode = node.children[1];
 
         	// Var Addition Branch Temporary Location
-        	var addTempLoc = "";
+        	var lastTempLoc = "";
 
         	// If the right addition is an Addition then we need to perform that first
 			if (intExprNode.type == "Addition") {
@@ -214,7 +216,7 @@ function codeGeneration() {
 				var compInt = "0" + intExprNode.name;
 				var scope = getScope(intExprNode.scope);
 				var tempLoc = varLocHead + varLocNum;
-				addTempLoc = tempLoc;
+				lastTempLoc = tempLoc;
 				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 				scope.symbols.push(numSymbol);
 
@@ -249,13 +251,15 @@ function codeGeneration() {
         	// Checks if right addition is an id or digit
 	    	if (intExprNode.type == "T_ID" || intExprNode.type == "T_DIGIT") {
 	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
+	    		lastTempLoc = tempLoc[0];
 
 	    		pushHex(tempLoc[0]);
 	    		pushHex(tempLoc[1]);
+
 	    	}
 	    	// If right addition was an AdditionExpr - then assign memory location of previous result
 	    	else {
-	    		pushHex(addTempLoc);
+	    		pushHex(lastTempLoc);
 	    		pushHex("XX");
 	    	}
 
@@ -267,7 +271,7 @@ function codeGeneration() {
 			console.log("Addition Finished codeTableLoc: " + codeTable.length);
         	console.log("Addition Finished Hex Generated: " + hexGenNum);
 
-	    	return hexGenNum;
+	    	return lastTempLoc;
         }
 
         function varDeclCodeGen(node, depth) {
@@ -549,6 +553,18 @@ function codeGeneration() {
     		pushHex(tempStore[1]);
     		pushHex(loadXWithConst);
     		pushHex("02");
+    	}
+    	// Checks to see if hte value being printed in an addition
+    	else if (printNode.type == "Addition") {
+    		var lastMemLoc = traverseTree(printNode, depth);
+
+    		pushHex(lastMemLoc);
+    		pushHex("XX");
+    		pushHex(loadYFromMemo);
+    		pushHex(lastMemLoc);
+    		pushHex("XX");
+    		pushHex(loadXWithConst);
+    		pushHex("01");
     	}
 
         pushHex(systemCall);
