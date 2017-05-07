@@ -66,7 +66,7 @@ function codeGeneration() {
 										  at the address in the Y register */
 
 	// Begin Code Generation
-	generate();
+	var code = generate();
 	/*console.log(toHex("t"));
 	console.log(toHex("there is no spoon"));
 	console.log(toHex(5));*/
@@ -86,6 +86,8 @@ function codeGeneration() {
 	}
 	// Code Generation Failed
 		/* See throwError Section of Code */
+
+	return code;
 
 	/********************************************** Code Gen - Traversing AST *************************************************/
 	function generate() {
@@ -112,11 +114,12 @@ function codeGeneration() {
 		console.log(codeTable);
 		console.log(fullSymbolTable);
 		console.log(jumpTable);
-		var str = "";
+		var code = "";
 		for (var i = 0; i < codeTable.length; i++) {
-			str = str + codeTable[i] + " ";
+			code = code + codeTable[i] + " ";
 		}
-		console.log(str);
+
+		return [code, codeTable];
 	}
 
 	function traverseTree(node, depth) {
@@ -461,7 +464,7 @@ function codeGeneration() {
             }
             // Checks to see if the assinging value is an Equality
             else if (assignValNode.type == "Equality") {
-            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST")) {
+            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST") || (assignValNode.children[0].type == "T_BOOLEAN_VALUE" && assignValNode.children[1].type == "T_BOOLEAN_VALUE")) {
 	    			var compBool = "";
 	    			if (assignValNode.children[0].name == assignValNode.children[1].name)
 	    				compBool = "01";
@@ -483,7 +486,7 @@ function codeGeneration() {
             }
             // Checks to see if the assinging value is an Equality
             else if (assignValNode.type == "Inequality") {
-            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST")) {
+            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST") || (assignValNode.children[0].type == "T_BOOLEAN_VALUE" && assignValNode.children[1].type == "T_BOOLEAN_VALUE")) {
 	    			var compBool = "";
 	    			if (assignValNode.children[0].name != assignValNode.children[1].name)
 	    				compBool = "01";
@@ -678,7 +681,7 @@ function codeGeneration() {
 			pushHex("00");
     	}
     	else if (booleanExpNode.name == "Equality") {
-    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST")) {
+    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST") || (booleanExpNode.children[0].type == "T_BOOLEAN_VALUE" && booleanExpNode.children[1].type == "T_BOOLEAN_VALUE")) {
     			var compBool = "";
     			if (booleanExpNode.children[0].name == booleanExpNode.children[1].name)
     				compBool = "00";
@@ -696,7 +699,7 @@ function codeGeneration() {
     		}
     	}
     	else if (booleanExpNode.name == "Inequality") {
-    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST")) {
+    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST") || (booleanExpNode.children[0].type == "T_BOOLEAN_VALUE" && booleanExpNode.children[1].type == "T_BOOLEAN_VALUE")) {
     			var compBool = "";
     			if (booleanExpNode.children[0].name != booleanExpNode.children[1].name)
     				compBool = "00";
