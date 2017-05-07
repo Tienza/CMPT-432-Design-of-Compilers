@@ -594,6 +594,8 @@ function codeGeneration() {
     	var blockNode = node.children[1];
     	if (booleanExpNode.name == "Equality")
     		equalityCodeGen(booleanExpNode, depth);
+    	else if (booleanExpNode.name == "Inequality")
+    		inequalityCodeGen(booleanExpNode, depth);
     	else if (booleanExpNode.name == "true" || booleanExpNode.name == "false") {
     		varLocNum++;
     		var compBool = "";
@@ -652,6 +654,70 @@ function codeGeneration() {
 
     	console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
         console.log("IfStatement Finished Hex Generated: " + hexGenNum);
+    }
+
+    function inequalityCodeGen(node, depth) {
+    	if (verbose) {
+    		printFoundBranch(node.name, node.line, node.scope);
+    		console.log("Generating Code For Inequality");
+    	}
+    	var startInequality = codeTable.length;
+    	var endInequality = 0;
+    	var hexGenNum = 0;
+    	var leftNode = node.children[0];
+    	var rightNode = node.children[1];
+    	var leftString = "";
+    	var rightString = "";
+    	var rightAddTempLoc = "";
+
+    	// If the right comparator is a pure digit we need to store it in memory
+    	if (rightNode.type == "T_DIGIT") {
+    		varLocNum++;
+    		var compInt = "0" + rightNode.name;
+			var scope = getScope(rightNode.scope);
+			var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+			var numSymbol = new Symbol(rightNode.name, "int", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+			scope.symbols.push(numSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compInt);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
+
+    	/* Handles Left Expression */
+
+    	// Checks if left comparator is an id
+    	if (leftNode.type == "T_ID") {
+    		var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+
+    		pushHex(loadXFromMemo);
+    		pushHex(tempLoc[0]);
+    		pushHex(tempLoc[1]);
+    		pushHex(compareMemoToX);
+    	}
+
+    	/* Handles Right Expression */
+
+    	// Checks if right comparator is an id or digit
+    	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT" || rightNode.type == "T_BOOLEAN_VALUE" || rightNode.type == "T_CHARLIST") {
+    		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+
+    		pushHex(tempLoc[0]);
+    		pushHex(tempLoc[1]);
+    	}
+
+    	// Based of Bloop (I don't understand why yet but we'll see later)
+    	pushHex(loadXWithConst);
+    	pushHex("00");
+    	pushHex(branchNBytes);
+    	pushHex("02");
+    	pushHex(loadXWithConst);
+    	pushHex("01");
+    	pushHex(compareMemoToX);
+    	pushHex(systemCall);
+    	pushHex(breakOp);
     }
 
     function equalityCodeGen(node, depth) {
