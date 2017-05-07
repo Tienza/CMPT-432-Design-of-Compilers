@@ -704,6 +704,30 @@ function codeGeneration() {
     		pushHex(tempLoc);
     		pushHex("XX");
     	}
+        // Checks if the right comparator is a pure string
+        else if (rightNode.type == "T_CHARLIST") {
+            varLocNum++;
+            rightString = rightNode.name;
+            var compBool = "01";
+            var scope = getScope(rightNode.scope);
+            var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+            var stringSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX")
+            scope.symbols.push(stringSymbol);
+
+            pushHex(loadAccWithConst);
+            pushHex(compBool);
+            pushHex(storeAccInMemo);
+            pushHex(tempLoc);
+            pushHex("XX");
+        }
+        // Checks if the right comparator is an Addition
+        else if (rightNode.name == "Addition") {
+            // Traverse Tree for Addition Node
+            rightAddTempLoc = traverseTree(rightNode, depth);
+
+            pushHex(rightAddTempLoc);
+            pushHex("XX");
+        }
 
     	/* Handles Left Expression */
 
@@ -736,6 +760,33 @@ function codeGeneration() {
     		pushHex(compBool);
     		pushHex(compareMemoToX);
     	}
+        // Checks if the left comparator is a pure string
+        else if (leftNode.type == "T_CHARLIST") {
+            leftString = leftNode.name;
+            var compBool = "";
+            // I swear this isn't cheating...
+            if (leftString == rightString) {
+                compBool = "01";
+            }
+            else
+                compBool = "00";
+
+            pushHex(loadXWithConst);
+            pushHex(compBool);
+            pushHex(compareMemoToX);
+        }
+        // Checks if the left comparator is an Addition
+        else if (leftNode.name == "Addition") {
+            // Traverse Tree for Addition Node
+            var leftAddTempLoc = traverseTree(leftNode, depth);
+
+            pushHex(leftAddTempLoc);
+            pushHex("XX");
+            pushHex(loadXFromMemo);
+            pushHex(leftAddTempLoc);
+            pushHex("XX");
+            pushHex(compareMemoToX);
+        }
 
     	/* Handles Right Expression */
 
@@ -752,7 +803,7 @@ function codeGeneration() {
     		pushHex("XX");
     	}
 
-    	// Based of Bloop (I don't understand why yet but we'll see later)
+    	// Based off Bloop (I don't understand why yet but we'll see later)
     	pushHex(loadXWithConst);
     	pushHex("00");
     	pushHex(branchNBytes);
@@ -762,6 +813,12 @@ function codeGeneration() {
     	pushHex(compareMemoToX);
     	pushHex(systemCall);
     	pushHex(breakOp);
+
+        endInequality = codeTable.length;
+        hexGenNum = endInequality - startInequality;
+
+        console.log("IfStatement Finished codeTableLoc: " + codeTable.length);
+        console.log("IfStatement Finished Hex Generated: " + hexGenNum);
     }
 
     function equalityCodeGen(node, depth) {
