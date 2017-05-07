@@ -685,6 +685,25 @@ function codeGeneration() {
     		pushHex(tempLoc);
     		pushHex("XX");
     	}
+    	// If the right comparator is a pure boolean we need to store it in memory
+    	else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    		varLocNum++;
+    		var compBool = "";
+    		if (rightNode.name == "true")
+    			compBool = "01";
+    		else
+    			compBool = "00";
+    		var scope = getScope(rightNode.scope);
+    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+    		var boolSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		scope.symbols.push(boolSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compBool);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
 
     	/* Handles Left Expression */
 
@@ -697,6 +716,26 @@ function codeGeneration() {
     		pushHex(tempLoc[1]);
     		pushHex(compareMemoToX);
     	}
+    	// Checks if the left comparator is a pure digit
+    	else if (leftNode.type == "T_DIGIT") {
+    		var compInt = "0" + leftNode.name;
+
+    		pushHex(loadXWithConst);
+    		pushHex(compInt);
+    		pushHex(compareMemoToX);
+    	}
+    	// Check if the left comparator is a pure boolean
+    	else if (leftNode.type == "T_BOOLEAN_VALUE") {
+    		var compBool = "";
+    		if (leftNode.name == "true")
+    			compBool = "01";
+    		else
+    			compBool = "00";
+
+    		pushHex(loadXWithConst);
+    		pushHex(compBool);
+    		pushHex(compareMemoToX);
+    	}
 
     	/* Handles Right Expression */
 
@@ -706,6 +745,11 @@ function codeGeneration() {
 
     		pushHex(tempLoc[0]);
     		pushHex(tempLoc[1]);
+    	}
+    	else if (rightNode.name == "Addition") {
+
+    		pushHex(rightAddTempLoc);
+    		pushHex("XX");
     	}
 
     	// Based of Bloop (I don't understand why yet but we'll see later)
@@ -891,7 +935,7 @@ function codeGeneration() {
         var codeLocNum = -1;
 
         for (var symbol = 0; symbol < booleanTable.length; symbol++) {
-            if (booleanTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
+            if (booleanTable[symbol].type == "boolean" && (/^boolean\d+$/.test(booleanTable[symbol].key)) || booleanTable[symbol].key == "true" || booleanTable[symbol].key == "false") {
                 if (booleanTable[symbol].stringHex == "01")
                     codeLocs.push(trueStringLoc+"00");
                 else 
@@ -902,7 +946,7 @@ function codeGeneration() {
         console.log(codeLocs);
 
         for (var symbol = 0; symbol < booleanTable.length; symbol++) {
-            if (booleanTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
+            if (booleanTable[symbol].type == "boolean" && (/^boolean\d+$/.test(booleanTable[symbol].key)) || booleanTable[symbol].key == "true" || booleanTable[symbol].key == "false") {
                 codeLocNum++;
                 var tempLoc = chunk(booleanTable[symbol].tempLoc,2);
                 console.log(tempLoc);
@@ -927,7 +971,7 @@ function codeGeneration() {
         }
 
         for (var symbol = 0; symbol < stringTable.length; symbol++) {
-            if (stringTable[symbol].type == "boolean" && /^boolean\d+$/.test(booleanTable[symbol].name)) {
+            if (booleanTable[symbol].type == "boolean" && (/^boolean\d+$/.test(booleanTable[symbol].key)) || booleanTable[symbol].key == "true" || booleanTable[symbol].key == "false") {
                 stringTable[symbol].tempLoc = codeLocs[symbol];
             }
         }
@@ -987,12 +1031,15 @@ function codeGeneration() {
  		var tempLocs = [];
 
  		for (var symbol = 0; symbol < staticTable.length; symbol++) {
+ 			console.log(staticTable[symbol]);
  			if (staticTable[symbol].type == "int")
  				tempLocs.push(staticTable[symbol].tempLoc);
- 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].name))
+ 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].key)) {
  				tempLocs.push(staticTable[symbol].tempLoc);
- 			else
+ 			}
+ 			else {
  				tempLocs.push(staticTable[symbol].tempStore);
+ 			}
  		}
 
  		console.log(tempLocs);
@@ -1012,7 +1059,7 @@ function codeGeneration() {
  			var tempLoc = "";
  			if (staticTable[newLoc].type == "int")
  				tempLoc = chunk(staticTable[newLoc].tempLoc,2);
- 			else if (staticTable[newLoc].type == "boolean" && !/^boolean\d+$/.test(staticTable[newLoc].name))
+ 			else if (staticTable[newLoc].type == "boolean" && !/^boolean\d+$/.test(staticTable[newLoc].key))
  				tempLoc = chunk(staticTable[newLoc].tempLoc,2);
  			else
  				tempLoc = chunk(staticTable[newLoc].tempStore,2);
@@ -1035,7 +1082,7 @@ function codeGeneration() {
 		for (var symbol = 0; symbol < staticTable.length; symbol++) {
 			if (staticTable[symbol].type == "int")
  				staticTable[symbol].tempLoc = tempLocs[symbol];
- 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].name))
+ 			else if (staticTable[symbol].type == "boolean" && !/^boolean\d+$/.test(staticTable[symbol].key))
  				staticTable[symbol].tempLoc = tempLocs[symbol];
             else
                 staticTable[symbol].tempStore = tempLocs[symbol];
