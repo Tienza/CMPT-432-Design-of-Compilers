@@ -142,6 +142,8 @@ function codeGeneration() {
 				printStateCodeGen(node, depth);
 			else if (node.name == "IfStatement")
 				ifStateCodeGen(node, depth);
+			else if (node.name == "WhileStatement")
+				whileStateCodeGen(node, depth);
 			else if (node.name == "Addition") {
 				var lastMemLoc = additionCodeGen(node, depth);
 				return lastMemLoc;
@@ -252,8 +254,16 @@ function codeGeneration() {
         	pushHex(addWithCarry);
 
         	// Checks if right addition is an id or digit
-	    	if (intExprNode.type == "T_ID" || intExprNode.type == "T_DIGIT") {
+	    	if (intExprNode.type == "T_DIGIT") {
 	    		var tempLoc = getTempLoc(addHead+addNum+intExprNode.name, intExprNode.scope);
+	    		lastTempLoc = tempLoc[0];
+
+	    		pushHex(tempLoc[0]);
+	    		pushHex(tempLoc[1]);
+
+	    	}
+	    	else if (intExprNode.type == "T_ID") {
+	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
 	    		lastTempLoc = tempLoc[0];
 
 	    		pushHex(tempLoc[0]);
@@ -581,6 +591,120 @@ function codeGeneration() {
     	return hexGenNum;
     }
 
+    function whileStateCodeGen(node, depth) {
+    	if (verbose) {
+    		printFoundBranch(node.name, node.line, node.scope);
+    		console.log("Generating Code For WhileStatement");
+    	}
+    	jumpNum++;
+    	var startWhile = codeTable.length;
+    	var endWhile = 0;
+    	var hexGenNum = 0;
+    	var booleanExpNode = node.children[0];
+    	var blockNode = node.children[1];
+
+    	// Push JumpVal to Jump Table
+    	var jumpName = jumpHead + jumpNum;
+    	var elem = new jumpVarElem(jumpName,"?");
+    	jumpTable.push(elem)
+
+    	if (booleanExpNode.name == "true" || booleanExpNode.name == "false") {
+    		varLocNum++;
+    		var scope = getScope(booleanExpNode.scope);
+    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+    		var boolSymbol = new Symbol(booleanExpNode.name, "boolean", booleanExpNode.line, booleanExpNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		scope.symbols.push(boolSymbol);
+
+	    	pushHex(loadXWithConst);
+	    	if (booleanExpNode.name == "true")
+	    		pushHex("00");
+	    	else
+	    		pushHex("01");
+			pushHex(compareMemoToX);
+			pushHex(systemCall);
+			pushHex("00");
+    	}
+    	else if (booleanExpNode.name == "Equality") {
+    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST")) {
+    			var compBool = "";
+    			if (booleanExpNode.children[0].name == booleanExpNode.children[1].name)
+    				compBool = "00";
+    			else
+    				compBool = "01";
+
+	    		pushHex(loadXWithConst);
+	    		pushHex(compBool);
+	    		pushHex(compareMemoToX);
+	    		pushHex(systemCall);
+	    		pushHex("00");
+    		}
+    		else {
+    			equalityCodeGen(booleanExpNode, depth);
+    		}
+    	}
+    	else if (booleanExpNode.name == "Inequality") {
+    		if ((booleanExpNode.children[0].type == "T_DIGIT" && booleanExpNode.children[1].type == "T_DIGIT") || (booleanExpNode.children[0].type == "T_CHARLIST" && booleanExpNode.children[1].type == "T_CHARLIST")) {
+    			var compBool = "";
+    			if (booleanExpNode.children[0].name != booleanExpNode.children[1].name)
+    				compBool = "00";
+    			else
+    				compBool = "01";
+
+	    		pushHex(loadXWithConst);
+	    		pushHex(compBool);
+	    		pushHex(compareMemoToX);
+	    		pushHex(systemCall);
+	    		pushHex("00");
+    		}
+    		else {
+    			inequalityCodeGen(booleanExpNode, depth);
+    		}
+    	}
+
+
+		pushHex(branchNBytes);
+		pushHex(jumpName);
+
+    	// Traverse Tree for Block
+    	var startBlock = codeTable.length;
+    	traverseTree(blockNode, depth);
+
+    	pushHex(loadXWithConst);
+    	pushHex("01");
+    	pushHex(compareMemoToX);
+    	pushHex(systemCall);
+    	pushHex("00");
+    	pushHex(branchNBytes);
+
+    	var endBlock = codeTable.length;
+    	var blockHexGenNum = endBlock - startBlock + 1;
+
+    	console.log("Jump Distance for Block: " + blockHexGenNum);
+
+    	/*if (booleanExpNode.name == "true" || booleanExpNode.name == "false")
+    		blockHexGenNum++;*/
+
+    	for (var i = 0; i < jumpTable.length; i++) {
+    		var hexVal = blockHexGenNum.toString(16).toUpperCase();
+    		if (blockHexGenNum < 16)
+    			hexVal = "0" + hexVal;
+
+    		if (jumpTable[i].tempName == jumpName)
+    			jumpTable[i].distance = hexVal;
+    	}
+
+    	var endWhile = codeTable.length;
+    	var whileHexGenNum = endWhile - startWhile;
+
+    	var whileJump = maxByteSize - whileHexGenNum - 1;
+    	var whileJumpHex = whileJump.toString(16).toUpperCase();
+    	if (whileJump < 16)
+    		whileJumpHex = "0" + whileJumpHex;
+
+    	pushHex(whileJumpHex);
+    	
+    }
+
     function ifStateCodeGen(node, depth) {
     	if (verbose) {
     		printFoundBranch(node.name, node.line, node.scope);
@@ -592,6 +716,7 @@ function codeGeneration() {
     	var hexGenNum = 0;
     	var booleanExpNode = node.children[0];
     	var blockNode = node.children[1];
+
     	if (booleanExpNode.name == "Equality")
     		equalityCodeGen(booleanExpNode, depth);
     	else if (booleanExpNode.name == "Inequality")
