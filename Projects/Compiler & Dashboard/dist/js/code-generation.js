@@ -39,6 +39,8 @@ function codeGeneration() {
     var booleanNum = -1;
     var intHead = "I"
     var intNum = -1;
+    var addHead = "A";
+    var addNum = -1;
 	var printStringCalled = 0;
 
 	/********************************************** Code Gen - 6502a Instructions **********************************************/
@@ -194,6 +196,7 @@ function codeGeneration() {
         }
 
         function additionCodeGen(node, depth) {
+        	addNum++;
         	// Generates code for Addition
         	if (verbose) {
         		printFoundBranch(node.name, node.line, node.scope);
@@ -217,7 +220,7 @@ function codeGeneration() {
 				var scope = getScope(intExprNode.scope);
 				var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
 				lastTempLoc = tempLoc;
-				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+				var numSymbol = new Symbol(addHead+addNum+intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 				scope.symbols.push(numSymbol);
 
 				traverseTree(intExprNode, depth);
@@ -231,7 +234,7 @@ function codeGeneration() {
 				var compInt = "0" + intExprNode.name;
 				var scope = getScope(intExprNode.scope);
 				var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
-				var numSymbol = new Symbol(intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+				var numSymbol = new Symbol(addHead+addNum+intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
 				scope.symbols.push(numSymbol);
 
 				pushHex(loadAccWithConst);
@@ -250,7 +253,7 @@ function codeGeneration() {
 
         	// Checks if right addition is an id or digit
 	    	if (intExprNode.type == "T_ID" || intExprNode.type == "T_DIGIT") {
-	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
+	    		var tempLoc = getTempLoc(addHead+addNum+intExprNode.name, intExprNode.scope);
 	    		lastTempLoc = tempLoc[0];
 
 	    		pushHex(tempLoc[0]);
@@ -554,7 +557,7 @@ function codeGeneration() {
     		pushHex(loadXWithConst);
     		pushHex("02");
     	}
-    	// Checks to see if hte value being printed in an addition
+    	// Checks to see if the value being printed in an addition
     	else if (printNode.type == "Addition") {
     		var lastMemLoc = traverseTree(printNode, depth);
 
@@ -591,6 +594,29 @@ function codeGeneration() {
     	var blockNode = node.children[1];
     	if (booleanExpNode.name == "Equality")
     		equalityCodeGen(booleanExpNode, depth);
+    	else if (booleanExpNode.name == "true" || booleanExpNode.name == "false") {
+    		varLocNum++;
+    		var compBool = "";
+    		if (booleanExpNode.name == "true")
+    			compBool = "01";
+    		else
+    			compBool = "00";
+    		var scope = getScope(booleanExpNode.scope);
+    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+    		var boolSymbol = new Symbol(booleanExpNode.name, "boolean", booleanExpNode.line, booleanExpNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		scope.symbols.push(boolSymbol);
+
+    		pushHex(loadAccWithConst);
+    		pushHex(compBool);
+    		pushHex(storeAccInMemo);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    		pushHex(loadXWithConst);
+    		pushHex("01");
+    		pushHex(compareMemoToX);
+    		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
     	
     	// Push JumpVal to Jump Table
     	var jumpName = jumpHead + jumpNum;
@@ -640,6 +666,7 @@ function codeGeneration() {
     	var rightNode = node.children[1];
     	var leftString = "";
     	var rightString = "";
+    	var rightAddTempLoc = "";
 
     	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
@@ -675,7 +702,7 @@ function codeGeneration() {
     		pushHex(tempLoc);
     		pushHex("XX");
     	}
-    	// Checks if the right compartor is a pure string
+    	// Checks if the right comparator is a pure string
     	else if (rightNode.type == "T_CHARLIST") {
     		varLocNum++;
     		rightString = rightNode.name;
@@ -689,6 +716,14 @@ function codeGeneration() {
     		pushHex(compBool);
     		pushHex(storeAccInMemo);
     		pushHex(tempLoc);
+    		pushHex("XX");
+    	}
+    	// Checks if the right comparator is an Addition
+    	else if (rightNode.name == "Addition") {
+    		// Traverse Tree for Addition Node
+    		rightAddTempLoc = traverseTree(rightNode, depth);
+
+    		pushHex(rightAddTempLoc);
     		pushHex("XX");
     	}
 
@@ -723,7 +758,7 @@ function codeGeneration() {
     		pushHex(compBool);
     		pushHex(compareMemoToX);
     	}
-    	// Cheks if the left comparator is a pure string
+    	// Checks if the left comparator is a pure string
     	else if (leftNode.type == "T_CHARLIST") {
     		leftString = leftNode.name;
     		var compBool = "";
@@ -738,6 +773,18 @@ function codeGeneration() {
     		pushHex(compBool);
     		pushHex(compareMemoToX);
     	}
+    	// Checks if the left comparator is an Addition
+    	else if (leftNode.name == "Addition") {
+    		// Traverse Tree for Addition Node
+    		var leftAddTempLoc = traverseTree(leftNode, depth);
+
+    		pushHex(leftAddTempLoc);
+    		pushHex("XX");
+    		pushHex(loadXFromMemo);
+    		pushHex(leftAddTempLoc);
+    		pushHex("XX");
+    		pushHex(compareMemoToX);
+    	}
 
     	/* Handles Right Expression */
 
@@ -747,6 +794,11 @@ function codeGeneration() {
 
     		pushHex(tempLoc[0]);
     		pushHex(tempLoc[1]);
+    	}
+    	else if (rightNode.name == "Addition") {
+
+    		pushHex(rightAddTempLoc);
+    		pushHex("XX");
     	}
 
     	endEquality = codeTable.length;
