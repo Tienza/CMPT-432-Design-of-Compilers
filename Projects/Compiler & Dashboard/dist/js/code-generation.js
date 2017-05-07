@@ -252,8 +252,16 @@ function codeGeneration() {
         	pushHex(addWithCarry);
 
         	// Checks if right addition is an id or digit
-	    	if (intExprNode.type == "T_ID" || intExprNode.type == "T_DIGIT") {
+	    	if (intExprNode.type == "T_DIGIT") {
 	    		var tempLoc = getTempLoc(addHead+addNum+intExprNode.name, intExprNode.scope);
+	    		lastTempLoc = tempLoc[0];
+
+	    		pushHex(tempLoc[0]);
+	    		pushHex(tempLoc[1]);
+
+	    	}
+	    	else if (intExprNode.type == "T_ID") {
+	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
 	    		lastTempLoc = tempLoc[0];
 
 	    		pushHex(tempLoc[0]);
