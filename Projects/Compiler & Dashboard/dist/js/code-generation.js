@@ -104,6 +104,11 @@ function codeGeneration() {
 		backPatchStringVal(codeTable, fullSymbolTable);
 		backPatchStatVal(codeTable, fullSymbolTable);
 		backPatchJumpVal(codeTable, jumpTable);
+		if (codeTable.length > maxByteSize)
+			throwCodeGenError("Memory Buffer Overflow...\n");
+		for (var i = codeTable.length; i < maxByteSize; i++) {
+			codeTable.push("00");
+		}
 		console.log(codeTable);
 		console.log(fullSymbolTable);
 		console.log(jumpTable);
@@ -454,6 +459,50 @@ function codeGeneration() {
 				pushHex(tempLocVar[0]);
 				pushHex(tempLocVar[1]);
             }
+            // Checks to see if the assinging value is an Equality
+            else if (assignValNode.type == "Equality") {
+            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST")) {
+	    			var compBool = "";
+	    			if (assignValNode.children[0].name == assignValNode.children[1].name)
+	    				compBool = "01";
+	    			else
+	    				compBool = "00";
+
+	    			// Store the results in the memory location of the variable being assigned
+					var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
+
+					if (verbose)
+						printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
+
+		    		pushHex(loadAccWithConst);
+		    		pushHex(compBool);
+		    		pushHex(storeAccInMemo);
+		    		pushHex(tempLocVar[0]);
+					pushHex(tempLocVar[1]);
+	    		}
+            }
+            // Checks to see if the assinging value is an Equality
+            else if (assignValNode.type == "Inequality") {
+            	if ((assignValNode.children[0].type == "T_DIGIT" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[0].type == "T_CHARLIST" && assignValNode.children[1].type == "T_CHARLIST")) {
+	    			var compBool = "";
+	    			if (assignValNode.children[0].name != assignValNode.children[1].name)
+	    				compBool = "01";
+	    			else
+	    				compBool = "00";
+
+	    			// Store the results in the memory location of the variable being assigned
+					var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
+
+					if (verbose)
+						printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
+
+		    		pushHex(loadAccWithConst);
+		    		pushHex(compBool);
+		    		pushHex(storeAccInMemo);
+		    		pushHex(tempLocVar[0]);
+					pushHex(tempLocVar[1]);
+	    		}
+            }
 
         	endAssign = codeTable.length;
         	hexGenNum = endAssign - startAssign;
@@ -603,6 +652,10 @@ function codeGeneration() {
     	var booleanExpNode = node.children[0];
     	var blockNode = node.children[1];
 
+    	// Check for nested boolean expression
+    	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
+    		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
+
     	// Push JumpVal to Jump Table
     	var jumpName = jumpHead + jumpNum;
     	var elem = new jumpVarElem(jumpName,"?");
@@ -716,6 +769,10 @@ function codeGeneration() {
     	var hexGenNum = 0;
     	var booleanExpNode = node.children[0];
     	var blockNode = node.children[1];
+
+    	// Check for nested boolean expression
+    	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
+    		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
 
     	if (booleanExpNode.name == "Equality")
     		equalityCodeGen(booleanExpNode, depth);
@@ -1636,8 +1693,8 @@ function codeGeneration() {
 	/************************************************* Error Printing Section *************************************************/
 	function throwCodeGenError(reason) {
 		cgErrorCount++;
+		txt = txt + " C.GEN --> | ERROR! " + reason;
 		printLastCGMessage(codeComplete);
-		txt = txt + " S.ANALYZE --> | ERROR! " + reason;
 		// Updates Progess Status Bar
 		$('#cgResults').html("<span style=\"color:red;\"> FAILED </span>");
 		throw new Error("HOLY SHIT! IT DIED..." + reason);
