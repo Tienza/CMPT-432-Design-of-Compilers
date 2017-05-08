@@ -5,7 +5,7 @@ function compile() {
 
 	var codeString = codeGenerationReturns.codeString;
 
-	console.log(codeString);
+	// console.log(codeString);
 
 	var codeTable = codeGenerationReturns.codeArray;
 
@@ -30,7 +30,7 @@ function compile() {
 	}
 	$("#codeDisplay").attr('class', 'col-lg-12');
 	$('#codeView').html(printCode);
-	$('#codeView').height("130px");
+	//$('#codeView').height("130px");
 
 	// Compilation Succeeded
 	if (totalErrorCount == 0) {

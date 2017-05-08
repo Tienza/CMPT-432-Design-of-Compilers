@@ -86,7 +86,7 @@ function resetIndexPage() {
 	semanticComplete = false;
 	codeComplete = false;
 	// Reset Page Elements
-    brokenTeeth(0);
+    brokenTeeth(4);
 	$('#lexResults').html(" --- ");
 	$('#parseResults').html(" --- ");
 	$('#saResults').html(" --- ");
@@ -97,6 +97,8 @@ function resetIndexPage() {
 	$('#astLog').val("");
 	$('#streeLog').val("");
 	$('#symbolTable').html("<th style=\"line-height:209px;\">No Symbols</th>");
+    $('#codeView').html("<span style=\"line-height:130px;font-size:18px\">No Machine Code</span>");
+    $("#codeDisplay").attr('class', 'col-lg-12 text-center');
     console.clear();
 }
 
@@ -139,4 +141,6 @@ function brokenTeeth(brokenLevel) {
         $('#teeth').attr('src', '../img/parseTeeth.png');
     else if (brokenLevel == 3)
         $('#teeth').attr('src', '../img/saTeeth.png');
+    else if (brokenLevel == 4)
+        $('#teeth').attr('src', '../img/cgTeeth.png');
 }

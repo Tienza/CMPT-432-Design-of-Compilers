@@ -372,7 +372,7 @@ function lex() {
         lexErrorCount = printLastReturn.lexErrorCount;
 
         // Logs token Array
-        console.log(tokens);
+        /*console.log(tokens);*/
 
         // Variable to store all objects moving on to the parser
         var lexReturns = {
@@ -384,7 +384,7 @@ function lex() {
 
         // Break Teeth
         if (lexComplete)
-            brokenTeeth(1);
+            brokenTeeth(3);
 
         return lexReturns;
     }

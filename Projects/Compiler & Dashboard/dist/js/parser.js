@@ -50,8 +50,8 @@ function parse() {
 			totalErrorCount: parseErrorCount + lexReturns.errorCount
 		}
 		
-		if (verbose)
-			console.log(parseReturns);
+		/*if (verbose)
+			console.log(parseReturns);*/
 
 		// Break Teeth
 		if(parseComplete)

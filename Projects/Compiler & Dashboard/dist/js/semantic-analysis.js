@@ -59,12 +59,12 @@ function semanticAnalysis() {
 	// Semantic Analysis Failed
 		/* See throwError Section of Code */
 	
-	if (verbose)
-		console.log(semanticAnalysisReturns);
+	/*if (verbose)
+		console.log(semanticAnalysisReturns);*/
 
 	// Break Teeth
 	if (semanticComplete)
-		brokenTeeth(3);
+		brokenTeeth(1);
 
 	return semanticAnalysisReturns;
 
