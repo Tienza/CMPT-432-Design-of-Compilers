@@ -9,6 +9,10 @@ body {
 textarea {
    resize: none;
 }
+#codeView {
+  padding-left: 7px;
+  background: #eee;
+}
 #editor {
 	height: 417px;
 	border-radius: 4px;
