@@ -694,9 +694,10 @@ function codeGeneration() {
     	var booleanExpNode = node.children[0];
     	var blockNode = node.children[1];
 
-    	// Check for nested boolean expression
-    	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
-    		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
+        if (booleanExpNode.children[0] != undefined && booleanExpNode.children[1] != undefined)
+        	// Check for nested boolean expression
+        	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
+        		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
 
     	// Push JumpVal to Jump Table
     	var jumpName = jumpHead + jumpNum;
@@ -812,9 +813,10 @@ function codeGeneration() {
     	var booleanExpNode = node.children[0];
     	var blockNode = node.children[1];
 
-    	// Check for nested boolean expression
-    	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
-    		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
+        if (booleanExpNode.children[0] != undefined && booleanExpNode.children[1] != undefined)
+        	// Check for nested boolean expression
+        	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
+        		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
 
     	if (booleanExpNode.name == "Equality")
     		equalityCodeGen(booleanExpNode, depth);
