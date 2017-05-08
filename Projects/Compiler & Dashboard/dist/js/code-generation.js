@@ -900,6 +900,9 @@ function codeGeneration() {
     	var rightString = "";
     	var rightAddTempLoc = "";
 
+    	if ((leftNode.type == "T_ID" && rightNode.type == "T_CHARLIST") || (leftNode.type == "T_CHARLIST" && rightNode.type == "T_ID"))
+    		throwCodeGenError("Variable to String comparison is not allowed...\n")
+
     	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
     		varLocNum++;
@@ -1064,6 +1067,9 @@ function codeGeneration() {
     	var leftString = "";
     	var rightString = "";
     	var rightAddTempLoc = "";
+
+    	if ((leftNode.type == "T_ID" && rightNode.type == "T_CHARLIST") || (leftNode.type == "T_CHARLIST" && rightNode.type == "T_ID"))
+    		throwCodeGenError("Variable to String comparison is not allowed...\n")
 
     	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
