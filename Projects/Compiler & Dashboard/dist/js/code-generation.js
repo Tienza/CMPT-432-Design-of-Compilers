@@ -1,8 +1,8 @@
 function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
-	/*if (verbose)
-		console.log(semanticAnalysisReturns);*/
+	if (verbose)
+		console.log(semanticAnalysisReturns);
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
@@ -966,11 +966,26 @@ function codeGeneration() {
 
     	// Checks if left comparator is an id
     	if (leftNode.type == "T_ID") {
-    		var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+    		var varLoc1 = "";
+    		var varLoc2 = "";
+    		var scope = getScope(leftNode.scope);
+    		var type = getVarType(scope, leftNode.name);
+    		console.log(type);
+
+    		if (type == "string") {
+    			var tempStore = getTempStore(leftNode.name, leftNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else {
+    			var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+    			varLoc1 = tempLoc[0];
+    			varLoc2 = tempLoc[1];
+    		}
 
     		pushHex(loadXFromMemo);
-    		pushHex(tempLoc[0]);
-    		pushHex(tempLoc[1]);
+    		pushHex(varLoc1);
+    		pushHex(varLoc2);
     		pushHex(compareMemoToX);
     	}
     	// Checks if the left comparator is a pure digit
@@ -1025,15 +1040,25 @@ function codeGeneration() {
 
     	// Checks if right comparator is an id or digit
     	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT" || rightNode.type == "T_BOOLEAN_VALUE" || rightNode.type == "T_CHARLIST") {
-    		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+    		var varLoc1 = "";
+    		var varLoc2 = "";
+    		var scope = getScope(rightNode.scope);
+    		var type = getVarType(scope, rightNode.name);
+    		console.log(type);
+    		
+    		if (type == "string") {
+    			var tempStore = getTempStore(rightNode.name, rightNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else {
+    			var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+    			varLoc1 = tempLoc[0];
+    			varLoc2 = tempLoc[1];
+    		}
 
-    		pushHex(tempLoc[0]);
-    		pushHex(tempLoc[1]);
-    	}
-    	else if (rightNode.name == "Addition") {
-
-    		pushHex(rightAddTempLoc);
-    		pushHex("XX");
+    		pushHex(varLoc1);
+    		pushHex(varLoc2)
     	}
 
     	// Based off Bloop (I don't understand why yet but we'll see later)
@@ -1134,11 +1159,26 @@ function codeGeneration() {
 
     	// Checks if left comparator is an id
     	if (leftNode.type == "T_ID") {
-    		var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+    		var varLoc1 = "";
+    		var varLoc2 = "";
+    		var scope = getScope(leftNode.scope);
+    		var type = getVarType(scope, leftNode.name);
+    		console.log(type);
+
+    		if (type == "string") {
+    			var tempStore = getTempStore(leftNode.name, leftNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else {
+    			var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
+    			varLoc1 = tempLoc[0];
+    			varLoc2 = tempLoc[1];
+    		}
 
     		pushHex(loadXFromMemo);
-    		pushHex(tempLoc[0]);
-    		pushHex(tempLoc[1]);
+    		pushHex(varLoc1);
+    		pushHex(varLoc2);
     		pushHex(compareMemoToX);
     	}
     	// Checks if the left comparator is a pure digit
@@ -1193,10 +1233,25 @@ function codeGeneration() {
 
     	// Checks if right comparator is an id or digit
     	if (rightNode.type == "T_ID" || rightNode.type == "T_DIGIT" || rightNode.type == "T_BOOLEAN_VALUE" || rightNode.type == "T_CHARLIST") {
-    		var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+    		var varLoc1 = "";
+    		var varLoc2 = "";
+    		var scope = getScope(rightNode.scope);
+    		var type = getVarType(scope, rightNode.name);
+    		console.log(type);
+    		
+    		if (type == "string") {
+    			var tempStore = getTempStore(rightNode.name, rightNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else {
+    			var tempLoc = getTempLoc(rightNode.name, rightNode.scope);
+    			varLoc1 = tempLoc[0];
+    			varLoc2 = tempLoc[1];
+    		}
 
-    		pushHex(tempLoc[0]);
-    		pushHex(tempLoc[1]);
+    		pushHex(varLoc1);
+    		pushHex(varLoc2)
     	}
     	else if (rightNode.name == "Addition") {
 
