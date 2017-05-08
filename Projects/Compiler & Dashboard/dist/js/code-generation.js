@@ -1,8 +1,8 @@
 function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
-	if (verbose)
-		console.log(semanticAnalysisReturns);
+	/*if (verbose)
+		console.log(semanticAnalysisReturns);*/
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
