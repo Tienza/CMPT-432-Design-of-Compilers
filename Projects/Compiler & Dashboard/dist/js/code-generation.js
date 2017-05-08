@@ -980,7 +980,7 @@ function codeGeneration() {
     		var varLoc2 = "";
     		var scope = getScope(leftNode.scope);
     		var type = getVarType(scope, leftNode.name);
-    		console.log(type);
+    		// console.log(type);
 
     		if (type == "string") {
     			var tempStore = getTempStore(leftNode.name, leftNode.scope);
@@ -1054,7 +1054,7 @@ function codeGeneration() {
     		var varLoc2 = "";
     		var scope = getScope(rightNode.scope);
     		var type = getVarType(scope, rightNode.name);
-    		console.log(type);
+    		// console.log(type);
     		
     		if (type == "string") {
     			var tempStore = getTempStore(rightNode.name, rightNode.scope);
@@ -1183,7 +1183,7 @@ function codeGeneration() {
     		var varLoc2 = "";
     		var scope = getScope(leftNode.scope);
     		var type = getVarType(scope, leftNode.name);
-    		console.log(type);
+    		// console.log(type);
 
     		if (type == "string") {
     			var tempStore = getTempStore(leftNode.name, leftNode.scope);
@@ -1257,7 +1257,7 @@ function codeGeneration() {
     		var varLoc2 = "";
     		var scope = getScope(rightNode.scope);
     		var type = getVarType(scope, rightNode.name);
-    		console.log(type);
+    		// console.log(type);
     		
     		if (type == "string") {
     			var tempStore = getTempStore(rightNode.name, rightNode.scope);
