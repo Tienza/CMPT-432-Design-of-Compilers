@@ -902,6 +902,16 @@ function codeGeneration() {
 
     	if ((leftNode.type == "T_ID" && rightNode.type == "T_CHARLIST") || (leftNode.type == "T_CHARLIST" && rightNode.type == "T_ID"))
     		throwCodeGenError("Variable to String comparison is not allowed...\n")
+    	else if (leftNode.type == "T_ID" && rightNode.type == "T_ID") {
+    		var scopeL = getScope(leftNode.scope);
+    		var typel = getVarType(scopeL, leftNode.name);
+
+    		var scopeR = getScope(rightNode.scope);
+    		var type2 = getVarType(scopeR, rightNode.name);
+
+    		if (typel == "string" && type2 == "string")
+    			throwCodeGenError("String Variable to String Variable comparison is not allowed...\n");
+    	}
 
     	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
@@ -1095,6 +1105,16 @@ function codeGeneration() {
 
     	if ((leftNode.type == "T_ID" && rightNode.type == "T_CHARLIST") || (leftNode.type == "T_CHARLIST" && rightNode.type == "T_ID"))
     		throwCodeGenError("Variable to String comparison is not allowed...\n")
+    	else if (leftNode.type == "T_ID" && rightNode.type == "T_ID") {
+    		var scopeL = getScope(leftNode.scope);
+    		var typel = getVarType(scopeL, leftNode.name);
+
+    		var scopeR = getScope(rightNode.scope);
+    		var type2 = getVarType(scopeR, rightNode.name);
+
+    		if (typel == "string" && type2 == "string")
+    			throwCodeGenError("String Variable to String Variable comparison is not allowed...\n");
+    	}
 
     	// If the right comparator is a pure digit we need to store it in memory
     	if (rightNode.type == "T_DIGIT") {
