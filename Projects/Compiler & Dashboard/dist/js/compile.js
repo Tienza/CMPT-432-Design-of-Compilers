@@ -1,11 +1,16 @@
 function compile() {
-	var code = codeGeneration();
+	var codeGenerationReturns = codeGeneration();
 
-	console.log(code[0]);
+	var txt = $('#log').val();
 
-	$('#codeView').html(code[0]);
+	var codeString = codeGenerationReturns.codeString;
 
-	var codeTable = code[1];
+	console.log(codeString);
+
+	var codeTable = codeGenerationReturns.codeArray;
+
+	var totalWarningCount = codeGenerationReturns.totalWarningCount;
+	var totalErrorCount =  codeGenerationReturns.totalErrorCount;
 
 	var machineCode = ["A9","AD","8D","6D","A2","AE","A0","AC","EA","EC","D0","EE","FF"]; 
 	var ascii = ["61","62","63","64","65","66","67","68","69","6A","6B","6C","6D","6E","6F","70","71","72","73","74","75","76","77","78","79","7A"];
@@ -26,4 +31,17 @@ function compile() {
 	$("#codeDisplay").attr('class', 'col-lg-12');
 	$('#codeView').html(printCode);
 	$('#codeView').height("130px");
+
+	// Compilation Succeeded
+	if (totalErrorCount == 0) {
+		// Prints Last Semantic Analysis Message
+		printLastCompileMessage(codeComplete);
+	}
+
+	function printLastCompileMessage(codeComplete) {
+		if (codeComplete) {
+			txt = $('#log').val(txt + "Compilation Completed With " + totalWarningCount + " WARNING(S) and " + totalErrorCount + " ERROR(S)\n");
+		}
+		scrollDown();
+	}
 }

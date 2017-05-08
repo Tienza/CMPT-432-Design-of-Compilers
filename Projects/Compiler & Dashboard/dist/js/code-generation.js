@@ -67,9 +67,13 @@ function codeGeneration() {
 
 	// Begin Code Generation
 	var code = generate();
-	/*console.log(toHex("t"));
-	console.log(toHex("there is no spoon"));
-	console.log(toHex(5));*/
+
+	var codeGenerationReturns = {
+		codeString: code[0],
+		codeArray: code[1],
+		totalWarningCount:  cgWarningCount + semanticAnalysisReturns.totalWarningCount,
+		totalErrorCount: cgErrorCount + semanticAnalysisReturns.totalErrorCount
+	}
 
 	// Code Generation Succeeded - Determines how code generation went and updates appropriate fields
 	if (cgErrorCount == 0) {
@@ -87,7 +91,7 @@ function codeGeneration() {
 	// Code Generation Failed
 		/* See throwError Section of Code */
 
-	return code;
+	return codeGenerationReturns;
 
 	/********************************************** Code Gen - Traversing AST *************************************************/
 	function generate() {
@@ -631,6 +635,41 @@ function codeGeneration() {
     		pushHex(loadXWithConst);
     		pushHex("01");
     	}
+    	// Checks to see if the value being printed is a boolean expression (Equality)
+    	else if (printNode.type == "Equality") {
+    		if ((printNode.children[0].type == "T_DIGIT" && printNode.children[1].type == "T_DIGIT") || (printNode.children[0].type == "T_CHARLIST" && printNode.children[1].type == "T_CHARLIST") || (printNode.children[0].type == "T_BOOLEAN_VALUE" && printNode.children[1].type == "T_BOOLEAN_VALUE")) {
+    			var boolLoc = "";
+    			if (printNode.children[0].name == printNode.children[1].name)
+    				boolLoc = "trueLoc";
+    			else
+    				boolLoc = "falseLoc";
+
+	    		pushHex(loadYWithConst);
+	    		pushHex(boolLoc);
+	    		pushHex(loadXWithConst);
+	    		pushHex("02");
+    		}
+    		else
+    			throwCodeGenError("Incompatible Expression...\n")
+    	}
+    	// Checks to see if the value being printed is a boolean expression (Inequality)
+    	else if (printNode.type == "Inequality") {
+    		if ((printNode.children[0].type == "T_DIGIT" && printNode.children[1].type == "T_DIGIT") || (printNode.children[0].type == "T_CHARLIST" && printNode.children[1].type == "T_CHARLIST") || (printNode.children[0].type == "T_BOOLEAN_VALUE" && printNode.children[1].type == "T_BOOLEAN_VALUE")) {
+    			var boolLoc = "";
+    			if (printNode.children[0].name != printNode.children[1].name)
+    				boolLoc = "trueLoc";
+    			else
+    				boolLoc = "falseLoc";
+
+	    		pushHex(loadYWithConst);
+	    		pushHex(boolLoc);
+	    		pushHex(loadXWithConst);
+	    		pushHex("02");
+    		}
+    		else
+    			throwCodeGenError("Incompatible Expression...\n")
+    	}
+
 
         pushHex(systemCall);
 
@@ -1176,6 +1215,13 @@ function codeGeneration() {
         var codeLocs = [];
         var codeLocNum = -1;
 
+        for (var i = 0; i < codeTable.length; i++) {
+        	if (codeTable[i] == "trueLoc")
+        		codeTable[i] = trueStringLoc;
+        	else if (codeTable[i] == "falseLoc")
+        		codeTable[i] = falseStringLoc;
+        }
+
         for (var symbol = 0; symbol < booleanTable.length; symbol++) {
             if (booleanTable[symbol].type == "boolean" && (/^boolean\d+$/.test(booleanTable[symbol].key)) || booleanTable[symbol].key == "true" || booleanTable[symbol].key == "false") {
                 if (booleanTable[symbol].stringHex == "01")
@@ -1225,7 +1271,7 @@ function codeGeneration() {
  		var codeLocNum = -1;
 
  		for (var symbol = 0; symbol < stringTable.length; symbol++) {
- 			if (stringTable[symbol].type == "string") {
+ 			if (stringTable[symbol].type == "string" && stringTable[symbol].stringHex != undefined) {
  				var dynamicMemStart = hexTable[codeTable.length];
  				codeLocs.push(dynamicMemStart + "00");
  				for (var hexVal = 0; hexVal < stringTable[symbol].stringHex.length; hexVal++) {
@@ -1237,7 +1283,7 @@ function codeGeneration() {
  		console.log(codeLocs);
 
  		for (var symbol = 0; symbol < stringTable.length; symbol++) {
- 			if (stringTable[symbol].type == "string") {
+ 			if (stringTable[symbol].type == "string" && stringTable[symbol].stringHex != undefined) {
  				codeLocNum++;
 	 			var tempLoc = chunk(stringTable[symbol].tempLoc,2);
 	 			console.log(tempLoc);
@@ -1262,7 +1308,7 @@ function codeGeneration() {
  		}
 
  		for (var symbol = 0; symbol < stringTable.length; symbol++) {
-			if (stringTable[symbol].type == "string") {
+			if (stringTable[symbol].type == "string" && stringTable[symbol].stringHex != undefined) {
  				stringTable[symbol].tempLoc = codeLocs[symbol];
 			}
  		}
