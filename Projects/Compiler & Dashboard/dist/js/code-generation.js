@@ -115,7 +115,7 @@ function codeGeneration() {
 		backPatchStatVal(codeTable, fullSymbolTable);
 		backPatchJumpVal(codeTable, jumpTable);
 		if (codeTable.length > maxByteSize)
-			throwCodeGenError("Memory Buffer Overflow...\n");
+			throwCodeGenError("Memory Exceeded 256 Bytes, Giving Up Now...\n");
 		for (var i = codeTable.length; i < maxByteSize; i++) {
 			codeTable.push("00");
 		}
@@ -654,7 +654,7 @@ function codeGeneration() {
 	    		pushHex("02");
     		}
     		else
-    			throwCodeGenError("Boolean Hell Detected, Not Generating Code For This...\n")
+    			throwCodeGenError("Boolean Hell Detected, Unwilling To Generate Code For This...\n")
     	}
     	// Checks to see if the value being printed is a boolean expression (Inequality)
     	else if (printNode.type == "Inequality") {
@@ -671,7 +671,7 @@ function codeGeneration() {
 	    		pushHex("02");
     		}
     		else
-    			throwCodeGenError("Incompatible Expression...\n")
+    			throwCodeGenError("Boolean Hell Detected, Unwilling To Generate Code For This...\n")
     	}
 
 
@@ -701,7 +701,7 @@ function codeGeneration() {
         if (booleanExpNode.children[0] != undefined && booleanExpNode.children[1] != undefined)
         	// Check for nested boolean expression
         	if (booleanExpNode.children[0].name == "Equality" || booleanExpNode.children[0].name == "Inequality" || booleanExpNode.children[1].name == "Equality" || booleanExpNode.children[1].name == "Inequality")
-        		throwCodeGenError("Nested Boolean Expression Detected, Fuck That...\n");
+        		throwCodeGenError("Nested Boolean Expression Detected, Unwilling To Generate Code For That...\n");
 
     	// Push JumpVal to Jump Table
     	var jumpName = jumpHead + jumpNum;
