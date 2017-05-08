@@ -654,7 +654,7 @@ function codeGeneration() {
 	    		pushHex("02");
     		}
     		else
-    			throwCodeGenError("Incompatible Expression...\n")
+    			throwCodeGenError("Boolean Hell Detected, Not Generating Code For This...\n")
     	}
     	// Checks to see if the value being printed is a boolean expression (Inequality)
     	else if (printNode.type == "Inequality") {
