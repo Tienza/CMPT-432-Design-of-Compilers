@@ -68,6 +68,11 @@ function codeGeneration() {
 	// Begin Code Generation
 	var code = generate();
 
+	for (var i = 0; i < codeTable.length; i++) {
+		if (code[1][i] == "un" || codeTable[i] == "de")
+			throwCodeGenError("Variable Memory Overflow. Please reduce string lengths or number of variables...\n");	
+	}
+
 	var codeGenerationReturns = {
 		codeString: code[0],
 		codeArray: code[1],
