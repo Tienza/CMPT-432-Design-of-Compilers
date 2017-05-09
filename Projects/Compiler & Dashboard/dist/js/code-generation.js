@@ -2,7 +2,7 @@ function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
 	/*if (verbose)
-		console.log(semanticAnalysisReturns);*/
+		// console.log(semanticAnalysisReturns);*/
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
@@ -423,11 +423,30 @@ function codeGeneration() {
         		// console.log(varKeyNode.name);
         		// console.log(varKeyNode.scope);
         		// Gets the Temporary Location of both the variable being assigned and the assigning varaible
-        		var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope);
-        		var tempLocVal = getTempLoc(assignValNode.name, assignValNode.scope);
-
         		if (verbose)
         			printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
+
+        		var tempLocVar = "";
+        		var tempLocVal = "";
+
+        		var varScope = getScope(varKeyNode.scope);
+        		var varType = getVarType(varScope, varKeyNode.name);
+
+        		var assignValScope = getScope(assignValNode.scope);
+        		var assignValType = getVarType(assignValScope, assignValNode.name);
+
+        		// console.log(varType);
+        		// console.log(assignValType);
+
+        		if (varType == "string" && assignValType == "string") {
+        			tempLocVar = getTempStore(varKeyNode.name, varKeyNode.scope);
+        			tempLocVal = getTempStore(assignValNode.name, assignValNode.scope);
+        		}
+
+        		else {
+        			tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope);
+        			tempLocVal = getTempLoc(assignValNode.name, assignValNode.scope);
+        		}
 
         		pushHex(loadAccFromMemo);
         		pushHex(tempLocVal[0]);
@@ -438,25 +457,35 @@ function codeGeneration() {
         	}
             // Check to see if the assigning value is a string
             else if (assignValNode.type == "T_CHARLIST") {
+            	stringNum++;
+	    		varLocNum++;
                 // console.log(varKeyNode.name);
                 // console.log(varKeyNode.scope);
+
                 var stringHex = toHex(assignValNode.name);
                 stringHex.push("00");
                 var scope = getScope(varKeyNode.scope);
                 // console.log(stringHex);
-                assignHexVal(scope, varKeyNode.name, stringHex);
-                // Gets the Temporary Location of the variable being assigned
-                var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope);
-                var tempStoreVal = getTempStore(varKeyNode.name, varKeyNode.scope);
+                //assignHexVal(scope, varKeyNode.name, stringHex);
+
+	    		var scope = getScope(assignValNode.scope);
+	    		// console.log(stringHex);
+	    		var elem = new Symbol("string"+stringNum, "string", assignValNode.line, assignValNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, stringHead+stringNum+"XX", stringHex, varLocHead+varLocNumtoHex(varLocNum)+"XX");
+	    		scope.symbols.push(elem);
+	    		
+                // Gets the Temporary Location of the variable being assigned   
+                var tempVarStore = getTempStore(varKeyNode.name, varKeyNode.scope);
+             	var tempLoc = getTempLoc("string"+stringNum, assignValNode.scope);
+                //var tempStoreVal = getTempStore(varKeyNode.name, varKeyNode.scope);
 
                 if (verbose)
                     printAssignLeaf(varKeyNode.name, varKeyNode.line, assignValNode.name);
-
+                //alert(tempLoc[0] + " " + tempLocVar[0] + " " + tempStore[0]);
                 pushHex(loadAccWithConst);
-                pushHex(tempLocVar[0]);
+                pushHex(tempLoc[0]);
                 pushHex(storeAccInMemo);
-                pushHex(tempStoreVal[0]);
-                pushHex(tempStoreVal[1]);
+                pushHex(tempVarStore[0]);
+                pushHex(tempVarStore[1]);
             }
             // Checks to see if the assigning value is an Addition
             else if (assignValNode.type == "Addition") {
@@ -563,11 +592,12 @@ function codeGeneration() {
                 var tempLoc = getTempLoc(printNode.name, printNode.scope);
                 var tempStore = getTempStore(printNode.name, printNode.scope);
 
-                pushHex(loadYWithConst);
-                pushHex(tempLoc[0]);
-                pushHex(storeAccInMemo);
+                pushHex(loadYFromMemo);
                 pushHex(tempStore[0]);
                 pushHex(tempStore[1]);
+                //pushHex(storeAccInMemo);
+                //pushHex(tempStore[0]);
+                //pushHex(tempStore[1]);
                 pushHex(loadXWithConst);
                 pushHex("02");
             }
