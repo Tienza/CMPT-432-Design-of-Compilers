@@ -2,7 +2,7 @@ function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
 	/*if (verbose)
-		// console.log(semanticAnalysisReturns);*/
+		console.log(semanticAnalysisReturns);*/
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
@@ -1585,7 +1585,7 @@ function codeGeneration() {
  		var node = traverseST(st.root, varKeyScope);
  		// console.log("Returning scope where variable was assigned...");
  		// console.log(node);
- 		var tempStore = getLocForVal(node, varKey);
+ 		var tempStore = getStoreForVal(node, varKey);
  		// console.log(tempStore);
  		tempStore = chunk(tempStore,2);
 
@@ -1608,22 +1608,22 @@ function codeGeneration() {
  			return returnNode;
  		}
 
- 		function getLocForVal(node, varKey) {
+ 		function getStoreForVal(node, varKey) {
  			var tempStore = "";
  			if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 	 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
-	 				if (varKey == node.symbols[symbol].getKey()) {
+	 				if (varKey == node.symbols[symbol].getKey() && node.symbols[symbol].tempLoc != undefined && node.symbols[symbol].tempLoc != null && node.symbols[symbol].tempLoc != "") {
 	 					// console.log("Retrieving TempStore for variable [ " + varKey + " ]");
 	 					tempStore = node.symbols[symbol].tempStore;
 	 					break;
 	 				}
 	 				else if (symbol == node.symbols.length-1 && (node.parent != undefined || node.parent != null)) {
-	 					tempStore = getLocForVal(node.parent, varKey);
+	 					tempStore = getStoreForVal(node.parent, varKey);
 	 				}
 	 			}
  			}
  			else if (node.parent != undefined || node.parent != null) {
-				tempStore = getLocForVal(node.parent, varKey);
+				tempStore = getStoreForVal(node.parent, varKey);
 			}
 
  			return tempStore;
@@ -1661,7 +1661,7 @@ function codeGeneration() {
  			var tempLoc = "";
  			if ((node.parent != undefined || node.parent != null) && node.symbols.length > 0) {
 	 			for (var symbol = 0; symbol < node.symbols.length; symbol++) {
-	 				if (varKey == node.symbols[symbol].getKey()) {
+	 				if (varKey == node.symbols[symbol].getKey() && node.symbols[symbol].tempLoc != undefined && node.symbols[symbol].tempLoc != null && node.symbols[symbol].tempLoc != "") {
 	 					// console.log("Retrieving TempLoc for variable [ " + varKey + " ]");
 	 					tempLoc = node.symbols[symbol].tempLoc;
 	 					break;
