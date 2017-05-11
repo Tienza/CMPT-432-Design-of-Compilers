@@ -78,6 +78,7 @@ function codeGeneration() {
 	var codeGenerationReturns = {
 		codeString: code[0],
 		codeArray: code[1],
+		dynamicMemStart: code[2],
 		totalWarningCount:  cgWarningCount + semanticAnalysisReturns.totalWarningCount,
 		totalErrorCount: cgErrorCount + semanticAnalysisReturns.totalErrorCount
 	}
@@ -110,6 +111,7 @@ function codeGeneration() {
 		pushHex(breakOp);
         var trueStringLoc = hexTable[codeTable.length+6];
         var falseStringLoc = hexTable[codeTable.length];
+        var dynamicMemStart = codeTable.length;
         // console.log("True String Location: " + trueStringLoc);
         // console.log("False String Location: " + falseStringLoc);
         pushBooleanString(trueFalseHex);
@@ -134,7 +136,7 @@ function codeGeneration() {
 			code = code + codeTable[i] + " ";
 		}
 
-		return [code, codeTable];
+		return [code, codeTable, dynamicMemStart];
 	}
 
 	function traverseTree(node, depth) {
