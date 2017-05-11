@@ -2,7 +2,7 @@ function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
 	/*if (verbose)
-		console.log(semanticAnalysisReturns);*/
+		// console.log(semanticAnalysisReturns);*/
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
@@ -42,6 +42,8 @@ function codeGeneration() {
     var addHead = "A";
     var addNum = -1;
 	var printStringCalled = 0;
+	var calledFromBoolExpr = false;
+	var calledFromAssign = false;
 
 	/********************************************** Code Gen - 6502a Instructions **********************************************/
 	var loadAccWithConst = "A9"; /* LDA - Load the accumulator with a constant */
@@ -284,11 +286,26 @@ function codeGeneration() {
 
 	    	}
 	    	else if (intExprNode.type == "T_ID") {
-	    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
-	    		lastTempLoc = tempLoc[0];
+	    		if (calledFromAssign == true) {
+		    		var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
+		    		lastTempLoc = tempLoc[0];
 
-	    		pushHex(tempLoc[0]);
-	    		pushHex(tempLoc[1]);
+		    		pushHex(tempLoc[0]);
+		    		pushHex(tempLoc[1]);
+	    		}
+	    		else if (calledFromBoolExpr == true) {
+	    			varLocNum++;
+					var scope = getScope(intExprNode.scope);
+					var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
+					lastTempLoc = tempLoc;
+					var numSymbol = new Symbol(addHead+addNum+intExprNode.name, "int", intExprNode.line, intExprNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+					scope.symbols.push(numSymbol);
+
+					var tempLoc = getTempLoc(intExprNode.name, intExprNode.scope);
+
+		    		pushHex(tempLoc[0]);
+		    		pushHex(tempLoc[1]);
+	    		}
 
 	    	}
 	    	// If right addition was an AdditionExpr - then assign memory location of previous result
@@ -492,8 +509,12 @@ function codeGeneration() {
             	// console.log(varKeyNode.name);
                 // console.log(varKeyNode.scope);
 
+                // Entering Addition Called From Assign
+                calledFromAssign = true;
                 // Traverse Tree for Addition
                 traverseTree(assignValNode, depth);
+                // Exiting Addition Called From Assign
+                calledFromAssign = false;
                 
 				// Store the results in the memory location of the variable being assigned
 				var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
@@ -664,7 +685,11 @@ function codeGeneration() {
     	}
     	// Checks to see if the value being printed in an addition
     	else if (printNode.type == "Addition") {
+    		// Entering Addition Called From Print Statement - Treated Like BoolExpr
+    		calledFromBoolExpr = true;
     		var lastMemLoc = traverseTree(printNode, depth);
+    		// Exiting Addition Called From Print Statment - Treated Like BoolExpr
+    		calledFromBoolExpr = false;
 
     		pushHex(lastMemLoc);
     		pushHex("XX");
@@ -1000,8 +1025,12 @@ function codeGeneration() {
         }
         // Checks if the right comparator is an Addition
         else if (rightNode.name == "Addition") {
+        	// Entering Addition Called From Boolexpr
+        	calledFromBoolExpr = true;
             // Traverse Tree for Addition Node
             rightAddTempLoc = traverseTree(rightNode, depth);
+            // Exiting Addition Called From BoolExpr
+            calledFromBoolExpr = false;
 
             pushHex(rightAddTempLoc);
             pushHex("XX");
@@ -1070,8 +1099,12 @@ function codeGeneration() {
         }
         // Checks if the left comparator is an Addition
         else if (leftNode.name == "Addition") {
+        	// Entering Addition Called From BoolExpr
+        	calledFromBoolExpr = true;
             // Traverse Tree for Addition Node
             var leftAddTempLoc = traverseTree(leftNode, depth);
+            // Exiting Addition Called From BoolExpr
+            calledFromBoolExpr = false;
 
             pushHex(leftAddTempLoc);
             pushHex("XX");
@@ -1104,6 +1137,10 @@ function codeGeneration() {
 
     		pushHex(varLoc1);
     		pushHex(varLoc2)
+    	}
+    	else if (rightNode.name == "Addition") {
+    		pushHex(rightAddTempLoc);
+    		pushHex("XX");
     	}
 
     	// Based off Bloop (I don't understand why yet but we'll see later)
@@ -1203,8 +1240,12 @@ function codeGeneration() {
     	}
     	// Checks if the right comparator is an Addition
     	else if (rightNode.name == "Addition") {
+    		// Entering Addition Called From BoolExpr
+    		calledFromBoolExpr = true;
     		// Traverse Tree for Addition Node
     		rightAddTempLoc = traverseTree(rightNode, depth);
+    		// Exiting Addition Called From BoolExpr
+    		calledFromBoolExpr = false;
 
     		pushHex(rightAddTempLoc);
     		pushHex("XX");
@@ -1273,8 +1314,12 @@ function codeGeneration() {
     	}
     	// Checks if the left comparator is an Addition
     	else if (leftNode.name == "Addition") {
+    		// Entering Addition Called From BoolExpr
+    		calledFromBoolExpr = true;
     		// Traverse Tree for Addition Node
     		var leftAddTempLoc = traverseTree(leftNode, depth);
+    		// Exiting Addition Called From BoolExpr
+    		calledFromBoolExpr = false;
 
     		pushHex(leftAddTempLoc);
     		pushHex("XX");
@@ -1309,7 +1354,6 @@ function codeGeneration() {
     		pushHex(varLoc2)
     	}
     	else if (rightNode.name == "Addition") {
-
     		pushHex(rightAddTempLoc);
     		pushHex("XX");
     	}
