@@ -1,8 +1,8 @@
 function codeGeneration() {
 	var semanticAnalysisReturns = semanticAnalysis();
 
-	/*if (verbose)
-		// console.log(semanticAnalysisReturns);*/
+	// if (verbose)
+		// console.log(semanticAnalysisReturns);
 
 	// Creates local copies of Semantic Analysis Returns to be operated on
 	var ast = semanticAnalysisReturns.AST;
@@ -548,6 +548,21 @@ function codeGeneration() {
 		    		pushHex(tempLocVar[0]);
 					pushHex(tempLocVar[1]);
 	    		}
+	    		else if ((assignValNode.children[0].type == "Addition" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[1].type == "Addition" && assignValNode.children[0].type == "T_DIGIT") || (assignValNode.children[0].type == "Addition" && assignValNode.children[1].type == "Addition")) {
+
+	    			var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
+	    			equalityCodeGen(assignValNode, depth);
+
+	    			pushHex(loadAccWithConst);
+	    			pushHex("00");
+	    			pushHex(branchNBytes);
+	    			pushHex("02");
+	    			pushHex(loadAccWithConst);
+	    			pushHex("01");
+	    			pushHex(storeAccInMemo);
+	    			pushHex(tempLocVar[0]);
+	    			pushHex(tempLocVar[1]);
+	    		}
             }
             // Checks to see if the assinging value is an Equality
             else if (assignValNode.type == "Inequality") {
@@ -569,6 +584,21 @@ function codeGeneration() {
 		    		pushHex(storeAccInMemo);
 		    		pushHex(tempLocVar[0]);
 					pushHex(tempLocVar[1]);
+	    		}
+	    		else if ((assignValNode.children[0].type == "Addition" && assignValNode.children[1].type == "T_DIGIT") || (assignValNode.children[1].type == "Addition" && assignValNode.children[0].type == "T_DIGIT") || (assignValNode.children[0].type == "Addition" && assignValNode.children[1].type == "Addition")) {
+
+	    			var tempLocVar = getTempLoc(varKeyNode.name, varKeyNode.scope)
+	    			inequalityCodeGen(assignValNode, depth);
+
+	    			pushHex(loadAccWithConst);
+	    			pushHex("00");
+	    			pushHex(branchNBytes);
+	    			pushHex("02");
+	    			pushHex(loadAccWithConst);
+	    			pushHex("01");
+	    			pushHex(storeAccInMemo);
+	    			pushHex(tempLocVar[0]);
+	    			pushHex(tempLocVar[1]);
 	    		}
             }
 
