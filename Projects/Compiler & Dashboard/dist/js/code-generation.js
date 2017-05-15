@@ -1441,14 +1441,18 @@ function codeGeneration() {
                 for (var newLoc = 0; newLoc < codeLocs.length; newLoc++) {
                     for (var hexCode  = 0; hexCode < codeTable.length-1; hexCode++) {
                         if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
-                            if (verbose)
+                            if (verbose && booleanTable[newLoc].tempLoc != undefined && booleanTable[newLoc].tempLoc != null && booleanTable[newLoc].tempLoc != "")
                                 printStatValBackPatch(booleanTable[newLoc].tempLoc, codeLocs[newLoc]);
+                            else if (verbose)
+                                printStatValBackPatch(booleanTable[newLoc].tempStore, codeLocs[newLoc]);
                             codeTable[hexCode] = codeLoc[0];
                             codeTable[hexCode+1] = codeLoc[1];
                         }
                         else if (codeTable[hexCode] == tempLoc[0]) {
-                            if (verbose)
+                            if (verbose && booleanTable[newLoc].tempLoc != undefined && booleanTable[newLoc].tempLoc != null && booleanTable[newLoc].tempLoc != "")
                                 printStatValBackPatch(booleanTable[newLoc].tempLoc, codeLocs[newLoc]);
+                            else if (verbose)
+                                printStatValBackPatch(booleanTable[newLoc].tempStore, codeLocs[newLoc]);
                             codeTable[hexCode] = codeLoc[0];
                         }
                     }
@@ -1490,14 +1494,18 @@ function codeGeneration() {
 		 		for (var newLoc = 0; newLoc < codeLocs.length; newLoc++) {
 		 			for (var hexCode = 0; hexCode < codeTable.length-1; hexCode++) {
 		 				if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
-		 					if (verbose)
+		 					if (verbose && stringTable[newLoc].tempLoc != undefined && stringTable[newLoc].tempLoc != null && stringTable[newLoc].tempLoc != "")
 		 						printStatValBackPatch(stringTable[newLoc].tempLoc, codeLocs[newLoc]);
+                            else if (verbose)
+                                printStatValBackPatch(stringTable[newLoc].tempStore, codeLocs[newLoc]);
 		 					codeTable[hexCode] = codeLoc[0];
 		 					codeTable[hexCode+1] = codeLoc[1];
 		 				}
 		 				else if (codeTable[hexCode] == tempLoc[0]) {
-		 					if (verbose)
-		 						printStatValBackPatch(stringTable[newLoc].tempLoc, codeLocs[newLoc]);
+		 					if (verbose && stringTable[newLoc].tempLoc != undefined && stringTable[newLoc].tempLoc != null && stringTable[newLoc].tempLoc != "")
+                                printStatValBackPatch(stringTable[newLoc].tempLoc, codeLocs[newLoc]);
+                            else if (verbose)
+                                printStatValBackPatch(stringTable[newLoc].tempStore, codeLocs[newLoc]);
 		 					codeTable[hexCode] = codeLoc[0];
 		 				}
 		 			}
@@ -1552,14 +1560,18 @@ function codeGeneration() {
 
  			for (var hexCode = 0; hexCode < codeTable.length-1; hexCode++) {
  				if (codeTable[hexCode] == tempLoc[0] && codeTable[hexCode+1] == tempLoc[1]) {
- 					if (verbose)
+ 					if (verbose && staticTable[newLoc].tempLoc != undefined && staticTable[newLoc].tempLoc != null && staticTable[newLoc].tempLoc != "")
  						printStatValBackPatch(staticTable[newLoc].tempLoc, tempLocs[newLoc]);
+                    else if (verbose)
+                        printStatValBackPatch(staticTable[newLoc].tempStore, tempLocs[newLoc]);
  					codeTable[hexCode] = codeLoc[0];
  					codeTable[hexCode+1] = codeLoc[1];
  				}
                 else if (codeTable[hexCode] == tempLoc[0]) {
-                    if (verbose)
-                        printStatValBackPatch(staticTable[newLoc].tempLoc, tempLoc[newLoc]);
+                    if (verbose && staticTable[newLoc].tempLoc != undefined && staticTable[newLoc].tempLoc != null && staticTable[newLoc].tempLoc != "")
+                        printStatValBackPatch(staticTable[newLoc].tempLoc, tempLocs[newLoc]);
+                    else if (verbose)
+                        printStatValBackPatch(staticTable[newLoc].tempStore, tempLocs[newLoc]);
                     codeTable[hexCode] = codeLoc[0];
                 }
  			}
