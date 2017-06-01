@@ -767,7 +767,16 @@ function codeGeneration() {
     			//throwCodeGenError("Boolean Hell Detected, Unwilling To Generate Code For This...\n")
     			equalityCodeGen(printNode, depth);
 
-    			pushHex(branchNBytes);
+    			pushHex(loadYWithConst);
+        		pushHex("falseLoc");
+        		pushHex(branchNBytes);
+        		pushHex("02");
+        		pushHex(loadYWithConst);
+        		pushHex("trueLoc");
+        		pushHex(loadXWithConst);
+        		pushHex("02");
+
+    			/*pushHex(branchNBytes);
     			pushHex("0D");
     			pushHex(loadYWithConst);
     			pushHex("trueLoc");
@@ -785,7 +794,7 @@ function codeGeneration() {
     			pushHex(loadYWithConst);
     			pushHex("falseLoc");
     			pushHex(loadXWithConst);
-    			pushHex("02");
+    			pushHex("02");*/
     		}
     	}
     	// Checks to see if the value being printed is a boolean expression (Inequality)
@@ -806,7 +815,16 @@ function codeGeneration() {
     			//throwCodeGenError("Boolean Hell Detected, Unwilling To Generate Code For This...\n")
     			inequalityCodeGen(printNode, depth);
 
-    			pushHex(branchNBytes);
+    			pushHex(loadYWithConst);
+        		pushHex("falseLoc");
+        		pushHex(branchNBytes);
+        		pushHex("02");
+        		pushHex(loadYWithConst);
+        		pushHex("trueLoc");
+        		pushHex(loadXWithConst);
+        		pushHex("02");
+
+    			/*pushHex(branchNBytes);
     			pushHex("0D");
     			pushHex(loadYWithConst);
     			pushHex("trueLoc");
@@ -824,7 +842,7 @@ function codeGeneration() {
     			pushHex(loadYWithConst);
     			pushHex("falseLoc");
     			pushHex(loadXWithConst);
-    			pushHex("02");
+    			pushHex("02");*/
     		}
     	}
 
@@ -1088,6 +1106,7 @@ function codeGeneration() {
     	}
     	// If the right comparator is a pure boolean we need to store it in memory
     	else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    		booleanNum++;
     		varLocNum++;
     		var compBool = "";
     		if (rightNode.name == "true")
@@ -1095,14 +1114,13 @@ function codeGeneration() {
     		else
     			compBool = "00";
     		var scope = getScope(rightNode.scope);
-    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
-    		var boolSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		var boolSymbol = new Symbol("boolean"+booleanNum, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, booleanHead+booleanNum+"XX", compBool, varLocHead+varLocNumtoHex(varLocNum)+"XX");
     		scope.symbols.push(boolSymbol);
 
     		pushHex(loadAccWithConst);
     		pushHex(compBool);
     		pushHex(storeAccInMemo);
-    		pushHex(tempLoc);
+    		pushHex(varLocHead+varLocNumtoHex(varLocNum));
     		pushHex("XX");
     	}
         // Checks if the right comparator is a pure string
@@ -1146,6 +1164,11 @@ function codeGeneration() {
 
     		if (type == "string") {
     			var tempStore = getTempStore(leftNode.name, leftNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else if (leftNode.type == "T_BOOLEAN_VALUE") {
+    			var tempStore = getTempStore("boolean"+booleanNum, rightNode.scope);
     			varLoc1 = tempStore[0];
     			varLoc2 = tempStore[1];
     		}
@@ -1224,6 +1247,11 @@ function codeGeneration() {
     		
     		if (type == "string") {
     			var tempStore = getTempStore(rightNode.name, rightNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    			var tempStore = getTempStore("boolean"+booleanNum, rightNode.scope);
     			varLoc1 = tempStore[0];
     			varLoc2 = tempStore[1];
     		}
@@ -1307,6 +1335,7 @@ function codeGeneration() {
     	}
     	// If the right comparator is a pure boolean we need to store it in memory
     	else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    		booleanNum++;
     		varLocNum++;
     		var compBool = "";
     		if (rightNode.name == "true")
@@ -1314,14 +1343,13 @@ function codeGeneration() {
     		else
     			compBool = "00";
     		var scope = getScope(rightNode.scope);
-    		var tempLoc = varLocHead + varLocNumtoHex(varLocNum);
-    		var boolSymbol = new Symbol(rightNode.name, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, tempLoc+"XX");
+    		var boolSymbol = new Symbol("boolean"+booleanNum, "boolean", rightNode.line, rightNode.scope, parseInt(scope.name[scope.name.length-1]), true, true, booleanHead+booleanNum+"XX", compBool, varLocHead+varLocNumtoHex(varLocNum)+"XX");
     		scope.symbols.push(boolSymbol);
 
     		pushHex(loadAccWithConst);
     		pushHex(compBool);
     		pushHex(storeAccInMemo);
-    		pushHex(tempLoc);
+    		pushHex(varLocHead+varLocNumtoHex(varLocNum));
     		pushHex("XX");
     	}
     	// Checks if the right comparator is a pure string
@@ -1368,12 +1396,16 @@ function codeGeneration() {
     			varLoc1 = tempStore[0];
     			varLoc2 = tempStore[1];
     		}
+    		else if (leftNode.type == "T_BOOLEAN_VALUE") {
+    			var tempStore = getTempStore("boolean"+booleanNum, rightNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
     		else {
     			var tempLoc = getTempLoc(leftNode.name, leftNode.scope);
     			varLoc1 = tempLoc[0];
     			varLoc2 = tempLoc[1];
     		}
-
     		pushHex(loadXFromMemo);
     		pushHex(varLoc1);
     		pushHex(varLoc2);
@@ -1443,6 +1475,11 @@ function codeGeneration() {
     		
     		if (type == "string") {
     			var tempStore = getTempStore(rightNode.name, rightNode.scope);
+    			varLoc1 = tempStore[0];
+    			varLoc2 = tempStore[1];
+    		}
+    		else if (rightNode.type == "T_BOOLEAN_VALUE") {
+    			var tempStore = getTempStore("boolean"+booleanNum, rightNode.scope);
     			varLoc1 = tempStore[0];
     			varLoc2 = tempStore[1];
     		}
