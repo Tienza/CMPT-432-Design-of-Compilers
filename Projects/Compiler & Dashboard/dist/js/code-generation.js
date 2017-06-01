@@ -631,7 +631,7 @@ function codeGeneration() {
 
         	//console.log("Variable [ " + printNode.name + " ] has type [ " + type + " ]");
 
-        	if (type == "int" || type == "boolean") {
+        	if (type == "int") {
 	        	// Gets the Temporary Location of the variable being printed
 	        	var tempLoc = getTempLoc(printNode.name, printNode.scope);
 	        	pushHex(loadYFromMemo);
@@ -639,6 +639,24 @@ function codeGeneration() {
 	        	pushHex(tempLoc[1]);
 	        	pushHex(loadXWithConst);
 	        	pushHex("01");
+        	}
+
+        	else if (type == "boolean") {
+        		// Gets teh Temporary Location of the variable being printed
+        		var tempLoc = getTempLoc(printNode.name, printNode.scope);
+        		pushHex(loadXWithConst);
+        		pushHex("01");
+        		pushHex(compareMemoToX);
+        		pushHex(tempLoc[0]);
+        		pushHex(tempLoc[1]);
+        		pushHex(loadYWithConst);
+        		pushHex("falseLoc");
+        		pushHex(branchNBytes);
+        		pushHex("02");
+        		pushHex(loadYWithConst);
+        		pushHex("trueLoc");
+        		pushHex(loadXWithConst);
+        		pushHex("02");
         	}
 
             else if (type == "string") {
